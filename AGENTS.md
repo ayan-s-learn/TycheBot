@@ -8,9 +8,9 @@ A self-play RL bot for [Gen 9] National Dex OU on Pokémon Showdown. GitHub: [ay
 
 ## Current state
 
-Replace this line, don't append to it, when the phase or what's in flight changes.
+Replace this line, don't append to it, when the phase changes. What's in flight is in [docs/checklist.md](docs/checklist.md).
 
-- 2026-11-23: planning docs reviewed. There is no code or data, and there are no build or test commands. Next is Phase 0 (plan.md, Phases), starting with the toolchain choice.
+- 2026-11-23: Phase 0 (plan.md, Phases). There is no code or data, and there are no build or test commands.
 
 ## Docs
 
@@ -19,12 +19,15 @@ Replace this line, don't append to it, when the phase or what's in flight change
 | [docs/plan.md](docs/plan.md) | Goal, components, phases and exit criteria, evaluation |
 | [docs/decisions.md](docs/decisions.md) | Design choices (D1, D2, …) and their status |
 | [docs/prior-work.md](docs/prior-work.md) | Other bots and engines, and external numbers with sources |
+| [docs/workflow.md](docs/workflow.md) | How planning and task sessions work, and who may edit or push what |
+| [docs/checklist.md](docs/checklist.md) | Current milestone, task status, decisions waiting on the user |
+| `tasks/<ID>-<slug>/README.md` | One task's brief, progress and result |
 
 On anything a D-number covers, decisions.md wins. When docs disagree with each other or with what was built, fix them in the same change or tell the user.
 
 ## Starting a task
 
-1. Read Current state, and the Areas row for each area you will touch.
+1. Read Current state, docs/checklist.md, the task's brief if it has one, and the Areas row for each area you will touch.
 2. Read those areas' notes. If an area has no notes yet, read its part of plan.md.
 3. Check the status of every decision the task relies on (Rules, below).
 
@@ -52,4 +55,4 @@ Status lives in the row (a few words) and the detail in the area's notes, `docs/
 - interfaces the area produces: formats, files, versions. The producing area's notes own an interface, and consumers link to them;
 - gotchas, each with its evidence.
 
-Before ending a task in an area, update its row and notes. Rules that apply to one area go in its notes. Conventions that apply to every area (toolchain, layout, test commands) go in a Conventions section here once they exist. If an area's notes pass ~150 lines, split them by sub-area and link the parts from the row.
+Before ending a task in an area, update its notes and its row. Task sessions edit the notes when their brief lists them and propose everything else under For integration (docs/workflow.md). Rules that apply to one area go in its notes. Conventions that apply to every area (toolchain, layout, test commands) go in a Conventions section here once they exist. If an area's notes pass ~150 lines, split them by sub-area and link the parts from the row.
