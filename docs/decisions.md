@@ -43,14 +43,15 @@ Why:
 
 Revisit once play-time search works: distill search outputs back into the policy (expert iteration).
 
-## D4. Teams: partly decided (2026-11-22)
+## D4. Teams: partly decided (2026-11-23)
 
 Unlinked numbers are the research agent's own counts from the Oct 2026 stats and ~60 top 2026 replays.
 
-**Decided (2026-11-22):**
+**Decided (2026-11-23):**
 
 - Both seats sample from the pool. The bot's own ladder team comes out of self-play, not a hand pick. Teambuilding is out of scope.
-- **Resample sets every game.** On both teams, with probability ~0.5 per mon, replace its set with another complete set of that species from the set library (`species_sets.json`, below), sampled in proportion to 1760 usage. Keep team structure: Mega/Z count, Stealth Rock setter, hazard removal.
+- **Resample sets every game.** On both teams, with probability ~0.5 per mon, replace its set with a complete set of that species drawn by weight from the set library (`species_sets.json`, below). It may draw the same set. Keep team structure: Mega/Z count, Stealth Rock setter, hazard removal.
+  - The library holds the analysis sets plus every set on a training (not held-out) pool team. A set's weight is the product of its species' 1760 chaos-stat marginals for its item, ability and four moves, since sets themselves carry no usage. An attribute missing from the stats gives weight 0; if all of a species' sets weigh 0, draw uniformly.
   - Why: Team Preview shows all 6 species. With fixed sets, the preview identifies the pool team, so aux heads memorize sets and ladder beliefs come out overconfident.
 - **Sources through Phase 2:** Smogon NatDex sample teams (25) and analysis sets (170), already machine-readable at pkmn.github.io/smogon, plus recent tour pastes via pokepast.es JSON.
 - **Usage stats weight and check the pool; they don't generate it.** They are per-species marginals with no joint sets, so generated sets come out incoherent.
@@ -90,7 +91,7 @@ Revisit later. The likely first use is behavior-cloning initialization on NatDex
 
 PyTorch, because the same code runs on MPS (M4 Max) and CUDA (5090). JAX's Metal backend is experimental, and MLX is Mac-only.
 
-## D7. Observation: partly decided (2026-11-22)
+## D7. Observation: partly decided (2026-11-23)
 
 - **One builder:** a single observation builder over the per-player Showdown protocol, used for both training and online play. Training then sees exactly what the ladder client sees.
 - **The builder is Python.**
@@ -98,13 +99,14 @@ PyTorch, because the same code runs on MPS (M4 Max) and CUDA (5090). JAX's Metal
   - It runs in Python env processes separate from the learner, so parsing doesn't compete with PPO for the GIL.
   - Damage calcs stay in @smogon/calc (JavaScript). Python sends one batched calc request per env step, covering every battle in the batch, to the Node workers.
   - Why: one language for features, model and training.
-  - Cost: a second round trip per step, plus Python parsing load. Both are measured in Phase 0 (S3, S5).
-  - **Open until spike S6:** write our own battle-state tracker, or fork poke-env's (prior-work.md, Reusable code). S6 ends with a recommendation for the user. Calcs stay in @smogon/calc either way.
+  - Cost: a second round trip per step, plus Python parsing load. Both are measured in Phase 0 (S3, S5). If transfer misses S5's target after batching, this choice reopens.
+  - **Open until spike S6:** write our own battle-state tracker, fork poke-env's, or use @pkmn/client (prior-work.md, Reusable code). @pkmn/client is TypeScript, so choosing it moves tracking into the Node worker next to @smogon/calc, removes the second round trip, and reopens "the builder is Python". S6 ends with a recommendation for the user.
 - **Damage calcs are in v0.**
   - Why: NatDex's species/item/ability diversity makes damage expensive to learn from embeddings alone. Jaxcalibur used them.
-  - Calcs assume the species-level usage prior: the most likely library set consistent with what the protocol has explicitly revealed (moves, item, ability, forme). They don't use the aux-head belief, which would feed the net's output back into its input.
+  - Calcs assume the species-level usage prior: the highest-weight library set (D4) consistent with what the protocol has explicitly revealed (moves, item, ability, forme). They don't use the aux-head belief, which would feed the net's output back into its input.
+  - For a species with no library set, or none consistent with what has been revealed, the prior is its most common 1760 item, ability, spread and moves, with revealed attributes kept. That can be an incoherent set, but here it is only a calc input, never a training set. A species with no 1760 stats gets no calcs.
   - Implicit evidence (speed order, damage compared to the calc) enters as observation features instead (plan.md, Network v0). Narrowing the prior on that evidence, as Foul Play does, is a later option.
-  - Cost per step is measured in Phase 0. If calcs take >30% of env time, restrict them to the active mons.
+  - Cost per step is measured in Phase 0. If calcs take >30% of env time, restrict them to the active mons' moves (plan.md, Network v0).
 
 ## D8. Play-time search: deferred (2026-11-22)
 
@@ -119,18 +121,22 @@ Either way:
 - Guard against leaking hidden information.
 - Override the policy only when search wins by a margin (MissingNo).
 
-## D9. Success bar and budget: partly decided (2026-11-22)
+## D9. Success bar and budget: partly decided (2026-11-23)
 
-- **Target:** top 10 on the public `gen9nationaldex` board, held over ≥100 rated games, then pivot toward #1. On 2026-11-22, #10 was ~1835–1849 Elo and #1 ~1931 ([ladder JSON](https://pokemonshowdown.com/ladder/gen9nationaldex.json)). Bot accounts do appear on public boards (MissingNo, prior-work.md).
-  - **Open:** does "held over ≥100 rated games" mean 100 games in total, or 100 played while in the top 10?
+- **Target:** an Elo at or above #10 on the default `gen9nationaldex` board, shown on the bots-included board, held over ≥100 rated games. Then pivot toward the default board's #1 Elo.
+  - Why not "top 10 on the board": since 2026-11-13 the default board hides registered bots, so a bot can't appear on it (prior-work.md, MissingNo ladder).
+  - On 2026-11-23, #10 was 1856 and #1 was 1940 ([ladder JSON](https://pokemonshowdown.com/ladder/gen9nationaldex.json); add `?includebots` for the other board).
+  - **Open:** does "held over ≥100 rated games" mean 100 games in total, or 100 played at or above the bar?
 - **Budget:** up to $1k of rented compute for now. Spend only when measurements show the M4 Max isn't enough, apart from the ~$10 Phase 2 trial that measures the D2 gate.
+  - **Open:** the threshold for "isn't enough". S4 proposes one (plan.md, Phase 0).
 - **Reference:** MissingNo's gen 9 run cost ~$350 and its whole project ~$2.1k (prior-work.md).
 
-## D10. Training details: decided (2026-11-22)
+## D10. Training details: decided (2026-11-23)
 
-- **The turn cap is a truncation.** A game that hits the cap is cut off, and its last step bootstraps from V(s) (Pardo et al. 2018, prior-work.md). It is not scored with `tiebreak()`.
-  - Why: the ladder has no such rule. It auto-ties at turn 1000 (`sim/battle.ts`), and `tiebreak()` runs only when the timer expires. Scoring capped games would teach a win condition the ladder doesn't have. With bootstrapping, a losing side that stalls to the cap gets its own low value, so stalling gains nothing as long as V is accurate.
+- **The turn cap is a truncation.** A game that hits the cap is cut off, and its last step bootstraps from V(s) (Pardo et al. 2018, prior-work.md). It is not scored with a tiebreak (HP or mons left).
+  - Why: the ladder has no such rule. It auto-ties at turn 1000 (`sim/battle.ts`), and nothing on the server calls `RoomBattle.tiebreak()`. Scoring capped games would teach a win condition the ladder doesn't have. With bootstrapping, a losing side that stalls to the cap gets its own low value, so stalling gains nothing as long as V is accurate.
 - **The KL term is KL(uniform‖π)** over legal actions, added to the entropy bonus.
   - Why: KL(π‖uniform) = log|A| − H(π), so that direction only duplicates the entropy bonus. KL(uniform‖π) grows without bound as any legal action's probability nears 0, which keeps situational moves like Encore alive. Jaxcalibur describes its term as zero-avoiding, which is this direction.
-- **Collection is asynchronous.** Env workers keep playing during PPO updates, on a policy at most one update stale. Behavior log-probs are stored, so the PPO ratio corrects for the lag.
+- **Collection is asynchronous.** Env workers keep playing during PPO updates, on a policy at most one update stale. Behavior log-probs are stored for the PPO ratio.
   - Why: with synchronous PPO the env cores sit idle during updates, and updates took ~70% of mikumiku's wall time.
+  - Caveat: the clip is then centred on the stale behavior policy. Log the clip fraction on stale data, and if it runs high, switch to decoupled PPO ([Hilton et al. 2021](https://arxiv.org/abs/2110.00641)), which clips around a separate proximal policy and uses the behavior policy only for the off-policy correction.

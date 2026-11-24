@@ -10,7 +10,7 @@ A self-play RL bot for [Gen 9] National Dex OU on Pokémon Showdown. GitHub: [ay
 
 Replace this line, don't append to it, when the phase or what's in flight changes.
 
-- 2026-11-22: planning only. There is no code or data, and there are no build or test commands. Phase 0 (plan.md, Phases) has not started.
+- 2026-11-23: planning docs reviewed. There is no code or data, and there are no build or test commands. Next is Phase 0 (plan.md, Phases), starting with the toolchain choice.
 
 ## Docs
 

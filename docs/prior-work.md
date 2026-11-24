@@ -1,6 +1,6 @@
 # Prior work
 
-Snapshot as of 2026-11-22. All numbers are self-reported by the authors and were not reproduced here. None of the 87 projects in [pkmn.ai's index](https://pkmn.ai/projects/) targets National Dex.
+Snapshot as of 2026-11-22. All numbers are self-reported by the authors and were not reproduced here. None of the 87 projects in [pkmn.ai's index](https://pkmn.ai/projects/) targets National Dex. Registered bots do already ladder NatDex OU: on 2026-11-23 the bots-included top 500 had two, the best (guoguo10000) at 1731.
 
 ## Summary
 
@@ -67,7 +67,7 @@ The three #1 bots share one recipe. Jaxcalibur introduced it. mikumiku says it a
   - Fix: let only a fraction of the value gradient reach the trunk, use a shorter advantage horizon and an entropy schedule, and auto-pause when the ratio climbs.
 - **Gen 2 sleep bug:** the net keyed on "did I just use Rest?" instead of "am I asleep?". Lesson: check that observations expose the real state.
 - **Random-battle sets change monthly,** so each run trains on the current month's sets.
-- **Ladder:** played under Showdown's bot registry (opened 2026-10-13), with "bot" in every account name. Since 2026-10-20, bots are matched only with players who opted in and with other bots ([staff thread](https://www.smogon.com/forums/threads/3789528/)). Its bot accounts appeared on the public top-10 boards (blog screenshots).
+- **Ladder:** played under Showdown's bot registry (opened 2026-10-13), with "bot" in every account name. Since 2026-10-20, bots are matched only with players who opted in and with other bots ([staff thread](https://www.smogon.com/forums/threads/3789528/)). Its bot accounts appeared on the public top-10 boards (blog screenshots), but since 2026-11-13 the default board hides registered bots and `?includebots` shows them (pokemon-showdown-client commit e8bad3a). On 2026-11-22 its gen9randombattle account was #20 at 2321 on the bots-included board and absent from the default one.
 
 ### PokaiTrainer
 - The only serious search-in-training (AlphaZero/ReBeL-family) attempt. Each decision is a Bayesian matrix game solved with linear CFR. Beliefs over opponent worlds are reweighted by how likely the engine makes the observed outcome.
@@ -100,6 +100,7 @@ Checked 2026-11-22.
 |---|---|---|---|
 | [Pokémon Showdown](https://github.com/smogon/pokemon-showdown) | MIT | `sim/tools/runner.ts` as the S1 harness base. `sim/tools/exhaustive-runner.ts`, which cycles every species, move, item and ability through random-AI games, for mask fuzzing. `sim/state.ts` (serialize and deserialize a `Battle`) for the Phase 5 synthesizer | The exhaustive runner targets custom-game formats by default |
 | [poke-env](https://github.com/hsahovic/poke-env) | MIT | Python battle-state tracker that handles `-mega` and Z-Moves, and a Showdown websocket client (D7, spike S6) | Its gen 9 Python damage calc ignores Megas and Z-Moves (comment in `damage_calc_gen9.py`). Speed not measured |
+| [@pkmn/client](https://github.com/pkmn/ps/tree/main/client) | MIT | TypeScript battle-state tracker over the Showdown protocol, from the pkmn/ps packages (D7, spike S6) | Speed and NatDex Mega/Z handling not checked |
 | [Metamon](https://github.com/UT-Austin-RPL/metamon) | MIT | `backend/team_prediction` fills unrevealed sets by matching revealed teams to complete teams seen in replays (D4, Phase 3). `backend/replay_parser` rebuilds a player's view from spectator replays. `backend/team_construction` has a team-vs-team win model and an equilibrium solver (D4, Phase 4) | Built for gen 1–4 OU and gen 9 OU, and `ReplayPredictor` (the coherent set filler) supports gen 1–4 only. Its raw replay dataset (`metamon-raw-replays`, 2.7M battles) has no NatDex |
 | [Foul Play](https://github.com/pmariglia/foul-play) | GPL-3.0 | Eval opponent, run as a separate process. Its set narrowing by speed and damage is the reference for that idea | Don't copy its code: GPL would bind this repo |
 | [OpenSpiel](https://github.com/google-deepmind/open_spiel) | Apache-2.0 | Matrix games, regret matching and exploitability, for the Phase 2 toy checks and Phase 5 search | |
@@ -108,7 +109,7 @@ MissingNo.Zero's repo has only a README and a PDF, with no code and no license.
 
 ## Methods from other fields
 
-- **SPRT** ([Stockfish fishtest](https://github.com/official-stockfish/fishtest)): run an A/B test until the result clears preset bounds, which stops early when the gap is large. Its pentanomial model scores games in pairs, which matches seat-swapped duplicate games. Used in plan.md, Evaluation.
+- **SPRT** ([Stockfish fishtest](https://github.com/official-stockfish/fishtest)): run an A/B test until the result clears preset bounds, which stops early when the gap is large. Its pentanomial model scores games in pairs, which matches duplicate games (plan.md, Evaluation). Used in plan.md, Evaluation.
 - **Time-limit bootstrapping** ([Pardo et al. 2018](https://arxiv.org/abs/1712.00378)): treat a step cap as truncation and bootstrap from the value, not as a terminal state. Used in D10.
 - **Surgery** ([OpenAI Five](https://arxiv.org/abs/1912.06680)): carry trained weights across changes to the inputs or architecture instead of retraining, with new inputs initialized so the old function is unchanged. Used in plan.md, Versioning.
 - **Exploiter agents** ([AlphaStar](https://www.nature.com/articles/s41586-019-1724-z)): agents trained only to beat the frozen main agent, to expose its weaknesses. Planned for Phase 3+ (plan.md, League).
