@@ -20,6 +20,14 @@
 
 ## Progress
 
+```text
+2026-11-24
+State: active
+Verified: nothing yet
+Pending: all acceptance checks
+Next: survey installed toolchain on the M4 Max, then check Showdown pin options
+```
+
 ## Result
 
 ## Outputs
