@@ -21,6 +21,16 @@
 ## Progress
 
 ```text
+2026-11-24 (2)
+State: active
+Verified: smoke.sh passes at Showdown 29f2d99 on Node 22.23.2 (nvm) with uv 0.13.10 run from a
+  scratch venv, Python 3.14.7 (Homebrew), torch 2.15.0: validate-team, 20+20 battles, exhaustive
+  runner, local server, MPS available.
+Pending: rerun on the proposed Node 24 and a regular uv install, from a clean checkout; write Result.
+Next: ask the user to OK `nvm install 24` and `brew install uv`; then rerun smoke.sh from a clean clone.
+```
+
+```text
 2026-11-24
 State: active
 Verified: nothing yet
