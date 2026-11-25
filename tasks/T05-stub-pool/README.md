@@ -32,6 +32,79 @@ Next: set up vendor/, then fetch the sample teams and validate them at the pin
 
 ## Result
 
+All 25 of Smogon's sample teams validate at Showdown 29f2d99, so the pool is entries 0–19 of them, in file order. No stop condition was hit.
+
+| Source (D4 order) | Teams checked | Failed validation | In the pool |
+|---|---|---|---|
+| Smogon NatDex sample teams | 25 | 0 | 20 |
+| Tour pastes | not needed | – | 0 |
+
+Analysis sets are single sets, not teams, so none were used.
+
+Source: `https://pkmn.github.io/smogon/data/teams/gen9nationaldex.json`, fetched 2026-11-24, 36,674 bytes, SHA-256 `f35934eb5238b3069139fa6a67de999e654873e5da4f8f5142b84446c60a1fe1`, saved as `evidence/sample-teams.json`.
+
+Acceptance checks (`acceptance.sh`, Node 24.22.3; log in `evidence/acceptance.log`):
+
+- The pool validates: 20/20, 20 distinct. The `validate-team gen9nationaldex` CLI also accepts each packed team (command in Outputs).
+- With Mewtwo swapped into the team on line 7, the validator exits 1 with `FAIL smogon-sample-06 (line 7)` and `Mewtwo is tagged ND Uber, which is banned.`
+- Mega Stones, Z-Crystals and hidden formes are all present (below).
+
+### Counts
+
+From `node tasks/T05-stub-pool/report.ts data/pool/v0/teams.jsonl`:
+
+- **Species,** 40 across 120 sets: Zamazenta 12, Ogerpon-Wellspring 8, Iron Treads 7, Slowking-Galar 7, Zapdos 7, Garchomp 5, Tapu Lele 5, Gholdengo 4, Great Tusk 4, Kingambit 4, Kyurem 4, Pecharunt 4, Terapagos 4, Alomomola 3, Diancie 3, Landorus-Therian 3, Samurott-Hisui 3, Ting-Lu 3, Tornadus-Therian 3, Urshifu-Rapid-Strike 3, Corviknight 2, Dragonite 2, Ferrothorn 2, Latios 2, and 1 each of Ceruledge, Cinderace, Cresselia, Hatterene, Heatran, Lopunny, Mawile, Moltres, Moltres-Galar, Ninetales, Raging Bolt, Slowbro, Tyranitar, Venusaur, Volcarona, Weavile.
+- **Mega Stones,** 8 (one each on 8 teams): Diancite 3, Latiosite 2, Lopunnite 1, Mawilite 1, Tyranitarite 1.
+- **Z-Crystals,** 19 (one each on 19 teams): Dragonium Z 4, Darkinium Z 3, Fightinium Z 3, Psychium Z 3, Flyinium Z 2, Ghostium Z 2, Groundium Z 1, Rockium Z 1.
+- **Hidden at Team Preview,** 15, read from the sim's `|poke|` lines: `Zamazenta-*` 12, `Urshifu-*` 3.
+
+### Limits
+
+- Entries 20–24 are left out. They are the only sample teams with Blissey, Clodsire, Gliscor or Toxapex (44 species across all 25), so Phase 1's growth to ~50 has them available.
+- The pool is narrower than the ladder in places: 19 of 20 teams carry a Z-Crystal, against plan.md's ~0.5 per team (research agent's count, not checked here), and Zamazenta is on 12.
+- Six pairs of teams share 4 species, the most any pair shares. D4's deferred group split would hold such teams out together.
+- Teams were validated and taken to Team Preview. No full battles were played with them.
+
 ## Outputs
 
+After setup (AGENTS.md, Conventions), from the root, with `nvm use` in the same shell:
+
+```bash
+tasks/T05-stub-pool/acceptance.sh
+```
+
+To rebuild `teams.jsonl` from the snapshot (reproduces it byte for byte):
+
+```bash
+node tasks/T05-stub-pool/build-pool.ts
+```
+
+To run Showdown's CLI on each pool team (prints the number accepted):
+
+```bash
+ok=0; while IFS= read -r l; do node -p 'JSON.parse(process.argv[1]).team' "$l" | node vendor/pokemon-showdown/pokemon-showdown validate-team gen9nationaldex && ok=$((ok+1)); done < data/pool/v0/teams.jsonl; echo "$ok"
+```
+
+| File | What it is |
+|---|---|
+| `data/pool/v0/teams.jsonl` | The stub pool |
+| `scripts/validate-pool.ts` | Validates a pool file at the pin |
+| `docs/areas/team-pool.md` | Format, command, contents |
+| `acceptance.sh`, `tsconfig.json` | Type check and the brief's acceptance checks |
+| `build-pool.ts` | Packs the snapshot's sets, checks that unpacking returns every field, validates, writes the pool |
+| `report.ts` | Counts, and the contents criteria |
+| `evidence/` | Source snapshot and the acceptance log |
+
 ## For integration
+
+AGENTS.md, Current state: replace "There is no project code or data yet." with:
+
+> A 20-team stub pool is in `data/pool/v0/`.
+
+AGENTS.md, Areas: replace "No areas yet. Add a row" with "Add a row", and add this row:
+
+> | Team pool and set priors | 20-team stub pool; no priors | `data/pool/`, `scripts/validate-pool.ts` | [team-pool](docs/areas/team-pool.md) |
+
+AGENTS.md, Conventions, "Re-pin Showdown monthly": replace "validate every pool team and rerun the tests that exist" with:
+
+> validate every pool team (`node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl`, once per pool version in use) and rerun the tests that exist
