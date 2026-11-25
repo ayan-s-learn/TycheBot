@@ -10,7 +10,7 @@ Phase 0 exit ([plan.md](plan.md), Phases): the toolchain is recorded (done 2026-
 
 ## Next replan
 
-When T07 or T08 opens a PR or stops on a stop condition. Once both are merged and you have signed off on their proposals, Phase 0 exits: then plan Phase 1, starting with the walking skeleton and the parallel learner track (plan.md, Phases). Add open-spiel to `pyproject.toml` for the toy checks (T01 found macOS wheels for cp311–cp314).
+When T07's or T08's PR has a `Reviewed:` line (workflow.md, Task session), or the task stops on a stop condition. Once both are merged and you have signed off on their proposals, Phase 0 exits: then plan Phase 1, starting with the walking skeleton and the parallel learner track (plan.md, Phases). Add open-spiel to `pyproject.toml` for the toy checks (T01 found macOS wheels for cp311–cp314).
 
 ## Needs you
 

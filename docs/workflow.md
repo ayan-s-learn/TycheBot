@@ -4,7 +4,7 @@ How sessions plan and do work. Planning runs in its own sessions, and each task 
 
 ## Roles
 
-- **The user** sets goals and scope, makes decisions (decisions.md), and approves merges and spending.
+- **The user** sets goals and scope, makes decisions (decisions.md), reviews each task's PR, and approves merges and spending.
 - **Planning session** (`/replan`): keeps the checklist and task briefs, and integrates finished tasks. Writes no project code.
 - **Task session** (`/do-task [ID]`): does one task from its brief. It picks its own method, not its next task.
 
@@ -34,7 +34,7 @@ Anything else reaching `main` needs the user's OK each time: task merges, and pl
 
 Run `/replan` when any of these happens. The checklist names the one expected next.
 
-- A task has a PR waiting, or stopped on one of its stop conditions.
+- A task's PR has a `Reviewed:` line (Task session, step 7), or the task stopped on one of its stop conditions.
 - A result crosses a gate in plan.md or decisions.md, such as D2's $8 per million games or D7's calc revisit trigger.
 - A phase's exit criteria are met.
 - The user has answered something under Needs you.
@@ -43,12 +43,27 @@ Run `/replan` when any of these happens. The checklist names the one expected ne
 
 ## Planning session
 
+Two stages: integrate what finished, then plan ahead. PRs arrive already reviewed (Task session, step 7), so stage 1 checks how they fit together, not each one's correctness.
+
+### Stage 1: integrate
+
 1. **Reconcile.** Fetch. For each Active task, read Progress and Result on its branch or PR. Check its files and any running jobs rather than trusting the status line.
-2. **Review finished tasks.** Run the brief's acceptance checks. Then get an independent pass from a separate agent (Opus unless the user picks a lighter model for the batch), briefed on what the task did and told not to trust earlier checks. A number that drives a decision is reproduced, not just read. Fixes made after that pass get their own short pass.
-3. **Merge, with the user's OK.** Prepare the merge locally. A separate commit applies the task's For integration edits and removes that section. The user sees both and approves pushing them.
-4. **Replan.** Decide whether the results change the route to the milestone, and update the checklist. Write briefs only for tasks in the current milestone whose inputs exist and whose decisions are decided (AGENTS.md, Rules). Leave later work in plan.md. Follow-up work gets a new ID. A replaced task is marked superseded, with a link to its successor. When work merges, moves, is cut or is deferred, grep docs/, AGENTS.md and open briefs for its task or spike ID and its name, and fix every hit, including figures quoted from it and the phase tags in plan.md's Components. Closed tasks' READMEs stay as records.
-5. **Ask the user.** List pending decisions under Needs you, each with a recommendation, and ask about them together. Record the answers in decisions.md or in the brief they affect.
-6. **Close.** Set the next replan trigger, then commit and push the checklist and briefs. Say which Ready tasks can run in parallel because they share no files.
+
+   A PR gets a full review before step 5 if it has no `Reviewed:` line, its task stopped on a stop condition, one of its results crosses a gate, or steps 2–4 find a substantive problem. A full review is an independent agent pass (Opus unless the user picks a lighter model), briefed on what the task did and told not to trust earlier checks, plus rerunning the numbers its decisions rest on. Fixes made after that pass get their own short pass.
+2. **Merge locally.** Merge the finished branches onto a scratch branch, one at a time, and note conflicts.
+3. **Check the merged result.** Run the acceptance checks that take minutes, and skip long timing sweeps unless the PR gets a full review. Rerun a number that drives a decision when that also takes minutes.
+4. **Check integration:**
+   - each task's For integration text against the docs as they now stand, combining edits that several tasks make to one section;
+   - figures that one task or doc quotes from another;
+   - shared docs edited on a task branch;
+   - the sweep rule in step 6, for the tasks being merged.
+5. **Merge, with the user's OK.** On the scratch branch, add a commit that applies the For integration edits and removes those sections. The user sees the merges and that commit, then approves pushing them to `main`.
+
+### Stage 2: plan
+
+6. **Replan.** Decide whether the results change the route to the milestone, and update the checklist. Write briefs only for tasks in the current milestone whose inputs exist and whose decisions are decided (AGENTS.md, Rules). Leave later work in plan.md. Follow-up work gets a new ID. A replaced task is marked superseded, with a link to its successor. When work merges, moves, is cut or is deferred, grep docs/, AGENTS.md and open briefs for its task or spike ID and its name, and fix every hit, including figures quoted from it and the phase tags in plan.md's Components. Closed tasks' READMEs stay as records.
+7. **Ask the user.** List pending decisions under Needs you, each with a recommendation, and ask about them together. Record the answers in decisions.md or in the brief they affect.
+8. **Close.** Set the next replan trigger, then commit and push the checklist and briefs. Say which Ready tasks can run in parallel because they share no files.
 
 ## Task session
 
@@ -60,7 +75,8 @@ Run `/replan` when any of these happens. The checklist names the one expected ne
 3. Change only the paths the brief allows. Put proposed edits to anything else under For integration, with the exact text.
 4. If a stop condition is met, stop and report rather than work around it.
 5. Checkpoint (below) after any expensive step and at the end of every session.
-6. To finish, run the acceptance checks, fill in Result and Outputs, set State to `done`, and open a PR. Don't merge. The task closes when a planning session merges it.
+6. To finish, run the acceptance checks, fill in Result and Outputs, set State to `done`, and open a PR.
+7. **Review.** After the PR is open, the user reviews it and has two adversarial review passes run, the second after the first's fixes are in. The task session, or a session resumed on the task branch, applies the fixes, updates Result if they change it, and adds a final Progress entry with the `Reviewed:` line. Don't merge: the task closes when a planning session merges it.
 
 ### Checkpoints
 
@@ -72,6 +88,7 @@ Verified: <what passed, with input and code versions>
 Pending: <checks not yet passing>
 Next: <first concrete action, and what result decides the step after>
 Handoff: open   (only when a session ends with the task unfinished)
+Reviewed: user, passes 1 and 2 (<date>), fixes in <commits or none>   (once, in the final entry, after step 7)
 ```
 
 Commit and push the branch, and confirm the remote has the commit. A resuming session claims the task by replacing `Handoff: open` with a new entry and pushing it, then checks the actual files and jobs before trusting State.
