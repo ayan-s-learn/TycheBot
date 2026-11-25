@@ -22,6 +22,17 @@
 ## Progress
 
 ```text
+2026-11-25
+State: done
+Verified: all acceptance checks, with the accepted exception: `uv run tasks/T04-replay-corpus/stats.py`
+  exits 0 on the data committed at 79f37d0, Python 3.14. A review's fixes are in: the check covers
+  only the 20 accepted games, two more forfeit messages, a correction for cut-short games, and a
+  fetch cache that keeps only usable replays.
+Pending: nothing.
+Next: planning session review.
+```
+
+```text
 2026-11-24 (3)
 State: done
 Verified: all acceptance checks, with the exception the user accepted on 2026-11-24 (Result):
@@ -59,8 +70,8 @@ games have a result but no rating lines and a null rating, so "In rated games, `
 follow `|win|`" holds only for games with a rating. The likely cause, from Showdown's code at the
 pin: a replay saved during a battle is uploaded again when it ends, before the ladder update has
 added the rating (`server/room-battle.ts`). 17 of the 20 were uploaded before their log's last
-timestamp. They are finished games and stay in the corpus: replacing them would drop ladder games
-because of how they were saved, and these run longer (mean 32.5 turns).
+timestamp. They are finished games and stay in the corpus rather than being removed for how they were
+saved. `stats.py` accepts only these 20.
 
 - **Turns** are the number on the log's last `|turn|` line. p90 interpolates linearly.
 - **Rating** is the lower of the two players' ratings after the game (`server/ladders-remote.ts` and
@@ -83,15 +94,39 @@ because of how they were saved, and these run longer (mean 32.5 turns).
 | no rating: not rated | 167 | 25 | 27.4 | 43.4 | 96 | 15.0% |
 
 - **Endings:** forfeit 39.9%, inactivity 2.5%, other 57.6%. No ties. 8 games ended before turn 1.
-- **Long games:** p99 88. Over 100 turns: 6 games (0.6%). The longest, 263, ended in a tournament
-  disqualification (counted as forfeit).
-- **Ratings** (games with one): min 1000, median 1168, p90 1487, max 1768.
+- **Ratings** (games with one): min 1000, median 1168.5, p90 1487, max 1768.
 - **Custom rules:** 35 games (3.5%), none with a rating (23 are tournament games), keep the format id
   but change the rules (for example added or banned species, dropped clauses, forced monotype). They
-  are in the figures above, and their median is 14 turns.
+  are in the figures above, and their median is 14 turns. Without them: all games, mean 24.9, median
+  22, p90 39; not ended by forfeit or inactivity, 26.8, 24, 39.
+
+**Long games were mostly cut short.** Of the 7 games over 100 turns in both samples, 5 ended by
+forfeit or inactivity. The longest, 263, ended in a tournament disqualification (counted as forfeit)
+with no Pokémon fainted. The longest played out ran 137. In the corpus, p99 is 88 and 6 games (0.6%)
+passed turn 100.
+
+**Corrected for cut-short games** (Kaplan-Meier, corpus). A game ended by forfeit or inactivity is
+taken to have gone on as long as other games that reached the same turn.
+
+| measure | observed | corrected (95% interval) |
+|---|---|---|
+| median turns | 22 | 27 |
+| p90 turns | 38 | 58 |
+| mean turns, counting each game up to turn 137 | 24.4 | 35.7 |
+| share past turn 50 | 4.1% | 12.5% (9.6 to 15.8) |
+| share past turn 100 | 0.6% | 5.1% (2.7 to 8.6) |
+| share past turn 137 | 0.3% | 3.2% (1.2 to 6.9) |
+
+- The observed figures are too low for games played to the end, since a cut game would have run at
+  least as long as it did.
+- The corrected ones rest on an assumption that is doubtful: 114 of the 416 cut games that started
+  ended with a side down to one Pokémon or none. Those likely had little left, which pushes the
+  correction too high.
+- Past turn 137 no game was played out, and nothing is estimated past turn 263. The share of games
+  that would pass 300 is unknown.
 
 **High-rated sample:** the first 100 games rated ≥1500 going back from the corpus's oldest upload,
-uploaded 2026-11-19 15:58 to 11-22 06:01 UTC. Ratings 1502 to 1744, median 1574. Forfeit 65%,
+uploaded 2026-11-19 15:58 to 11-22 06:01 UTC. Ratings 1502 to 1744, median 1574.5. Forfeit 65%,
 inactivity 2%.
 
 | games (high-rated) | n | median | mean | p90 | max |
@@ -99,15 +134,17 @@ inactivity 2%.
 | all | 100 | 23 | 27.6 | 48.2 | 129 |
 | not ended by forfeit or inactivity | 33 | 29 | 30.8 | 43 | 90 |
 
+The same correction gives this sample a median of 36 turns, from only 33 games played out.
+
 Limits:
 
 - Public replays are only some of the games played, not a random sample. How they differ from the
   rest wasn't measured.
 - Under three days of uploads. The most frequent player is in 7.2% of the corpus's games and 11.0%
   of the high-rated sample's, where the top 10 fill 30.0% of seats.
-- Neither "all" nor the subset without forfeit or inactivity is the length of games played to the
-  end: the first includes the 42% cut short, and the second drops them. Self-play has no forfeits,
-  and its lengths aren't measured here.
+- Neither "all" nor the subset without forfeit or inactivity is the length games would reach if all
+  were played out: the first includes the 42% cut short, and the second drops them. Self-play has no
+  forfeits, and its lengths aren't measured here.
 - The forfeit and inactivity label comes from server messages. In the 1,092 games that started, it
   agrees with whether the loser's whole team fainted, except one loss the sim ruled for restorative
   berry-cycling (counted as not forfeit).
@@ -120,9 +157,15 @@ Limits:
     `players` (two names);
   - `log`: protocol lines joined by `\n`, as served except that `|c|` and `|c:|` lines are removed.
 - Figures and acceptance checks, from the committed files: `uv run tasks/T04-replay-corpus/stats.py`
+- Replay search, probed 2026-11-24: `search.json?format=gen9nationaldex` returns up to 51 entries,
+  newest upload first (a 51st means another page), each with `id`, `format`, `players`, `uploadtime`,
+  `rating`, `private` and `password`. `before=<uploadtime>` is exclusive, so `fetch.py` passes the
+  last time plus one and drops repeats. `&sort=rating` returns the highest-rated, back to 2024. Every
+  replay fetched had `formatid` `gen9nationaldex`.
 - Fetch: `uv run tasks/T04-replay-corpus/fetch.py <cache dir outside the repo>`, about 22 minutes at
   one request per second or slower. A rerun takes the newest uploads at that time and overwrites both
-  data files and fetch-log.json. The committed files are the record. The cache holds replays with chat.
+  data files and fetch-log.json. The committed files are the record, fetched with `fetch.py` at
+  79f37d0. The cache holds replays with chat.
 - [fetch-log.json](fetch-log.json): this run's times, search pages, rejected replays (none), and the
   search entries scanned for the high-rated sample (100 of 1,049 were rated ≥1500).
 
@@ -130,11 +173,11 @@ Limits:
 
 1. plan.md, Compute: add this bullet before **M4 Max:**.
 
-   > - **Turns per game** (T04: 1,000 public replays uploaded 2026-11-22 to 11-25 UTC): mean 24.6, median 22, p90 38. Without the 42% ended by forfeit or inactivity: mean 26.2, median 24, p90 39. Ladder games only, also without those (403 games): mean 25.7, median 23, p90 38. These are human games, and none of these figures measures games played to the end. Self-play lengths are unmeasured.
+   > - **Turns per game** (T04: 1,000 public replays of human games, uploaded 2026-11-22 to 11-25 UTC): mean 24.6, median 22, p90 38, including 35 custom-rule games (without them: mean 24.9, p90 39). 42% ended by forfeit or inactivity, so these are too low for games played to the end. A Kaplan-Meier correction gives median 27, p90 58 and mean 35.7 counted up to turn 137, likely too high because some games were forfeited when nearly decided. Without the 42%: mean 26.2, median 24, p90 39; ladder games only (403): mean 25.7, median 23, p90 38. Self-play lengths are unmeasured.
 
-2. plan.md, Training v0: nothing in T04's lengths argues against the starting cap of 300. Replace the "Turn cap" line, keeping its indent under **Reward:**, with:
+2. plan.md, Training v0: T04's lengths give no reason to change the starting cap of 300, and can't confirm it. Replace the "Turn cap" line, keeping its indent under **Reward:**, with:
 
-   > - Turn cap: start at 300 and tune from game-length data. None of T04's 1,100 public replays passed 300 turns (max 263; p99 88 in the 1,000-game corpus). These are human games, and self-play lengths are unmeasured. Capped games are truncated and bootstrap from V(s) (D10). Log the cap-hit rate.
+   > - Turn cap: start at 300 and tune from game-length data. None of T04's 1,100 public replays passed 300 turns, but that is a weak check: the longest (263) was cut off by a tournament disqualification with no Pokémon fainted, 5 of the 7 games over 100 turns ended early, and no game past turn 137 was played out. A Kaplan-Meier correction on the 1,000-game corpus puts 5.1% of games past turn 100 (0.6% observed) and can't estimate the share past 300. These are human games, and self-play lengths are unmeasured. Capped games are truncated and bootstrap from V(s) (D10). Log the cap-hit rate.
 
 3. AGENTS.md, Current state: replace the line (dated at merge, and combined with other tasks' changes to it) with:
 

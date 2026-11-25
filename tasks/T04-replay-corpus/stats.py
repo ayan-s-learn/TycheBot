@@ -24,7 +24,8 @@ ENDINGS = {
     "forfeit": re.compile(
         r"^\|-message\|.* (forfeited\.|forfeited the series\.|forfeited by changing their name\."
         r"|lost by having an inappropriate name\.|was made to forfeit\."
-        r"|lost by being unavailable at the start of a game\.|was disqualified from the tournament\.)$"
+        r"|lost by being unavailable at the start of a game\.|was disqualified from the tournament\."
+        r"|lost by being banned\.|lost by being offline too long\.)$"
     ),
     "inactivity": re.compile(
         r"^\|-message\|(.* lost (the series )?due to inactivity\.|All players are inactive\.)$"
@@ -32,6 +33,13 @@ ENDINGS = {
 }
 CUSTOM_RULES = re.compile(r"^\|raw\|.*<strong>\d+ custom rules?:</strong>")
 RATING_LINE = re.compile(r"^\|raw\|.*'s rating: \d+ &rarr; <strong>(\d+)</strong>")
+
+# Ladder games with neither a rating nor rating lines, accepted by the user on 2026-11-24 (Result).
+ACCEPTED_UNRATED = {f"{FORMAT}-{number}" for number in (
+    2717751610, 2717861354, 2718189460, 2718273993, 2718277604, 2718277703, 2718278550,
+    2718280135, 2718282827, 2718284464, 2718398731, 2718446782, 2718450964, 2718605709,
+    2718636878, 2718669421, 2718788206, 2718913139, 2719015572, 2719020541,
+)}
 
 failures = []
 
@@ -57,24 +65,27 @@ def parse(record):
     rating_at = [i for i, line in enumerate(lines) if RATING_LINE.match(line)]
     new_ratings = [int(RATING_LINE.match(lines[i])[1]) for i in rating_at]
 
+    sizes = {line.split("|")[2]: int(line.split("|")[3]) for line in lines if line.startswith("|teamsize|")}
+    # Pokemon each side has left at the end. Revival Blessing brings fainted ones back.
+    left = {
+        side: size
+        - sum(line.startswith(f"|faint|{side}") for line in lines)
+        + sum(line.startswith(f"|-heal|{side}") and line.endswith("[from] move: Revival Blessing") for line in lines)
+        for side, size in sizes.items()
+    }
+
     # Cross-check on the label: the loser has fainted out exactly when nobody forfeited or timed out.
     ending_matches_faints = None
     result = lines[results[0]] if results else ""
     if result.startswith("|win|"):
-        sides, sizes = {}, {}
+        sides = {}
         for line in lines:
             part = line.split("|")
             if line.startswith("|player|") and len(part) > 3 and part[3]:
                 sides.setdefault(part[2], part[3])
-            elif line.startswith("|teamsize|"):
-                sizes[part[2]] = int(part[3])
         losers = [side for side, name in sides.items() if name != result[len("|win|"):]]
-        if len(losers) == 1 and losers[0] in sizes:
-            fainted = sum(line.startswith(f"|faint|{losers[0]}") for line in lines) - sum(
-                line.startswith(f"|-heal|{losers[0]}") and line.endswith("[from] move: Revival Blessing")
-                for line in lines
-            )
-            ending_matches_faints = (fainted >= sizes[losers[0]]) == (ending == "played out")
+        if len(losers) == 1 and losers[0] in left:
+            ending_matches_faints = (left[losers[0]] <= 0) == (ending == "played out")
 
     return {
         **record,
@@ -86,9 +97,11 @@ def parse(record):
         "last_timestamp": max((int(line.split("|")[2]) for line in lines if line.startswith("|t:|")), default=0),
         "results": len(results),
         "chat": any(line.startswith(("|c|", "|c:|")) for line in lines),
-        "rating_lines_ok": bool(results) and bool(rating_at) and min(rating_at) > results[0],
+        "rating_lines_ok": bool(results) and len(rating_at) == 2 and min(rating_at) > results[0],
         "new_ratings": new_ratings,
         "ending_matches_faints": ending_matches_faints,
+        "fainted": sum(line.startswith("|faint|") for line in lines),
+        "fewest_left": min(left.values(), default=None),
     }
 
 
@@ -109,11 +122,12 @@ def check_games(name, games):
     check(all(g["formatid"] == FORMAT for g in games), f"every formatid is {FORMAT}")
     check(all(g["results"] == 1 for g in games), "every log has exactly one |win| or |tie line")
     ladder = [g for g in games if g["rating"] is not None or g["kind"] == "ladder"]
-    # Accepted by the user on 2026-11-24 (Result): ladder games with neither a rating nor rating lines.
-    unscored = [g for g in ladder if g["rating"] is None and not g["new_ratings"]]
-    rated = [g for g in ladder if g not in unscored]
-    bad = [g["id"] for g in rated if not g["rating_lines_ok"]]
-    check(not bad, f"{len(rated)} rated games: |raw| rating lines follow the result {bad[:10]}")
+    unscored = [g for g in ladder
+                if g["id"] in ACCEPTED_UNRATED and g["rating"] is None and not g["new_ratings"]]
+    accepted = {g["id"] for g in unscored}
+    rated = [g for g in ladder if g["id"] not in accepted]
+    bad = [g["id"] for g in rated if g["rating"] is None or not g["rating_lines_ok"]]
+    check(not bad, f"{len(rated)} rated games: a rating, and two |raw| rating lines after the result {bad[:10]}")
     if unscored:
         early = sum(g["uploadtime"] < g["last_timestamp"] for g in unscored)
         print(f"info  accepted exception: {len(unscored)} ladder games have no rating and no rating lines; "
@@ -147,6 +161,48 @@ def table(rows):
               f"| {t.max()} | {percent(quit_early(games), len(games))} |")
 
 
+def still_going(games):
+    """Kaplan-Meier share of games lasting past turn 0, 1, 2, ..., with its 95% interval.
+
+    A game ended by forfeit or inactivity counts as cut off: it would have gone on, for as
+    long as other games that reached the same turn.
+    """
+    turns = np.array([g["turns"] for g in games])
+    finished = np.array([g["ending"] == "played out" for g in games])
+    at_risk = np.array([(turns >= t).sum() for t in range(turns.max() + 1)])
+    ended = np.array([(finished & (turns == t)).sum() for t in range(turns.max() + 1)])
+    share = np.cumprod(1 - ended / at_risk)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        # Greenwood's variance on the log(-log) scale, which keeps the interval inside 0 to 1.
+        spread = 1.96 * np.sqrt(np.cumsum(ended / (at_risk * (at_risk - ended)))) / np.abs(np.log(share))
+        return share, share ** np.exp(spread), share ** np.exp(-spread)
+
+
+def corrected_lengths(games):
+    turns = np.array([g["turns"] for g in games])
+    horizon = max(g["turns"] for g in games if g["ending"] == "played out")
+    share, low, high = still_going(games)
+
+    def reached(level):
+        return str(int(np.argmax(share <= level))) if (share <= level).any() else "-"
+
+    print("\n### Lengths corrected for games cut short (Kaplan-Meier)\n")
+    print("| measure | observed | corrected (95% interval) |\n|---|---|---|")
+    print(f"| median turns | {np.median(turns):g} | {reached(0.5)} |")
+    print(f"| p90 turns | {np.percentile(turns, 90):g} | {reached(0.1)} |")
+    print(f"| mean turns, counting each game up to turn {horizon} | {np.minimum(turns, horizon).mean():.1f} "
+          f"| {share[:horizon].sum():.1f} |")
+    for t in sorted({50, 100, horizon}):
+        if t <= horizon:
+            print(f"| share past turn {t} | {percent((turns > t).sum(), len(turns))} "
+                  f"| {100 * share[t]:.1f}% ({100 * low[t]:.1f} to {100 * high[t]:.1f}) |")
+    print(f"\nLongest game played out: {horizon} turns. Games cut off later than that: {(turns > horizon).sum()}, "
+          f"the last at turn {turns.max()}. Nothing is estimated past it.")
+    cut = [g for g in games if g["ending"] != "played out" and g["fewest_left"] is not None]
+    print(f"Of {len(cut)} cut games that started, {sum(g['fewest_left'] <= 1 for g in cut)} ended with a side "
+          f"down to one Pokemon or none.")
+
+
 def report(name, games):
     times = sorted(g["uploadtime"] for g in games)
     first, last = (time.strftime("%Y-%m-%d %H:%M", time.gmtime(t)) for t in (times[0], times[-1]))
@@ -168,6 +224,9 @@ def report(name, games):
     played = [g for g in games if g["ending"] == "played out"]
     print("\n### Turns per game\n")
     table([("all", games), ("not ended by forfeit or inactivity", played),
+           ("all, without custom rules", [g for g in games if not g["custom_rules"]]),
+           ("not ended by forfeit or inactivity, without custom rules",
+            [g for g in played if not g["custom_rules"]]),
            ("ladder", [g for g in games if g["kind"] == "ladder"]),
            ("ladder, not ended by forfeit or inactivity", [g for g in played if g["kind"] == "ladder"])]
           + [(f"rating {label}", [g for g in games if band(g) == label]) for label, _ in BANDS]
@@ -185,6 +244,8 @@ def report(name, games):
     print("Longest: " + ", ".join(f"{g['turns']} ({g['id']}, {g['ending']})"
                                   for g in sorted(games, key=lambda g: -g["turns"])[:5]))
 
+    corrected_lengths(games)
+
     ratings = np.array([g["rating"] for g in games if g["rating"] is not None])
     print("\n### Rating distribution (the lower player's rating after the game)\n")
     print("| band | n | share |\n|---|---|---|")
@@ -192,7 +253,7 @@ def report(name, games):
     for label in [label for label, _ in BANDS] + ["no rating"]:
         print(f"| {label} | {counts[label]} | {percent(counts[label], len(games))} |")
     q = np.percentile(ratings, [0, 25, 50, 75, 90, 99, 100])
-    print("\nGames with a rating, min / p25 / median / p75 / p90 / p99 / max: " + " / ".join(f"{v:.0f}" for v in q))
+    print("\nGames with a rating, min / p25 / median / p75 / p90 / p99 / max: " + " / ".join(f"{v:g}" for v in q))
 
 
 def main():
@@ -207,6 +268,10 @@ def main():
     report("Corpus", corpus)
     if high:
         report("High-rated sample", high)
+    long = sorted((g for g in corpus + high if g["turns"] > 100), key=lambda g: -g["turns"])
+    print(f"\n## Both samples, over 100 turns: {len(long)} games, {quit_early(long)} ended by forfeit or inactivity\n")
+    for g in long:
+        print(f"{g['turns']} turns, {g['id']}, {g['ending']}, {g['fainted']} Pokemon fainted")
     if failures:
         sys.exit(f"\n{len(failures)} checks failed")
 

@@ -74,12 +74,18 @@ def search(log):
 
 def fetch_replay(replay_id, cache):
     path = cache / f"{replay_id}.json"
-    if not path.exists():
-        body = get(f"{BASE}/{replay_id}.json")
-        if body is None:
-            return None
-        path.write_bytes(body)
-    return json.loads(path.read_bytes())
+    if path.exists():
+        return json.loads(path.read_bytes())
+    body = get(f"{BASE}/{replay_id}.json")
+    if body is None:
+        return None
+    replay = json.loads(body)
+    # A rejected replay may still change on the server (one saved mid-battle does), so don't keep it.
+    if reject_reason(replay) is None:
+        partial = path.with_suffix(".part")
+        partial.write_bytes(body)
+        partial.replace(path)
+    return replay
 
 
 def reject_reason(replay):
