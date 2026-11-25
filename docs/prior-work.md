@@ -103,7 +103,7 @@ Checked 2026-11-22.
 | [@pkmn/client](https://github.com/pkmn/ps/tree/main/client) | MIT | TypeScript battle-state tracker over the Showdown protocol, from the pkmn/ps packages (D7, spike S6) | Speed and NatDex Mega/Z handling not checked |
 | [Metamon](https://github.com/UT-Austin-RPL/metamon) | MIT | `backend/team_prediction` fills unrevealed sets by matching revealed teams to complete teams seen in replays (D4, Phase 3). `backend/replay_parser` rebuilds a player's view from spectator replays. `backend/team_construction` has a team-vs-team win model and an equilibrium solver (D4, Phase 4) | Built for gen 1–4 OU and gen 9 OU, and `ReplayPredictor` (the coherent set filler) supports gen 1–4 only. Its raw replay dataset (`metamon-raw-replays`, 2.7M battles) has no NatDex |
 | [Foul Play](https://github.com/pmariglia/foul-play) | GPL-3.0 | Eval opponent, run as a separate process. Its set narrowing by speed and damage is the reference for that idea | Don't copy its code: GPL would bind this repo |
-| [OpenSpiel](https://github.com/google-deepmind/open_spiel) | Apache-2.0 | Matrix games, regret matching and exploitability, for the Phase 2 toy checks and Phase 5 search | |
+| [OpenSpiel](https://github.com/google-deepmind/open_spiel) | Apache-2.0 | Matrix games, regret matching and exploitability, for the toy checks (Phase 1's learner track) and Phase 5 search | |
 
 MissingNo.Zero's repo has only a README and a PDF, with no code and no license.
 

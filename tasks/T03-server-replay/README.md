@@ -2,6 +2,8 @@
 
 ## Brief
 
+Deferred 2026-11-25: start only at the online gate before Phase 2's rated games (plan.md, Phases).
+
 - **Objective:** check that one observation builder can read both what a live server sends and what the in-process sim produces (D7: one builder for training and online play). Play games on a local server, replay each in-process from its `/exportinputlog` with the same seed, and document every difference between the two per-player streams, such as `rqid`, room lines, timestamps and `|split|` handling.
 - **Inputs:**
   - Setup first (AGENTS.md, Conventions), including `scripts/setup-showdown.sh`: each worktree builds its own `vendor/`.
@@ -9,7 +11,7 @@
   - The server: `node pokemon-showdown start --skip-build --no-security <port>` from `vendor/pokemon-showdown`, as T01's `check-server.sh` runs it. T01's Result (Gotchas) has what it found about the server.
   - Server-side players: poke-env's websocket client (root `pyproject.toml`).
   - The input log: at the pin, `/exportinputlog` works only after the battle ends and only once the other player consents with `/allowexportinputlog <user>`, and the log comes back as an HTML-escaped `|html|` block (`server/chat-commands/core.ts`). Alternatively, `logchallenges` in vendor's `config/config.js` writes each challenge battle's log, with its input log, under `logs/` (`server/room-battle.ts`). Editing that local config is not a Showdown patch.
-  - In-process: both `Battle` with `extractChannelMessages` and `BattleStream`'s player streams, since S1 (T02) hasn't picked one yet.
+  - In-process: `Battle` driven directly with `extractChannelMessages`, as S1 picked (T02). T02's `sim.ts` (`Collector`, `makeGame`) is a base to copy from.
   - Teams: Smogon NatDex sample teams that validate at the pin. T01's `teams/sample-1.txt` and `sample-2.txt` are two.
 - **Deliverables,** in this folder:
   - The scripts, and for each game the raw captures: both players' websocket messages and the exported input log.

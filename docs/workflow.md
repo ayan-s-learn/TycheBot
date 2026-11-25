@@ -35,7 +35,7 @@ Anything else reaching `main` needs the user's OK each time: task merges, and pl
 Run `/replan` when any of these happens. The checklist names the one expected next.
 
 - A task has a PR waiting, or stopped on one of its stop conditions.
-- A result crosses a gate in plan.md or decisions.md, such as D2's $8 per million games, D7's 30% calc rule or S5's 10% transfer target.
+- A result crosses a gate in plan.md or decisions.md, such as D2's $8 per million games or D7's calc revisit trigger.
 - A phase's exit criteria are met.
 - The user has answered something under Needs you.
 - The Ready list is empty.
@@ -44,9 +44,9 @@ Run `/replan` when any of these happens. The checklist names the one expected ne
 ## Planning session
 
 1. **Reconcile.** Fetch. For each Active task, read Progress and Result on its branch or PR. Check its files and any running jobs rather than trusting the status line.
-2. **Review finished tasks.** Run the brief's acceptance checks. Then get an independent pass from a separate Opus agent, briefed on what the task did and told not to trust earlier checks. A number that drives a decision is reproduced, not just read. Fixes made after that pass get their own short pass.
+2. **Review finished tasks.** Run the brief's acceptance checks. Then get an independent pass from a separate agent (Opus unless the user picks a lighter model for the batch), briefed on what the task did and told not to trust earlier checks. A number that drives a decision is reproduced, not just read. Fixes made after that pass get their own short pass.
 3. **Merge, with the user's OK.** Prepare the merge locally. A separate commit applies the task's For integration edits and removes that section. The user sees both and approves pushing them.
-4. **Replan.** Decide whether the results change the route to the milestone, and update the checklist. Write briefs only for tasks in the current milestone whose inputs exist and whose decisions are decided (AGENTS.md, Rules). Leave later work in plan.md. Follow-up work gets a new ID. A replaced task is marked superseded, with a link to its successor.
+4. **Replan.** Decide whether the results change the route to the milestone, and update the checklist. Write briefs only for tasks in the current milestone whose inputs exist and whose decisions are decided (AGENTS.md, Rules). Leave later work in plan.md. Follow-up work gets a new ID. A replaced task is marked superseded, with a link to its successor. When work merges, moves, is cut or is deferred, grep docs/, AGENTS.md and open briefs for its task or spike ID and its name, and fix every hit, including figures quoted from it and the phase tags in plan.md's Components. Closed tasks' READMEs stay as records.
 5. **Ask the user.** List pending decisions under Needs you, each with a recommendation, and ask about them together. Record the answers in decisions.md or in the brief they affect.
 6. **Close.** Set the next replan trigger, then commit and push the checklist and briefs. Say which Ready tasks can run in parallel because they share no files.
 

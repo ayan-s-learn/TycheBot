@@ -91,22 +91,24 @@ Revisit later. The likely first use is behavior-cloning initialization on NatDex
 
 PyTorch, because the same code runs on MPS (M4 Max) and CUDA (5090). JAX's Metal backend is experimental, and MLX is Mac-only.
 
-## D7. Observation: partly decided (2026-11-23)
+## D7. Observation: partly decided (2026-11-25)
 
-- **One builder:** a single observation builder over the per-player Showdown protocol, used for both training and online play. Training then sees exactly what the ladder client sees.
+- **One builder:** a single observation builder over the per-player Showdown protocol, used for both training and online play. Training then sees exactly what the ladder client sees. S2, which checks that the server's per-player streams match the in-process sim's, is deferred to Phase 2's online gate, so S6 checks trackers against the in-process sim only.
 - **The builder is Python.**
   - Node workers send raw protocol lines and request JSON. Python parses them, tracks state and builds tensors.
   - It runs in Python env processes separate from the learner, so parsing doesn't compete with PPO for the GIL.
   - Damage calcs stay in @smogon/calc (JavaScript). Python sends one batched calc request per env step, covering every battle in the batch, to the Node workers.
   - Why: one language for features, model and training.
-  - Cost: a second round trip per step, plus Python parsing load. Both are measured in Phase 0 (S3, S5). If transfer misses S5's target after batching, this choice reopens.
+  - Cost: a second round trip per step, plus Python parsing load. This choice reopens if the env's decisions/s on the M4 Max, measured by Phase 1's walking skeleton, falls below ~2× the learner's (S4's figure until Phase 1's learner track gives its own).
   - **Open until spike S6:** write our own battle-state tracker, fork poke-env's, or use @pkmn/client (prior-work.md, Reusable code). @pkmn/client is TypeScript, so choosing it moves tracking into the Node worker next to @smogon/calc, removes the second round trip, and reopens "the builder is Python". S6 ends with a recommendation for the user.
 - **Damage calcs are in v0.**
   - Why: NatDex's species/item/ability diversity makes damage expensive to learn from embeddings alone. Jaxcalibur used them.
   - Calcs assume the species-level usage prior: the highest-weight library set (D4) consistent with what the protocol has explicitly revealed (moves, item, ability, forme). They don't use the aux-head belief, which would feed the net's output back into its input.
   - For a species with no library set, or none consistent with what has been revealed, the prior is its most common 1760 item, ability, spread and moves, with revealed attributes kept. That can be an incoherent set, but here it is only a calc input, never a training set. A species with no 1760 stats gets no calcs.
   - Implicit evidence (speed order, damage compared to the calc) enters as observation features instead (plan.md, Network v0). Narrowing the prior on that evidence, as Foul Play does, is a later option.
-  - Cost per step is measured in Phase 0. If calcs take >30% of env time, restrict them to the active mons' moves (plan.md, Network v0).
+  - **v0 carries all 288 calcs (decided 2026-11-25).** This replaces the rule that cut calcs to the active mons' 48 if they took >30% of env time. T06 measured even the 48, cached, at 52–60% of sim + calc time per decision, and that share was the wrong measure: calcs matter only if they lower games/day (the env bounding the M4 Max) or raise $ per million games (D2). On the M4 Max the learner likely bounds throughput (planning estimate, ~500–700 decisions/s: plan.md, Compute), and the 288 as T06 ran them (~96 calcs per decision, skipping fainted mons and status moves), cached, cost ~0.53 ms of CPU per decision in one process.
+    - **Revisit** if S4 and Phase 1's walking skeleton show the env bounds the M4 Max, or the D2 trial is env-bound and the 68 set would cut $ per million games by ≥$1 or bring a tripped $8 gate back under it. The fallback is then the 48 plus the own bench mons' moves against the opposing active (68, unmeasured), which switch decisions need and the 48 lack.
+    - Forking @smogon/calc to remove its per-call copies waits until a measurement shows calcs limit throughput.
 
 ## D8. Play-time search: deferred (2026-11-22)
 
