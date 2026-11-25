@@ -1,0 +1,5920 @@
+{
+ "names": {
+  "species": {
+   "pool": 49,
+   "poolPast": [
+    "Diancie-Mega",
+    "Ferrothorn",
+    "Latios-Mega",
+    "Lopunny",
+    "Lopunny-Mega",
+    "Mawile",
+    "Mawile-Mega",
+    "Tapu Lele",
+    "Tyranitar-Mega"
+   ],
+   "poolMissing": [],
+   "legal": 1206,
+   "legalMissing": [],
+   "legalAsBase": [
+    "Burmy-Sandy",
+    "Burmy-Trash",
+    "Shellos-East",
+    "Gastrodon-East",
+    "Deerling-Summer",
+    "Deerling-Autumn",
+    "Deerling-Winter",
+    "Vivillon-Icy Snow",
+    "Vivillon-Polar",
+    "Vivillon-Tundra",
+    "Vivillon-Continental",
+    "Vivillon-Garden",
+    "Vivillon-Elegant",
+    "Vivillon-Modern",
+    "Vivillon-Marine",
+    "Vivillon-Archipelago",
+    "Vivillon-High Plains",
+    "Vivillon-Sandstorm",
+    "Vivillon-River",
+    "Vivillon-Monsoon",
+    "Vivillon-Savanna",
+    "Vivillon-Sun",
+    "Vivillon-Ocean",
+    "Vivillon-Jungle",
+    "Aegislash",
+    "Minior-Orange",
+    "Minior-Yellow",
+    "Minior-Green",
+    "Minior-Blue",
+    "Minior-Indigo",
+    "Minior-Violet",
+    "Alcremie-Ruby-Cream",
+    "Alcremie-Matcha-Cream",
+    "Alcremie-Mint-Cream",
+    "Alcremie-Lemon-Cream",
+    "Alcremie-Ruby-Swirl",
+    "Alcremie-Caramel-Swirl",
+    "Alcremie-Rainbow-Swirl"
+   ]
+  },
+  "items": {
+   "pool": 38,
+   "poolPast": [
+    "Darkinium Z",
+    "Diancite",
+    "Dragonium Z",
+    "Fightinium Z",
+    "Flyinium Z",
+    "Ghostium Z",
+    "Groundium Z",
+    "Latiosite",
+    "Lopunnite",
+    "Mawilite",
+    "Psychium Z",
+    "Rockium Z",
+    "Tyranitarite"
+   ],
+   "poolMissing": [],
+   "legal": 531,
+   "legalMissing": []
+  },
+  "abilities": {
+   "pool": 38,
+   "poolPast": [],
+   "poolMissing": [],
+   "legal": 304,
+   "legalMissing": []
+  },
+  "moves": {
+   "pool": 141,
+   "poolPast": [
+    "All-Out Pummeling",
+    "Black Hole Eclipse",
+    "Continental Crush",
+    "Devastating Drake",
+    "Frustration",
+    "Hidden Power Fire",
+    "Never-Ending Nightmare",
+    "Pursuit",
+    "Return",
+    "Shattered Psyche",
+    "Supersonic Skystrike",
+    "Tectonic Rage"
+   ],
+   "poolMissing": [],
+   "legal": 874,
+   "legalMissing": []
+  }
+ },
+ "calcRuns": {
+  "calcs": 2934,
+  "z": 120,
+  "mega": 252,
+  "errors": [],
+  "zBp": []
+ },
+ "range": {
+  "games": 100,
+  "hits": 3608,
+  "coverage": {
+   "zMove": 64,
+   "mega": 380,
+   "past": 1423,
+   "exactZ": 64,
+   "exactMega": 377,
+   "exactPast": 1412
+  },
+  "causes": {
+   "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0": 25,
+   "the defender used Roost this turn and lost its Flying type; the calc has no input for that": 7,
+   "twice the damage the attacker took this turn, which the calc has no input for": 10,
+   "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn": 11,
+   "Pursuit on a target switching out doubles; the calc input for that (isSwitching) was not set": 1
+  },
+  "exact": 3554,
+  "inRange": 3554,
+  "skipped": {
+   "crit": 179,
+   "multihit": 49,
+   "notNumber": 549,
+   "notActivePair": {
+    "Future Sight": 42
+   }
+  },
+  "mismatches": [
+   {
+    "lastDamageTaken": 53,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 0,
+    "turn": 15,
+    "attacker": "Ting-Lu",
+    "defender": "Zamazenta",
+    "move": "Ruination",
+    "z": false,
+    "sim": 194,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 461,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Dauntless Shield",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Jolly",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 136,
+      "spa": 0,
+      "spd": 0,
+      "spe": 120
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 1,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 388,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 354,
+    "atkVolatiles": [
+     "taunt"
+    ],
+    "defVolatiles": [],
+    "game": 0,
+    "turn": 28,
+    "attacker": "Ting-Lu",
+    "defender": "Ogerpon-Wellspring",
+    "move": "Ruination",
+    "z": false,
+    "sim": 150,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 107,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "F",
+     "ability": "Water Absorb",
+     "abilityOn": false,
+     "item": "Wellspring Mask",
+     "nature": "Jolly",
+     "evs": {
+      "hp": 0,
+      "atk": 252,
+      "def": 0,
+      "spa": 0,
+      "spd": 4,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 301,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 30,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 6,
+    "turn": 5,
+    "attacker": "Ting-Lu",
+    "defender": "Ferrothorn",
+    "move": "Ruination",
+    "z": false,
+    "sim": 176,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 453,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Iron Barbs",
+     "abilityOn": false,
+     "item": "Rocky Helmet",
+     "nature": "Relaxed",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 140,
+      "spa": 0,
+      "spd": 116,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 352,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 6,
+    "turn": 17,
+    "attacker": "Ting-Lu",
+    "defender": "Toxapex",
+    "move": "Ruination",
+    "z": false,
+    "sim": 143,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 152,
+     "status": "tox",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Calm",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 96,
+      "spa": 0,
+      "spd": 152,
+      "spe": 12
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 287,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [
+     "roost"
+    ],
+    "game": 6,
+    "turn": 43,
+    "attacker": "Ting-Lu",
+    "defender": "Corviknight",
+    "move": "Earthquake",
+    "z": false,
+    "sim": 218,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 4
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 306,
+     "status": "psn",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Pressure",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Impish",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 116,
+      "spa": 0,
+      "spd": 140,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 400,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the defender used Roost this turn and lost its Flying type; the calc has no input for that"
+   },
+   {
+    "lastDamageTaken": 55,
+    "atkVolatiles": [
+     "mirrorcoat"
+    ],
+    "defVolatiles": [],
+    "game": 8,
+    "turn": 26,
+    "attacker": "Alomomola",
+    "defender": "Hatterene",
+    "move": "Mirror Coat",
+    "z": false,
+    "sim": 110,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Assault Vest",
+     "nature": "Sassy",
+     "evs": {
+      "hp": 20,
+      "atk": 0,
+      "def": 236,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 283,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "F",
+     "ability": "Magic Bounce",
+     "abilityOn": false,
+     "nature": "Bold",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 248,
+      "spa": 0,
+      "spd": 0,
+      "spe": 8
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 316,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "twice the damage the attacker took this turn, which the calc has no input for"
+   },
+   {
+    "lastDamageTaken": 54,
+    "atkVolatiles": [
+     "mirrorcoat"
+    ],
+    "defVolatiles": [],
+    "game": 8,
+    "turn": 28,
+    "attacker": "Alomomola",
+    "defender": "Hatterene",
+    "move": "Mirror Coat",
+    "z": false,
+    "sim": 108,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Assault Vest",
+     "nature": "Sassy",
+     "evs": {
+      "hp": 20,
+      "atk": 0,
+      "def": 236,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 177,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "F",
+     "ability": "Magic Bounce",
+     "abilityOn": false,
+     "nature": "Bold",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 248,
+      "spa": 0,
+      "spd": 0,
+      "spe": 8
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 272,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "twice the damage the attacker took this turn, which the calc has no input for"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 16,
+    "turn": 22,
+    "attacker": "Ting-Lu",
+    "defender": "Zapdos",
+    "move": "Payback",
+    "z": false,
+    "sim": 78,
+    "rolls": [
+     133,
+     135,
+     136,
+     138,
+     139,
+     141,
+     142,
+     144,
+     145,
+     147,
+     148,
+     150,
+     151,
+     153,
+     154,
+     157
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 4
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 379,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Flyinium Z",
+     "nature": "Timid",
+     "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 4,
+      "spa": 252,
+      "spd": 0,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 20,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn"
+   },
+   {
+    "lastDamageTaken": 70,
+    "atkVolatiles": [
+     "mirrorcoat"
+    ],
+    "defVolatiles": [],
+    "game": 17,
+    "turn": 40,
+    "attacker": "Alomomola",
+    "defender": "Heatran",
+    "move": "Mirror Coat",
+    "z": false,
+    "sim": 140,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "F",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Assault Vest",
+     "nature": "Sassy",
+     "evs": {
+      "hp": 8,
+      "atk": 0,
+      "def": 248,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 403,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Flash Fire",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Calm",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 216,
+      "spe": 40
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 133,
+     "status": "par",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "twice the damage the attacker took this turn, which the calc has no input for"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 21,
+    "turn": 45,
+    "attacker": "Ting-Lu",
+    "defender": "Latios-Mega",
+    "move": "Payback",
+    "z": false,
+    "sim": 120,
+    "rolls": [
+     236,
+     236,
+     240,
+     242,
+     246,
+     248,
+     252,
+     254,
+     258,
+     260,
+     264,
+     266,
+     270,
+     272,
+     276,
+     278
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 4
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 324,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Levitate",
+     "abilityOn": false,
+     "item": "Latiosite",
+     "nature": "Timid",
+     "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "spa": 252,
+      "spd": 4,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 113,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "weather": "Snow",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn"
+   },
+   {
+    "lastDamageTaken": 54,
+    "atkVolatiles": [],
+    "defVolatiles": [
+     "roost"
+    ],
+    "game": 21,
+    "turn": 75,
+    "attacker": "Ting-Lu",
+    "defender": "Zapdos",
+    "move": "Earthquake",
+    "z": false,
+    "sim": 198,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 4
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 514,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Bold",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 252,
+      "spa": 8,
+      "spd": 0,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 383,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the defender used Roost this turn and lost its Flying type; the calc has no input for that"
+   },
+   {
+    "lastDamageTaken": 52,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 22,
+    "turn": 13,
+    "attacker": "Ting-Lu",
+    "defender": "Zapdos",
+    "move": "Payback",
+    "z": false,
+    "sim": 55,
+    "rolls": [
+     99,
+     100,
+     100,
+     102,
+     103,
+     105,
+     105,
+     106,
+     108,
+     109,
+     111,
+     111,
+     112,
+     114,
+     115,
+     117
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 414,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Bold",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 204,
+      "spa": 0,
+      "spd": 0,
+      "spe": 56
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 336,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 22,
+    "turn": 34,
+    "attacker": "Ting-Lu",
+    "defender": "Latios",
+    "move": "Payback",
+    "z": false,
+    "sim": 158,
+    "rolls": [
+     282,
+     284,
+     288,
+     290,
+     294,
+     296,
+     302,
+     306,
+     308,
+     312,
+     314,
+     318,
+     320,
+     324,
+     326,
+     332
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 406,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Levitate",
+     "abilityOn": false,
+     "item": "Latiosite",
+     "nature": "Timid",
+     "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 4,
+      "spa": 252,
+      "spd": 0,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 301,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 23,
+    "turn": 47,
+    "attacker": "Ting-Lu",
+    "defender": "Latios-Mega",
+    "move": "Payback",
+    "z": false,
+    "sim": 132,
+    "rolls": [
+     234,
+     236,
+     240,
+     240,
+     242,
+     246,
+     248,
+     252,
+     254,
+     258,
+     260,
+     264,
+     266,
+     270,
+     272,
+     276
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 4
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 482,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Levitate",
+     "abilityOn": false,
+     "item": "Latiosite",
+     "nature": "Timid",
+     "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 4,
+      "spa": 252,
+      "spd": 0,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 62,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn"
+   },
+   {
+    "lastDamageTaken": 91,
+    "atkVolatiles": [
+     "partiallytrapped"
+    ],
+    "defVolatiles": [],
+    "game": 23,
+    "turn": 56,
+    "attacker": "Ting-Lu",
+    "defender": "Zapdos",
+    "move": "Payback",
+    "z": false,
+    "sim": 51,
+    "rolls": [
+     99,
+     100,
+     100,
+     102,
+     103,
+     105,
+     105,
+     106,
+     108,
+     109,
+     111,
+     111,
+     112,
+     114,
+     115,
+     117
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 4
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 391,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Bold",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 204,
+      "spa": 0,
+      "spd": 0,
+      "spe": 56
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 383,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn"
+   },
+   {
+    "lastDamageTaken": 288,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 27,
+    "turn": 2,
+    "attacker": "Ting-Lu",
+    "defender": "Gholdengo",
+    "move": "Payback",
+    "z": false,
+    "sim": 122,
+    "rolls": [
+     246,
+     248,
+     252,
+     254,
+     258,
+     260,
+     264,
+     266,
+     270,
+     272,
+     276,
+     278,
+     282,
+     284,
+     288,
+     290
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 258,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Good as Gold",
+     "abilityOn": false,
+     "item": "Air Balloon",
+     "nature": "Calm",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 156,
+      "spe": 100
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 378,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn"
+   },
+   {
+    "lastDamageTaken": 84,
+    "atkVolatiles": [
+     "mirrorcoat",
+     "healblock"
+    ],
+    "defVolatiles": [],
+    "game": 32,
+    "turn": 20,
+    "attacker": "Alomomola",
+    "defender": "Hatterene",
+    "move": "Mirror Coat",
+    "z": false,
+    "sim": 168,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Assault Vest",
+     "nature": "Sassy",
+     "evs": {
+      "hp": 20,
+      "atk": 0,
+      "def": 236,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 100,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "F",
+     "ability": "Magic Bounce",
+     "abilityOn": false,
+     "nature": "Bold",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 248,
+      "spa": 0,
+      "spd": 0,
+      "spe": 8
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 184,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "twice the damage the attacker took this turn, which the calc has no input for"
+   },
+   {
+    "lastDamageTaken": 126,
+    "atkVolatiles": [
+     "pursuit"
+    ],
+    "defVolatiles": [],
+    "game": 37,
+    "turn": 20,
+    "attacker": "Tyranitar-Mega",
+    "defender": "Ogerpon-Wellspring",
+    "move": "Pursuit",
+    "z": false,
+    "sim": 223,
+    "rolls": [
+     100,
+     100,
+     102,
+     103,
+     105,
+     106,
+     106,
+     108,
+     109,
+     111,
+     112,
+     112,
+     114,
+     115,
+     117,
+     118
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Sand Stream",
+     "abilityOn": false,
+     "item": "Tyranitarite",
+     "nature": "Adamant",
+     "evs": {
+      "hp": 88,
+      "atk": 252,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 168
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 237,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "F",
+     "ability": "Water Absorb",
+     "abilityOn": false,
+     "item": "Wellspring Mask",
+     "nature": "Jolly",
+     "evs": {
+      "hp": 0,
+      "atk": 252,
+      "def": 0,
+      "spa": 0,
+      "spd": 4,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 87,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "weather": "Sand",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "Pursuit on a target switching out doubles; the calc input for that (isSwitching) was not set"
+   },
+   {
+    "lastDamageTaken": 64,
+    "atkVolatiles": [
+     "mirrorcoat"
+    ],
+    "defVolatiles": [],
+    "game": 38,
+    "turn": 11,
+    "attacker": "Alomomola",
+    "defender": "Pecharunt",
+    "move": "Mirror Coat",
+    "z": false,
+    "sim": 128,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Assault Vest",
+     "nature": "Sassy",
+     "evs": {
+      "hp": 20,
+      "atk": 0,
+      "def": 236,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": -1,
+      "def": 0,
+      "spa": -1,
+      "spd": -1,
+      "spe": 0
+     },
+     "curHP": 365,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Poison Puppeteer",
+     "abilityOn": false,
+     "nature": "Timid",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 0,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 8,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "twice the damage the attacker took this turn, which the calc has no input for"
+   },
+   {
+    "lastDamageTaken": 117,
+    "atkVolatiles": [],
+    "defVolatiles": [
+     "roost"
+    ],
+    "game": 38,
+    "turn": 36,
+    "attacker": "Slowking-Galar",
+    "defender": "Moltres",
+    "move": "Ice Beam",
+    "z": false,
+    "sim": 33,
+    "rolls": [
+     60,
+     61,
+     61,
+     62,
+     63,
+     63,
+     64,
+     65,
+     66,
+     66,
+     67,
+     68,
+     68,
+     69,
+     70,
+     71
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Relaxed",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 252,
+      "spa": 0,
+      "spd": 4,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 233,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Flame Body",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Calm",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 188,
+      "spe": 68
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 384,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "weather": "Snow",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the defender used Roost this turn and lost its Flying type; the calc has no input for that"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 42,
+    "turn": 17,
+    "attacker": "Ting-Lu",
+    "defender": "Zapdos",
+    "move": "Ruination",
+    "z": false,
+    "sim": 63,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Red Card",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 514,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Bold",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 236,
+      "spa": 0,
+      "spd": 0,
+      "spe": 24
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 126,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 42,
+    "turn": 19,
+    "attacker": "Ting-Lu",
+    "defender": "Ting-Lu",
+    "move": "Ruination",
+    "z": false,
+    "sim": 225,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Red Card",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 514,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 450,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [
+     "taunt"
+    ],
+    "defVolatiles": [],
+    "game": 42,
+    "turn": 43,
+    "attacker": "Ting-Lu",
+    "defender": "Ting-Lu",
+    "move": "Payback",
+    "z": false,
+    "sim": 26,
+    "rolls": [
+     48,
+     48,
+     49,
+     49,
+     50,
+     51,
+     51,
+     51,
+     52,
+     53,
+     54,
+     54,
+     54,
+     55,
+     56,
+     57
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 260,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 393,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn"
+   },
+   {
+    "lastDamageTaken": 26,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 42,
+    "turn": 44,
+    "attacker": "Ting-Lu",
+    "defender": "Ting-Lu",
+    "move": "Ruination",
+    "z": false,
+    "sim": 146,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 367,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 292,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 42,
+    "turn": 53,
+    "attacker": "Ting-Lu",
+    "defender": "Ting-Lu",
+    "move": "Payback",
+    "z": false,
+    "sim": 24,
+    "rolls": [
+     48,
+     48,
+     49,
+     49,
+     50,
+     51,
+     51,
+     51,
+     52,
+     53,
+     54,
+     54,
+     54,
+     55,
+     56,
+     57
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 177,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 303,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 42,
+    "turn": 57,
+    "attacker": "Ting-Lu",
+    "defender": "Ting-Lu",
+    "move": "Ruination",
+    "z": false,
+    "sim": 120,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 247,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 241,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 42,
+    "turn": 61,
+    "attacker": "Ting-Lu",
+    "defender": "Ferrothorn",
+    "move": "Ruination",
+    "z": false,
+    "sim": 68,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 196,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Iron Barbs",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 92,
+      "spa": 0,
+      "spd": 168,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 137,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 42,
+    "turn": 64,
+    "attacker": "Ting-Lu",
+    "defender": "Ting-Lu",
+    "move": "Ruination",
+    "z": false,
+    "sim": 18,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 176,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 36,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 89,
+    "atkVolatiles": [],
+    "defVolatiles": [
+     "roost"
+    ],
+    "game": 44,
+    "turn": 35,
+    "attacker": "Zapdos",
+    "defender": "Zapdos",
+    "move": "Volt Switch",
+    "z": false,
+    "sim": 57,
+    "rolls": [
+     100,
+     100,
+     102,
+     103,
+     105,
+     106,
+     106,
+     108,
+     109,
+     111,
+     112,
+     112,
+     114,
+     115,
+     117,
+     118
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Bold",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 252,
+      "spa": 0,
+      "spd": 8,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 210,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "nature": "Bold",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 252,
+      "spa": 8,
+      "spd": 0,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 383,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the defender used Roost this turn and lost its Flying type; the calc has no input for that"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [
+     "roost"
+    ],
+    "game": 44,
+    "turn": 46,
+    "attacker": "Zapdos",
+    "defender": "Zapdos",
+    "move": "Volt Switch",
+    "z": false,
+    "sim": 50,
+    "rolls": [
+     100,
+     100,
+     102,
+     103,
+     105,
+     106,
+     106,
+     108,
+     109,
+     111,
+     112,
+     112,
+     114,
+     115,
+     117,
+     118
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "nature": "Bold",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 252,
+      "spa": 8,
+      "spd": 0,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 329,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Bold",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 252,
+      "spa": 0,
+      "spd": 8,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 315,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the defender used Roost this turn and lost its Flying type; the calc has no input for that"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 45,
+    "turn": 17,
+    "attacker": "Ting-Lu",
+    "defender": "Alomomola",
+    "move": "Ruination",
+    "z": false,
+    "sim": 207,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 276,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "F",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Assault Vest",
+     "nature": "Sassy",
+     "evs": {
+      "hp": 8,
+      "atk": 0,
+      "def": 248,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 414,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "weather": "Snow",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 45,
+    "turn": 39,
+    "attacker": "Ting-Lu",
+    "defender": "Corviknight",
+    "move": "Ruination",
+    "z": false,
+    "sim": 95,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 276,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Pressure",
+     "abilityOn": false,
+     "item": "Rocky Helmet",
+     "nature": "Impish",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 204,
+      "spa": 0,
+      "spd": 56,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 190,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [
+     "taunt"
+    ],
+    "game": 45,
+    "turn": 45,
+    "attacker": "Ting-Lu",
+    "defender": "Slowking-Galar",
+    "move": "Ruination",
+    "z": false,
+    "sim": 196,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 128,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Relaxed",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 176,
+      "spa": 0,
+      "spd": 84,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 393,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 45,
+    "turn": 57,
+    "attacker": "Ting-Lu",
+    "defender": "Slowking-Galar",
+    "move": "Ruination",
+    "z": false,
+    "sim": 113,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 128,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Relaxed",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 176,
+      "spa": 0,
+      "spd": 84,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 226,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 82,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 47,
+    "turn": 38,
+    "attacker": "Ting-Lu",
+    "defender": "Garchomp",
+    "move": "Payback",
+    "z": false,
+    "sim": 55,
+    "rolls": [
+     100,
+     100,
+     102,
+     103,
+     105,
+     106,
+     106,
+     108,
+     109,
+     111,
+     112,
+     112,
+     114,
+     115,
+     117,
+     118
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 4
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 409,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Rough Skin",
+     "abilityOn": false,
+     "item": "Rocky Helmet",
+     "nature": "Impish",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 108,
+      "spa": 0,
+      "spd": 148,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 84,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn"
+   },
+   {
+    "lastDamageTaken": 190,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 61,
+    "turn": 17,
+    "attacker": "Ting-Lu",
+    "defender": "Ninetales",
+    "move": "Ruination",
+    "z": false,
+    "sim": 62,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 202,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Drought",
+     "abilityOn": false,
+     "item": "Heat Rock",
+     "nature": "Timid",
+     "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "spa": 252,
+      "spd": 4,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 124,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "weather": "Sun",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 193,
+    "atkVolatiles": [],
+    "defVolatiles": [
+     "lockedmove"
+    ],
+    "game": 61,
+    "turn": 22,
+    "attacker": "Ting-Lu",
+    "defender": "Dragonite",
+    "move": "Ruination",
+    "z": false,
+    "sim": 22,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 131,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Multiscale",
+     "abilityOn": false,
+     "item": "Dragonium Z",
+     "nature": "Jolly",
+     "evs": {
+      "hp": 0,
+      "atk": 252,
+      "def": 4,
+      "spa": 0,
+      "spd": 0,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 45,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "weather": "Sun",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 90,
+    "atkVolatiles": [
+     "counter"
+    ],
+    "defVolatiles": [],
+    "game": 63,
+    "turn": 74,
+    "attacker": "Blissey",
+    "defender": "Slowking-Galar",
+    "move": "Counter",
+    "z": false,
+    "sim": 180,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "F",
+     "ability": "Natural Cure",
+     "abilityOn": false,
+     "nature": "Bold",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 252,
+      "spa": 0,
+      "spd": 4,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 3
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 254,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Relaxed",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 176,
+      "spa": 0,
+      "spd": 84,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 380,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "twice the damage the attacker took this turn, which the calc has no input for"
+   },
+   {
+    "lastDamageTaken": 100,
+    "atkVolatiles": [
+     "mirrorcoat"
+    ],
+    "defVolatiles": [],
+    "game": 63,
+    "turn": 100,
+    "attacker": "Alomomola",
+    "defender": "Pecharunt",
+    "move": "Mirror Coat",
+    "z": false,
+    "sim": 200,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "F",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "nature": "Sassy",
+     "evs": {
+      "hp": 8,
+      "atk": 0,
+      "def": 248,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 229,
+     "status": "tox",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Poison Puppeteer",
+     "abilityOn": false,
+     "nature": "Bold",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 224,
+      "spa": 0,
+      "spd": 0,
+      "spe": 32
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 332,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "twice the damage the attacker took this turn, which the calc has no input for"
+   },
+   {
+    "lastDamageTaken": 41,
+    "atkVolatiles": [
+     "counter"
+    ],
+    "defVolatiles": [],
+    "game": 63,
+    "turn": 124,
+    "attacker": "Blissey",
+    "defender": "Slowking-Galar",
+    "move": "Counter",
+    "z": false,
+    "sim": 82,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "F",
+     "ability": "Natural Cure",
+     "abilityOn": false,
+     "nature": "Bold",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 252,
+      "spa": 0,
+      "spd": 4,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 3
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 445,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Relaxed",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 176,
+      "spa": 0,
+      "spd": 84,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 393,
+     "status": "brn",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "twice the damage the attacker took this turn, which the calc has no input for"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 73,
+    "turn": 24,
+    "attacker": "Ting-Lu",
+    "defender": "Slowking-Galar",
+    "move": "Ruination",
+    "z": false,
+    "sim": 196,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 463,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Relaxed",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 176,
+      "spa": 0,
+      "spd": 84,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 393,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 74,
+    "turn": 16,
+    "attacker": "Ting-Lu",
+    "defender": "Pecharunt",
+    "move": "Ruination",
+    "z": false,
+    "sim": 134,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 120,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Poison Puppeteer",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Timid",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 0,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 268,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [
+     "roost"
+    ],
+    "game": 76,
+    "turn": 27,
+    "attacker": "Ting-Lu",
+    "defender": "Zapdos",
+    "move": "Earthquake",
+    "z": false,
+    "sim": 294,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 214,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Flyinium Z",
+     "nature": "Timid",
+     "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 4,
+      "spa": 252,
+      "spd": 0,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 287,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the defender used Roost this turn and lost its Flying type; the calc has no input for that"
+   },
+   {
+    "lastDamageTaken": 133,
+    "atkVolatiles": [
+     "mirrorcoat"
+    ],
+    "defVolatiles": [],
+    "game": 77,
+    "turn": 16,
+    "attacker": "Alomomola",
+    "defender": "Terapagos-Terastal",
+    "move": "Mirror Coat",
+    "z": false,
+    "sim": 266,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Assault Vest",
+     "nature": "Sassy",
+     "evs": {
+      "hp": 20,
+      "atk": 0,
+      "def": 236,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 0
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 305,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Tera Shell",
+     "abilityOn": false,
+     "item": "Heavy-Duty Boots",
+     "nature": "Timid",
+     "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "spa": 252,
+      "spd": 4,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 193,
+     "status": "psn",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "twice the damage the attacker took this turn, which the calc has no input for"
+   },
+   {
+    "lastDamageTaken": 108,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 77,
+    "turn": 28,
+    "attacker": "Ting-Lu",
+    "defender": "Kingambit",
+    "move": "Ruination",
+    "z": false,
+    "sim": 185,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 374,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Supreme Overlord",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Adamant",
+     "evs": {
+      "hp": 240,
+      "atk": 252,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 16
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 370,
+     "status": "",
+     "alliesFainted": 3
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 77,
+    "turn": 34,
+    "attacker": "Ting-Lu",
+    "defender": "Kingambit",
+    "move": "Ruination",
+    "z": false,
+    "sim": 130,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 342,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Supreme Overlord",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Adamant",
+     "evs": {
+      "hp": 240,
+      "atk": 252,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 16
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 2,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 260,
+     "status": "",
+     "alliesFainted": 4
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 77,
+    "turn": 35,
+    "attacker": "Ting-Lu",
+    "defender": "Great Tusk",
+    "move": "Ruination",
+    "z": false,
+    "sim": 6,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 342,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Protosynthesis",
+     "abilityOn": false,
+     "item": "Rocky Helmet",
+     "nature": "Jolly",
+     "evs": {
+      "hp": 252,
+      "atk": 4,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 12,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 151,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 77,
+    "turn": 38,
+    "attacker": "Ting-Lu",
+    "defender": "Kingambit",
+    "move": "Ruination",
+    "z": false,
+    "sim": 40,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 191,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Supreme Overlord",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Adamant",
+     "evs": {
+      "hp": 240,
+      "atk": 252,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 16
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 80,
+     "status": "",
+     "alliesFainted": 4
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 87,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 77,
+    "turn": 39,
+    "attacker": "Ting-Lu",
+    "defender": "Kingambit",
+    "move": "Ruination",
+    "z": false,
+    "sim": 32,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 72,
+      "spe": 180
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 104,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "M",
+     "ability": "Supreme Overlord",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Adamant",
+     "evs": {
+      "hp": 240,
+      "atk": 252,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 16
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 65,
+     "status": "",
+     "alliesFainted": 4
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 165,
+    "atkVolatiles": [],
+    "defVolatiles": [
+     "choicelock"
+    ],
+    "game": 79,
+    "turn": 49,
+    "attacker": "Ting-Lu",
+    "defender": "Zapdos",
+    "move": "Ruination",
+    "z": false,
+    "sim": 40,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 323,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Choice Specs",
+     "nature": "Timid",
+     "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "spa": 252,
+      "spd": 4,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 80,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 262,
+    "atkVolatiles": [],
+    "defVolatiles": [
+     "choicelock"
+    ],
+    "game": 79,
+    "turn": 53,
+    "attacker": "Ting-Lu",
+    "defender": "Zapdos",
+    "move": "Ruination",
+    "z": false,
+    "sim": 20,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 61,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Choice Specs",
+     "nature": "Timid",
+     "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "spa": 252,
+      "spd": 4,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 40,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [],
+    "game": 84,
+    "turn": 17,
+    "attacker": "Ting-Lu",
+    "defender": "Zapdos",
+    "move": "Payback",
+    "z": false,
+    "sim": 81,
+    "rolls": [
+     135,
+     136,
+     138,
+     139,
+     141,
+     142,
+     144,
+     145,
+     147,
+     148,
+     150,
+     151,
+     153,
+     154,
+     156,
+     159
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Vessel of Ruin",
+     "abilityOn": false,
+     "item": "Leftovers",
+     "nature": "Careful",
+     "evs": {
+      "hp": 252,
+      "atk": 0,
+      "def": 4,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 514,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Choice Specs",
+     "nature": "Timid",
+     "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "spa": 252,
+      "spd": 4,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 267,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the calc doubles Payback by Speed order; Showdown only if the target moved first this turn"
+   },
+   {
+    "lastDamageTaken": 0,
+    "atkVolatiles": [],
+    "defVolatiles": [
+     "roost"
+    ],
+    "game": 88,
+    "turn": 42,
+    "attacker": "Zamazenta",
+    "defender": "Zapdos",
+    "move": "Close Combat",
+    "z": false,
+    "sim": 234,
+    "rolls": [
+     105,
+     107,
+     108,
+     109,
+     111,
+     112,
+     113,
+     114,
+     116,
+     117,
+     118,
+     120,
+     120,
+     122,
+     123,
+     125
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Dauntless Shield",
+     "abilityOn": false,
+     "item": "Darkinium Z",
+     "nature": "Jolly",
+     "evs": {
+      "hp": 0,
+      "atk": 252,
+      "def": 0,
+      "spa": 0,
+      "spd": 4,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": -2,
+      "spa": 0,
+      "spd": -2,
+      "spe": 0
+     },
+     "curHP": 198,
+     "status": "par",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Static",
+     "abilityOn": false,
+     "item": "Flyinium Z",
+     "nature": "Timid",
+     "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 4,
+      "spa": 252,
+      "spd": 0,
+      "spe": 252
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 321,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "the defender used Roost this turn and lost its Flying type; the calc has no input for that"
+   },
+   {
+    "lastDamageTaken": 100,
+    "atkVolatiles": [
+     "mirrorcoat"
+    ],
+    "defVolatiles": [],
+    "game": 94,
+    "turn": 12,
+    "attacker": "Alomomola",
+    "defender": "Pecharunt",
+    "move": "Mirror Coat",
+    "z": false,
+    "sim": 200,
+    "rolls": [
+     0
+    ],
+    "exact": false,
+    "inRange": false,
+    "atk": {
+     "level": 99,
+     "gender": "M",
+     "ability": "Regenerator",
+     "abilityOn": false,
+     "item": "Assault Vest",
+     "nature": "Impish",
+     "evs": {
+      "hp": 68,
+      "atk": 0,
+      "def": 188,
+      "spa": 0,
+      "spd": 252,
+      "spe": 0
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 31,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 383,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "def": {
+     "level": 100,
+     "gender": "N",
+     "ability": "Poison Puppeteer",
+     "abilityOn": false,
+     "item": "Ghostium Z",
+     "nature": "Modest",
+     "evs": {
+      "hp": 248,
+      "atk": 0,
+      "def": 0,
+      "spa": 140,
+      "spd": 0,
+      "spe": 120
+     },
+     "ivs": {
+      "hp": 31,
+      "atk": 0,
+      "def": 31,
+      "spa": 31,
+      "spd": 31,
+      "spe": 31
+     },
+     "boosts": {
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+     },
+     "curHP": 379,
+     "status": "",
+     "alliesFainted": 0
+    },
+    "field": {
+     "gameType": "Singles",
+     "isGravity": false,
+     "isMagicRoom": false,
+     "isWonderRoom": false,
+     "attackerSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     },
+     "defenderSide": {
+      "isReflect": false,
+      "isLightScreen": false,
+      "isAuroraVeil": false
+     }
+    },
+    "cause": "twice the damage the attacker took this turn, which the calc has no input for"
+   }
+  ]
+ }
+}

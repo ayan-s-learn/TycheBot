@@ -1,0 +1,75 @@
+species: pool 49 (9 Past), missing in calc []; legal 1206, missing 0
+items: pool 38 (13 Past), missing in calc []; legal 531, missing 0
+abilities: pool 38 (0 Past), missing in calc []; legal 304, missing 0
+moves: pool 141 (12 Past), missing in calc []; legal 874, missing 0
+calcs on pool sets: 2934 (120 Z, 252 Mega), 0 threw, 0 Z BP differences
+range check: 100 games, 3608 hits, 3554 exact roll, 3554 in range, skipped {"crit":179,"multihit":49,"notNumber":549,"notActivePair":{"Future Sight":42}}
+hits with a Z-Move, a Mega, Past content (and exact): {
+  zMove: 64,
+  mega: 380,
+  past: 1423,
+  exactZ: 64,
+  exactMega: 377,
+  exactPast: 1412
+}
+{
+  "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0": 25,
+  'the defender used Roost this turn and lost its Flying type; the calc has no input for that': 7,
+  'twice the damage the attacker took this turn, which the calc has no input for': 10,
+  'the calc doubles Payback by Speed order; Showdown only if the target moved first this turn': 11,
+  'Pursuit on a target switching out doubles; the calc input for that (isSwitching) was not set': 1
+}
+  g0 t15 Ting-Lu Ruination -> Zamazenta: sim 194, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g0 t28 Ting-Lu Ruination -> Ogerpon-Wellspring: sim 150, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g6 t5 Ting-Lu Ruination -> Ferrothorn: sim 176, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g6 t17 Ting-Lu Ruination -> Toxapex: sim 143, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g6 t43 Ting-Lu Earthquake -> Corviknight: sim 218, calc 0-0: the defender used Roost this turn and lost its Flying type; the calc has no input for that
+  g8 t26 Alomomola Mirror Coat -> Hatterene: sim 110, calc 0-0: twice the damage the attacker took this turn, which the calc has no input for
+  g8 t28 Alomomola Mirror Coat -> Hatterene: sim 108, calc 0-0: twice the damage the attacker took this turn, which the calc has no input for
+  g16 t22 Ting-Lu Payback -> Zapdos: sim 78, calc 133-157: the calc doubles Payback by Speed order; Showdown only if the target moved first this turn
+  g17 t40 Alomomola Mirror Coat -> Heatran: sim 140, calc 0-0: twice the damage the attacker took this turn, which the calc has no input for
+  g21 t45 Ting-Lu Payback -> Latios-Mega: sim 120, calc 236-278: the calc doubles Payback by Speed order; Showdown only if the target moved first this turn
+  g21 t75 Ting-Lu Earthquake -> Zapdos: sim 198, calc 0-0: the defender used Roost this turn and lost its Flying type; the calc has no input for that
+  g22 t13 Ting-Lu Payback -> Zapdos: sim 55, calc 99-117: the calc doubles Payback by Speed order; Showdown only if the target moved first this turn
+  g22 t34 Ting-Lu Payback -> Latios: sim 158, calc 282-332: the calc doubles Payback by Speed order; Showdown only if the target moved first this turn
+  g23 t47 Ting-Lu Payback -> Latios-Mega: sim 132, calc 234-276: the calc doubles Payback by Speed order; Showdown only if the target moved first this turn
+  g23 t56 Ting-Lu Payback -> Zapdos: sim 51, calc 99-117: the calc doubles Payback by Speed order; Showdown only if the target moved first this turn
+  g27 t2 Ting-Lu Payback -> Gholdengo: sim 122, calc 246-290: the calc doubles Payback by Speed order; Showdown only if the target moved first this turn
+  g32 t20 Alomomola Mirror Coat -> Hatterene: sim 168, calc 0-0: twice the damage the attacker took this turn, which the calc has no input for
+  g37 t20 Tyranitar-Mega Pursuit -> Ogerpon-Wellspring: sim 223, calc 100-118: Pursuit on a target switching out doubles; the calc input for that (isSwitching) was not set
+  g38 t11 Alomomola Mirror Coat -> Pecharunt: sim 128, calc 0-0: twice the damage the attacker took this turn, which the calc has no input for
+  g38 t36 Slowking-Galar Ice Beam -> Moltres: sim 33, calc 60-71: the defender used Roost this turn and lost its Flying type; the calc has no input for that
+  g42 t17 Ting-Lu Ruination -> Zapdos: sim 63, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g42 t19 Ting-Lu Ruination -> Ting-Lu: sim 225, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g42 t43 Ting-Lu Payback -> Ting-Lu: sim 26, calc 48-57: the calc doubles Payback by Speed order; Showdown only if the target moved first this turn
+  g42 t44 Ting-Lu Ruination -> Ting-Lu: sim 146, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g42 t53 Ting-Lu Payback -> Ting-Lu: sim 24, calc 48-57: the calc doubles Payback by Speed order; Showdown only if the target moved first this turn
+  g42 t57 Ting-Lu Ruination -> Ting-Lu: sim 120, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g42 t61 Ting-Lu Ruination -> Ferrothorn: sim 68, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g42 t64 Ting-Lu Ruination -> Ting-Lu: sim 18, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g44 t35 Zapdos Volt Switch -> Zapdos: sim 57, calc 100-118: the defender used Roost this turn and lost its Flying type; the calc has no input for that
+  g44 t46 Zapdos Volt Switch -> Zapdos: sim 50, calc 100-118: the defender used Roost this turn and lost its Flying type; the calc has no input for that
+  g45 t17 Ting-Lu Ruination -> Alomomola: sim 207, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g45 t39 Ting-Lu Ruination -> Corviknight: sim 95, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g45 t45 Ting-Lu Ruination -> Slowking-Galar: sim 196, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g45 t57 Ting-Lu Ruination -> Slowking-Galar: sim 113, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g47 t38 Ting-Lu Payback -> Garchomp: sim 55, calc 100-118: the calc doubles Payback by Speed order; Showdown only if the target moved first this turn
+  g61 t17 Ting-Lu Ruination -> Ninetales: sim 62, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g61 t22 Ting-Lu Ruination -> Dragonite: sim 22, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g63 t74 Blissey Counter -> Slowking-Galar: sim 180, calc 0-0: twice the damage the attacker took this turn, which the calc has no input for
+  g63 t100 Alomomola Mirror Coat -> Pecharunt: sim 200, calc 0-0: twice the damage the attacker took this turn, which the calc has no input for
+  g63 t124 Blissey Counter -> Slowking-Galar: sim 82, calc 0-0: twice the damage the attacker took this turn, which the calc has no input for
+  g73 t24 Ting-Lu Ruination -> Slowking-Galar: sim 196, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g74 t16 Ting-Lu Ruination -> Pecharunt: sim 134, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g76 t27 Ting-Lu Earthquake -> Zapdos: sim 294, calc 0-0: the defender used Roost this turn and lost its Flying type; the calc has no input for that
+  g77 t16 Alomomola Mirror Coat -> Terapagos-Terastal: sim 266, calc 0-0: twice the damage the attacker took this turn, which the calc has no input for
+  g77 t28 Ting-Lu Ruination -> Kingambit: sim 185, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g77 t34 Ting-Lu Ruination -> Kingambit: sim 130, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g77 t35 Ting-Lu Ruination -> Great Tusk: sim 6, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g77 t38 Ting-Lu Ruination -> Kingambit: sim 40, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g77 t39 Ting-Lu Ruination -> Kingambit: sim 32, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g79 t49 Ting-Lu Ruination -> Zapdos: sim 40, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g79 t53 Ting-Lu Ruination -> Zapdos: sim 20, calc 0-0: no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0
+  g84 t17 Ting-Lu Payback -> Zapdos: sim 81, calc 135-159: the calc doubles Payback by Speed order; Showdown only if the target moved first this turn
+  g88 t42 Zamazenta Close Combat -> Zapdos: sim 234, calc 105-125: the defender used Roost this turn and lost its Flying type; the calc has no input for that
+  g94 t12 Alomomola Mirror Coat -> Pecharunt: sim 200, calc 0-0: twice the damage the attacker took this turn, which the calc has no input for

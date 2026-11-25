@@ -26,6 +26,17 @@
 ## Progress
 
 ```text
+2026-11-24 (2)
+State: blocked (stop condition met: the 48 calcs, cached, take 51% of env time, so D7 reopens)
+Verified: benchmark, 5 runs of 200 games (Result); NatDex support and range check, 100 games, every
+  mismatch with a confirmed cause. Node 24.22.3, Showdown 29f2d99, @smogon/calc 0.12.0.
+Pending: the clean-checkout rerun (acceptance check 1); For integration's D7 text, which waits on the
+  user's decision.
+Next: planning session: put D7's calc cost to the user (Result, What D7's rule gives).
+```
+
+```text
+2026-11-24
 State: active
 Verified: nothing yet (claimed 2026-11-24)
 Pending: setup, benchmark, NatDex support check, range check
@@ -34,6 +45,98 @@ Next: run setup, then write the benchmark
 
 ## Result
 
+### Calc cost
+
+Five runs of `node bench.ts 200 20`, back to back in one process each, under the timing lock: 200 seeded games of RandomPlayerAI vs RandomPlayerAI (21,932 decisions, 9,532 turns) after 20 untimed warm-up games. A decision is a request a player must answer (wait requests excluded). At each one, the deciding player's calc set is run four ways: both sets, uncached and cached. Sim time covers battle creation, `choose`, `sendUpdates` and `extractChannelMessages`, with `Battle` driven directly. One process on an M4 Max (10 P + 4 E cores); load averages went from 14.7 to 4.1 over the runs (`runs/2026-11-24.jsonl` has each run's).
+
+| Measure | Median | Min–max |
+|---|---|---|
+| sim ms per decision | 0.243 | 0.236–0.256 |
+| all: calcs per decision (max 288) | 96.4 | 96.4–96.4 |
+| all: µs per calc, uncached | 15.5 | 15.1–15.5 |
+| all: ms per decision, uncached | 1.489 | 1.452–1.494 |
+| all: ms per decision, cached | 0.550 | 0.534–0.553 |
+| all: cache hit rate | 0.692 | 0.692–0.692 |
+| all: ms per decision at 288 calcs, uncached | 4.451 | 4.339–4.464 |
+| all: calc share of env time, uncached | 0.858 | 0.854–0.860 |
+| all: calc share of env time, cached | 0.690 | 0.683–0.695 |
+| active: calcs per decision (max 48) | 20.2 | 20.2–20.2 |
+| active: µs per calc, uncached | 16.2 | 15.8–16.3 |
+| active: ms per decision, uncached | 0.327 | 0.318–0.329 |
+| active: ms per decision, cached | 0.261 | 0.255–0.262 |
+| active: cache hit rate | 0.260 | 0.260–0.260 |
+| active: ms per decision at 48 calcs, uncached | 0.778 | 0.756–0.783 |
+| active: calc share of env time, uncached | 0.572 | 0.562–0.575 |
+| active: calc share of env time, cached | 0.515 | 0.506–0.519 |
+
+- **Calc sets as run** (`calcs.ts`): fainted mons and status moves get no calcs, which is why the sets average 96 and 20 calcs rather than 288 and 48. The "at 288/48 calcs" rows scale µs per calc to the full sets. "active" has no calcs at Team Preview or for a fainted active.
+- **Cache:** one Map per player per game, keyed on every input passed to the calc: both mons' species, level, gender, ability, `abilityOn`, item, nature, EVs, IVs, boosts, current HP, status, Supreme Overlord's fallen count, Protosynthesis/Quark Drive stat; the move; weather, terrain, Gravity, Magic Room, Wonder Room and both sides' screens. Calc objects are built only on a miss. Cached time includes building the keys.
+- **Where calc time goes:** in a CPU profile of a 10-game run (`node --cpu-prof bench.ts 10 3`), `calculate` was 71% of the process's time, and `Pokemon.clone`, which `calculate` runs on both mons for every call, 36%. So about half of a calc is @smogon/calc copying its inputs. Building our own calc objects was 4%.
+- **Hit rate under D7's prior sets:** these runs use true sets for both sides, so it may differ there. A player's own mons keep their true sets. An opposing mon's prior set changes whenever a reveal changes which library set is consistent, which invalidates that mon's entries, so the per-game hit rate should be somewhat lower early in a game and about the same once sets are revealed. Prior sets are shared across games, so a worker-wide cache could hit across games, unlike this one. Not measured: the set library doesn't exist yet.
+- **Cross-check with T02:** T02's Result wasn't out when this was written.
+
+### What D7's rule gives
+
+D7: if calcs take more than 30% of env time, use the 48. Both sets are over 30%: the 288 at 69% cached, and **the 48 at 51% cached (50.6–51.9% over 5 runs)**. That is this brief's first stop condition: D7 has no step after "use the 48", so it reopens.
+
+Facts for that decision:
+
+- The share uses the brief's measure, calc / (sim + calc). The env's other per-decision work (Python parsing, the observation builder, transfer, inference: S5, S4) adds to the denominator. For cached 48-calc sets (0.261 ms) to be 30% of env time, that other work would have to come to ≥0.37 ms per decision on top of the sim's 0.243 ms.
+- About half of each calc is @smogon/calc's own input copying (profile above). Calling its mechanics without the copies would need a patched or forked calc. Not tested.
+- The cached sets miss on any input change, including current HP, which changes most turns for an active mon (hit rate 26% for the 48). Most damage results don't depend on current HP (exceptions include Eruption, Multiscale and Nature's Madness), so a key that drops HP where it can't matter would hit more often. Not tested.
+
+### NatDex support
+
+`node support.ts 100` (output in `support.txt` and `support.json`).
+
+- **Names:** every species (49, including 5 Mega formes), item (38, including 8 Z-Crystals and 5 Mega Stones), ability (38) and move (141, including 8 Z-Moves) on the pool teams is in the calc's gen 9 data. Past content on the pool: 9 species, 13 items, 12 moves (`support.json`, `names.*.poolPast`). Of everything gen9nationaldex allows at the pin (1,206 species, 531 items, 304 abilities, 874 moves), the calc names only species differently: 37 cosmetic formes (Vivillon-*, Alcremie-*, …) that it lacks and that calc as their base species, and Aegislash, which it calls Aegislash-Shield. `calcSpecies` in `calcs.ts` maps both.
+- **Calcs on the pool sets:** 2,934 calcs (each set's damaging moves against the next team's six sets; 120 as Z-Moves, 252 from the Mega forme) ran without an error. Each Z-Move's power matched the sim's.
+- **Range check:** in 100 games, 3,608 single-hit, non-crit damaging hits between active mons, with the calc run on the state at the moment of the hit. 3,554 (98.5%) of the sim's damage values were one of the calc's 16 rolls, including all 64 Z-Move hits, 377 of 380 hits involving a Mega, and 1,412 of 1,423 involving Past content. Each of the 54 mismatches has a cause confirmed on its own state (the sim's number follows from the rule, or the calc rerun with the missing input gives it exactly):
+
+| Cause | Hits |
+|---|---|
+| Ruination: the calc has no half-HP rule for it (it has one for Nature's Madness) and returns 0. Super Fang is missing too (not on the pool). | 25 |
+| Payback: the calc doubles it by Speed order, Showdown only if the target moved first this turn | 11 |
+| Counter, Mirror Coat: twice the damage the attacker took this turn, which the calc has no input for | 10 |
+| The defender used Roost this turn and lost its Flying type; the calc has no input for that | 7 |
+| Pursuit on a target switching out; the calc's `isSwitching` input wasn't set | 1 |
+
+Skipped: 179 crits, 49 multi-hit moves, 549 calls that returned no damage (immunity or failure), and 42 Future Sight hits, whose user wasn't active.
+
+Limits: RandomPlayerAI games, not ladder play; the pool's 25 teams, so content off the pool was only checked by name.
+
 ## Outputs
 
+Setup as in AGENTS.md (Conventions), then from this folder on Node 24 (`nvm use` in the same command):
+
+```bash
+L="$(git rev-parse --path-format=absolute --git-common-dir)/timing.lock"; until mkdir "$L" 2>/dev/null; do sleep 30; done; echo "T06 $(date +%FT%T)" > "$L/owner"; trap 'rm -f "$L/owner"; rmdir "$L" 2>/dev/null' EXIT; trap 'exit 143' INT TERM HUP; for i in 1 2 3 4 5; do node bench.ts 200 20 >> runs/<date>.jsonl || exit 1; done
+```
+
+```bash
+node summarize.ts runs/<date>.jsonl
+```
+
+```bash
+node support.ts 100 > support.json 2> support.txt
+```
+
+- `bench.ts` prints one JSON line per run (~63 s each here). `summarize.ts` gives the Result table. `support.ts` is deterministic.
+- `teams/pool.jsonl`: T02's 25 Smogon NatDex sample teams, copied from `task/T02-sim-throughput` at 4664b14 (sha256 `cfebf44c…6d2a4d`). Games are seeded as in T02's `makeGame`.
+- Type-check: `node ../../vendor/pokemon-showdown/node_modules/typescript/bin/tsc -p tsconfig.json`.
+
 ## For integration
+
+plan.md, Compute, a new bullet after Env:
+
+```markdown
+- **Damage calcs** (S3, T06): @smogon/calc 0.12.0 takes ~16 µs per calc on the M4 Max, against ~0.24 ms of sim per decision. Skipping fainted mons and status moves, the 288 set averages 96 calcs (1.5 ms per decision uncached, 0.55 ms cached) and the 48 set 20 (0.33 ms, 0.26 ms cached). About half of each calc is the library copying its inputs.
+```
+
+plan.md, Network v0, the Damage calcs bullet, appended:
+
+```markdown
+  - @smogon/calc's gen 9 data covers NatDex content; it lacks only cosmetic formes and names Aegislash differently (T06). Its known gaps, found against the sim: Ruination and Super Fang return 0; Payback is doubled by Speed order; nothing for Roost's type loss or damage taken this turn (Counter, Mirror Coat).
+```
+
+D7, Damage calcs, the last bullet: waits on the user. Measured, the 48 cached are 51% of sim + calc time (T06), so "restrict them to the active mons' moves" doesn't bring calcs under 30%.
