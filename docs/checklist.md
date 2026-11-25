@@ -14,7 +14,7 @@ When T02 (S1) pushes a Progress entry starting `Recorder ready`: S6's brief can 
 
 ## Needs you
 
-Nothing to decide now. Later: T07 (S4) brings the v0 net size and D9's threshold for sign-off, and S6 the tracker choice. T06 (S3) may reopen D7's calcs, if even the 48 active-mon calcs take over 30% of env time.
+Nothing to decide now. Later: T07 (S4) brings the v0 net size and D9's threshold for sign-off, and S6 the tracker choice. T06 (S3) may reopen D7 (its stop conditions).
 
 ## Active
 
@@ -29,7 +29,7 @@ Start these four now, each in its own session (`/do-task T02` and so on). They s
 - T04: replay corpus. [Brief](../tasks/T04-replay-corpus/README.md). Gives turns per game for S1's numbers, and Phase 1's robustness test reuses it.
 - T05: stub pool. [Brief](../tasks/T05-stub-pool/README.md).
 
-Then start these as sessions free up, keeping to four at once:
+Then start these as sessions free up, keeping to your limit of four at once:
 
 - T07: S4 MPS throughput. [Brief](../tasks/T07-mps-throughput/README.md). Its proposals need your sign-off, and S5 needs its CPU inference numbers.
 - T03: S2 server game replayed in-process. [Brief](../tasks/T03-server-replay/README.md). Last, because no Phase 0 choice waits on it; it checks D7's one-builder premise for Phase 1's online client.

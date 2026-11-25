@@ -6,7 +6,7 @@
 - **Inputs:**
   - Setup first (AGENTS.md, Conventions), including `scripts/setup-showdown.sh`: each worktree builds its own `vendor/`.
   - D4's decided parts (sources through Phase 2, validation, interface), plan.md (Components 5).
-  - Sources, in order: Smogon's NatDex sample teams (`https://pkmn.github.io/smogon/data/teams/gen9nationaldex.json`; T01 used entries 0 and 2), then recent tournament pastes through pokepast.es JSON. The replan's review found all 25 sample teams valid at the pin on 2026-11-24, so pastes should only be needed to replace any that fail.
+  - Sources, in order: Smogon's NatDex sample teams (`https://pkmn.github.io/smogon/data/teams/gen9nationaldex.json`; T01 used entries 0 and 2), then recent tournament pastes through pokepast.es JSON. All 25 sample teams validated at the pin on 2026-11-24 (planning check), so pastes are needed only to replace any that fail.
 - **Deliverables:**
   - `data/pool/v0/teams.jsonl`: one team per line, with the team in Showdown's packed format and its source (URL, and name and date where given). The task picks any other fields.
   - `scripts/validate-pool.ts`: validates every team in a pool file at the pin and exits non-zero if any fails, naming it. The monthly re-pin (Conventions) will use it.

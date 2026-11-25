@@ -7,7 +7,7 @@
   - Setup first (AGENTS.md, Conventions), including `scripts/setup-showdown.sh`: each worktree builds its own `vendor/`.
   - @smogon/calc (root `package.json`). plan.md (Network v0: Damage calcs; Phase 0: S3), D7 (Damage calcs).
   - Game states: in-process seeded games, as in T01's `battle.ts`, with Smogon NatDex sample teams that validate at the pin.
-  - Opponent sets: D7's calcs use a species-level prior set, but the set library doesn't exist until Phase 1. Use each opposing mon's true set; how the set is chosen doesn't change a calc's cost.
+  - Opponent sets: D7's calcs use a species-level prior set, but the set library doesn't exist until Phase 1. Use each opposing mon's true set. A calc costs the same whichever set it uses, but the cache hit rate may differ under D7's prior sets, so Result says how.
   - T02 (S1) measures the sim at the same time. This task measures the sim time it needs itself, so it doesn't wait for T02; compare with T02's Result if it is out by the end.
 - **Deliverables,** in this folder:
   - The benchmark: at each decision of seeded games, compute both calc sets as Network v0 defines them, uncached and with a cache keyed on every input the calc reads. In the same setup (process count, core type), time the sim's own work per decision with `Battle` driven directly.
@@ -21,7 +21,7 @@
 - **Limits:** one session, no paid services. Take timings as in AGENTS.md, Conventions (Timed runs).
 - **Stop and report if:**
   - the 48 calcs, cached, still take more than 30% of env time. D7 has no step after "use the 48", so it would reopen;
-  - @smogon/calc can't compute gen 9 damage for Megas, Z-Moves or Past content, or the range check finds mismatches that no known calc limit explains. Either would put v0's calc features (D7) in question.
+  - @smogon/calc can't compute gen 9 damage for Megas, Z-Moves or Past content, or the range check finds mismatches it can't explain. Either would put v0's calc features (D7) in question.
 
 ## Progress
 

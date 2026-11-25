@@ -6,7 +6,7 @@
 - **Inputs:**
   - Setup first (AGENTS.md, Conventions), including `scripts/setup-showdown.sh`: each worktree builds its own `vendor/`.
   - plan.md (Components 1; Phase 0: S1 and S6; Compute), D2, D7. T01's `battle.ts` drives both paths at the pin and is a starting point.
-  - T01's gotchas: `Runner`'s `dual` option throws, so don't use it. `RandomPlayerAI` never Mega Evolves unless given a `mega` probability; use `Runner.AI_OPTIONS` or similar so games include Megas and Z-Moves.
+  - T01's gotchas: `Runner`'s `dual` option throws, so don't use it. `RandomPlayerAI` never Mega Evolves unless given a `mega` probability; set it as `Runner.AI_OPTIONS` does (0.6) so games include Megas.
   - Teams: Smogon's NatDex sample teams (`https://pkmn.github.io/smogon/data/teams/gen9nationaldex.json`) that pass `validate-team gen9nationaldex` at the pin. None has an Illusion user (checked 2026-11-24), so also build one validated test team with Zoroark or Zoroark-Hisui and keep it in this folder. T05 builds the stub pool from the same source at the same time; don't wait for it.
   - Turns per game come from T04 (replay corpus), not from random-AI games. The planning session combines the two.
 - **Deliverables,** in this folder:

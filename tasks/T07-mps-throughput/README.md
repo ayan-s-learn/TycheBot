@@ -8,7 +8,7 @@
   - plan.md (Network v0, Training v0, Compute: M4 Max; Phase 0: S4 and S5), D6, D9 (Budget: the open threshold), D10.
   - For the threshold only: env throughput from T02's Result (S1) and turns per game from T04's (replay corpus), on their PRs or `main`. If either isn't there when you reach that step, set State to `blocked (T02 or T04)` and hand off.
 - **Deliverables,** in this folder:
-  - A stand-in net with Network v0's shape: a pre-RMSNorm transformer over ~45–80 tokens, with the action, value and aux heads, at 3M, 5M and 9M parameters. It doesn't need to read real observations.
+  - A stand-in for plan.md's Network v0, with its heads, at 3M, 5M and 9M parameters. It doesn't need to read real observations.
   - Result: samples/s for inference at the batch sizes an env would send, and for PPO training steps (forward, backward, optimizer) at realistic minibatch sizes. fp32 against fp16 and bf16 autocast. CPU inference too, since S5 compares inference in each env process (plan.md, S5): set torch's thread count as an env process would, at 1 and at a few threads, rather than torch's default of every core. Median and spread over ≥3 runs, with load averages and the torch version.
   - A FLOP count for the 5M net, checked against plan.md's estimate of ~2.4 GFLOP per decision step per PPO epoch.
   - The two proposals with their reasoning, and under For integration the text they change in plan.md and D9.
