@@ -16,6 +16,7 @@ if [ "$(git -C "$dir" rev-parse -q --verify HEAD || true)" != "$sha" ]; then
 fi
 cd "$dir"
 npm ci --no-audit --no-fund --loglevel=error
+rm -rf dist  # the build only adds files, so a re-pin would keep stale modules
 node build
 node node_modules/typescript/bin/tsc --ignoreConfig sim/global-types.ts sim/index.ts \
   sim/tools/runner.ts sim/tools/exhaustive-runner.ts \

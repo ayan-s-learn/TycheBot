@@ -15,7 +15,7 @@
   - Under For integration: the team-pool row for AGENTS.md's Areas table, and the validate command for the re-pin step in Conventions.
 - **Acceptance checks:**
   - `node scripts/validate-pool.ts data/pool/v0/teams.jsonl` exits 0 at the pin, with 20 distinct teams.
-  - It exits non-zero on a copy in which one team has a banned Pokémon.
+  - On a copy in which one team has a banned Pokémon, it exits non-zero and its output names that team and the ban, so a crash can't pass for a rejection.
   - Between them, the teams include at least one Mega Stone, one Z-Crystal, one Illusion user, and one forme that Team Preview hides (plan.md, Format facts). If the sources lack any of these, Result says which. S6 and Phase 1 test against them.
 - **May change:** `tasks/T05-stub-pool/`, `data/pool/v0/`, `scripts/validate-pool.ts`, `docs/areas/team-pool.md`.
 - **Limits:** one session, no paid services.

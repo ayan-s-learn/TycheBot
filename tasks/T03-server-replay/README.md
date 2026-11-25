@@ -6,7 +6,7 @@
 - **Inputs:**
   - Setup first (AGENTS.md, Conventions), including `scripts/setup-showdown.sh`: each worktree builds its own `vendor/`.
   - plan.md (Components 2 and 7; Phase 0: S2), D7.
-  - The server: `node pokemon-showdown start --skip-build --no-security <port>` from `vendor/pokemon-showdown`, as T01's `check-server.sh` runs it. `--no-security` works but isn't listed in `pokemon-showdown help`. npm 11 skips Showdown's optional native deps (better-sqlite3, sqlite3); T01's server check didn't need them.
+  - The server: `node pokemon-showdown start --skip-build --no-security <port>` from `vendor/pokemon-showdown`, as T01's `check-server.sh` runs it. `--no-security` works but isn't listed in `pokemon-showdown help`. On Node 24, Showdown's optional native deps (better-sqlite3, sqlite3) fail to build and npm drops them silently; T01's server check didn't need them.
   - Server-side players: poke-env's websocket client (root `pyproject.toml`).
   - In-process: both `Battle` with `extractChannelMessages` and `BattleStream`'s player streams, since S1 (T02) hasn't picked one yet.
   - Teams: Smogon NatDex sample teams that validate at the pin. T01's `teams/sample-1.txt` and `sample-2.txt` are two.

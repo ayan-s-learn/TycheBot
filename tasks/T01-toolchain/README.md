@@ -99,7 +99,7 @@ Publish dates and source commits below come from the npm registry (`npm view`) a
 - **`pokemon-showdown` npm package:** 0.11.11 was published 2026-07-28 from 739a5e1, 315 commits behind the pin, and the release before it was 2025-02-27. A monthly re-pin can't track master this way.
 - **@pkmn/sim:** 0.11.0 was published 2026-11-09 from Showdown a78551b0, 33 commits behind the pin, with 51 files changed under `sim/`, `data/` and `config/formats.ts`. It exports the runners, `State`, `extractChannelMessages` and `TeamValidator`, and its `[Gen 9] National Dex` definition matches the pin's. But it has no server and no `validate-team` CLI, it ships a curated subset of Showdown's formats, and its `Teams` parsing goes through @pkmn/sets with different defaults (its README). It had no release between 2026-06-18 (0.10.11) and 2026-10-28 (0.10.12), so a monthly re-pin could stall. Its README says projects like this would "probably be better off vendoring" Showdown.
 
-The monthly re-pin (plan.md, Evaluation: Versioning) is in the proposed Conventions (For integration, item 3). Changes are read through GitHub's compare API because the checkout is shallow. The pool is re-validated because a new ban can make a pool team illegal. Checkpoints already record the commit and the vocab hash, which changes when `data/` adds species, moves, items or abilities.
+The monthly re-pin (plan.md, Evaluation: Versioning) is in the proposed Conventions (For integration, item 3). Changes are read with a local `git diff` after fetching the new commit (changed at integration: GitHub's compare API lists at most 300 files). The pool is re-validated because a new ban can make a pool team illegal. Checkpoints already record the commit and the vocab hash, which changes when `data/` adds species, moves, items or abilities.
 
 ### Spike code: throwaway
 
@@ -108,9 +108,9 @@ The spikes produce numbers and choices that decide what Phase 1 builds: S1 picks
 ### Gotchas for later tasks
 
 - `Runner`'s `dual` option throws `TypeError: stream is not async iterable` at the pin, because `getPlayerStreams` iterates its stream with `for await` and `DualStream` doesn't support that. S1 can't use it. `battle.ts` does the same State round-trip check by hand.
-- exhaustive-runner's pools drop all `isNonstandard` content. On gen9nationaldex they hold none of the format's 93 Mega Stones or 35 Z-Crystals, and no Past Pokémon such as Mawile. Adapting it to NatDex means letting in the content the format allows.
+- exhaustive-runner's pools drop all `isNonstandard` content. On gen9nationaldex they hold none of the format's Mega Stones or 35 Z-Crystals (corrected at integration: the 93 counted every Gen 9 dex Mega Stone, including Future and CAP ones the format rejects), and no Past Pokémon such as Mawile. Adapting it to NatDex means letting in the content the format allows.
 - `RandomPlayerAI` never Mega Evolves unless given a `mega` probability (default 0). `Runner.AI_OPTIONS` sets it to 0.6.
-- npm 11, bundled with Node 24, skipped Showdown's optional native dependencies (better-sqlite3, sqlite3) that npm 10 installed: 219 packages vs 328. Nothing in the smoke test needs them.
+- On Node 24, Showdown's optional native dependencies (better-sqlite3, sqlite3) fail to build and npm drops them, which `--loglevel=error` hides: 219 packages vs 328 on Node 22 (cause corrected at integration). Nothing in the smoke test needs them.
 - `--no-security` still works (`server/config-loader.ts`), though `pokemon-showdown help` doesn't list it.
 
 ### Not checked
@@ -131,7 +131,7 @@ nvm install    # Node 24, from .nvmrc
 ./smoke.sh     # exits non-zero at the first failing check
 ```
 
-Once the branch is merged and deleted, clone `main` instead. The first run downloads Showdown, its npm packages and torch (132 MiB, per uv). `evidence/smoke-node24.log` and `smoke-node22.log` are passing runs from a clean clone, with the commit and the elapsed time in them. `evidence/py314-deps.log` is the scratch install of torch, numpy, poke-env and open-spiel.
+Once the branch is merged and deleted, clone `main` instead. The first run downloads Showdown, its npm packages and torch (132 MiB, per uv). `evidence/smoke-node24.log` is a passing run from a clean clone, and `smoke-node22.log` a rerun in that checkout (the integration review found it reused the Node 24 one), with the commit and the elapsed time in them. `evidence/py314-deps.log` is the scratch install of torch, numpy, poke-env and open-spiel.
 
 | File | What it is |
 |---|---|
