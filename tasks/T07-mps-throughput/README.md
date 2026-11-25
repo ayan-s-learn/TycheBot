@@ -27,7 +27,7 @@
 
 ```text
 State: done
-Verified: Acceptance checks (Result), torch 2.15.0, code at 17c2742
+Verified: Acceptance checks (Result), torch 2.15.0, code at a1f9e30
 Pending: review (workflow.md, Task session, step 7)
 Next: review; the net size and D9's threshold need the user's OK
 ```
@@ -43,37 +43,68 @@ Next: write the stand-in net and benchmark
 
 ## Result
 
-**Proposals for the user:** a 5M v0 net, trained and run under bf16 autocast; and for D9, the M4 Max "isn't enough" when the next planned run needs more than 14 days on it at the games/day the current pipeline measures. Both are argued under Proposals. The learner, not the env, bounds the M4 Max, by about 18×. With MPS inference, Python parsing and transfer would have to cost ~14 ms per decision per process to change that (Learner and env). No stop condition was hit.
+**Proposals for the user:**
+- A 5M v0 net, trained and run under bf16 autocast.
+- For D9: the M4 Max "isn't enough" when the next planned run needs more than 14 days on it, at the games/day the current pipeline measures.
 
-All timings: 2026-11-25, torch 2.15.0, Python 3.14.7, MacBook Pro (Mac16,5) M4 Max with a 32-core GPU and 36 GB, on mains power. `PYTORCH_ENABLE_MPS_FALLBACK` was unset, which `bench.py` asserts. Three runs of `bench.py`, each a fresh process, ran back to back under the timing lock from 17:02 to 17:19 at 1-minute load averages of 0.5–2.2 (`runs/2026-11-25.log`).
+Both are argued under Proposals.
+
+**The learner, not the env, bounds the M4 Max.** How much it leads depends on a question plan.md leaves open. Network v0's token list gives 33 tokens, but its Size line says 45–80, and the learner's cost scales with the token count:
+- **At 33 tokens:** the 5M net gives an estimated ~1,900 learner decisions/s at 3 epochs, about 2M games/day. The env has ~7× that. **D7's 2× builder rule trips once Python parsing and transfer cost ~2.2 ms per decision per process.** That margin is thin enough that Phase 1's walking skeleton may well trip it.
+- **At 77 tokens:** ~820 learner decisions/s, ~0.9M games/day. The margin is ~16×, and the builder rule trips at ~6.4 ms.
+
+No stop condition was hit.
+
+All timings: 2026-11-25, torch 2.15.0, Python 3.14.7, MacBook Pro (Mac16,5) M4 Max with a 32-core GPU and 36 GB, on mains power. `PYTORCH_ENABLE_MPS_FALLBACK` was unset, which `bench.py` asserts. Each figure comes from three runs of `bench.py`, each a fresh process, back to back under the timing lock:
+- 77 and 53 tokens: 17:02–17:19, 1-minute load averages 0.5–2.2 (`runs/2026-11-25.log`).
+- 33 tokens: 18:26–18:37, load 0.9–3.0 (`runs/2026-11-25-33tok.log`).
 
 ### Stand-in net
 
-`net.py` follows plan.md's Network v0, fed synthetic inputs:
+`net.py` builds Network v0's tokens, trunk and heads from plan.md, fed synthetic inputs, in three token layouts:
 
-- **Tokens (77):** field (1), own mons (6), opposing mons (6), every own and opposing mon's moves (24 + 24), and the last 16 events. A mon token is built from its species, item, ability and four move embeddings (64 wide; vocabularies are gen9nationaldex's sizes at the pin, from T06) plus 128 numeric features, which include its 24 damage calcs. Move tokens carry a move embedding plus 48 dex features, and event tokens carry three embeddings plus 16 features. About 10% of the non-mon tokens are masked out of attention, standing in for empty event slots.
+- **33 tokens, plan.md's token list as written:** field (1), own mons (6), opposing mons (6), the active mon's moves (4), the last 16 events.
+- **77 tokens:** every own and opposing mon's moves as tokens (24 + 24) instead of the active mon's 4. This matches the ~80 tokens behind plan.md's FLOP estimate and the top of its "45–80 tokens".
+- **53 tokens:** the 77 without the opposing moves (5M only).
+
+The rest is the same in every layout:
+
+- **Tokens:**
+  - **Mon tokens** are built from species, item, ability and four move embeddings, 64 wide, plus 128 numeric features, which include the mon's 24 damage calcs. The vocabularies are gen9nationaldex's sizes at the pin, from T06.
+  - **Move tokens** carry a move embedding plus 48 dex features.
+  - **Event tokens** carry three embeddings plus 16 features.
+  - About 10% of the non-mon tokens are masked out of attention, standing in for empty event slots.
 - **Trunk:** a pre-RMSNorm transformer with 64-wide heads, a GELU MLP 4× wide, and one set of weights shared by all token types.
-- **Heads:** 18 masked action logits (4 moves × {plain, Mega, Z} from the active mon's move tokens, plus a switch per team slot) and a value. Training adds the aux heads on the 6 opposing mon tokens (moves, item, ability, spread bucket) and the opponent's next action. The heads run in fp32 under autocast, because masking with −inf and log-softmax overflow in fp16.
-- **Loss:** PPO's clipped surrogate, value MSE, entropy, KL(uniform‖π) over legal actions (D10), and the aux losses. A step is forward, backward, a grad-norm clip at 1.0 and AdamW. fp16 adds a `GradScaler`, which bf16 doesn't need.
+- **Heads:**
+  - **Acting:** 18 masked action logits and a value. The logits are 4 moves × {plain, Mega, Z}, read from the active mon's move tokens, plus a switch per team slot.
+  - **Training only:** aux heads on the 6 opposing mon tokens (moves, item, ability, spread bucket), plus the opponent's next action.
+  - The heads run in fp32 under autocast, because masking with −inf and log-softmax overflow in fp16.
+- **Loss:** PPO's clipped surrogate, value MSE, entropy, KL(uniform‖π) over legal actions (D10), and the aux losses. A step is forward, backward, a grad-norm clip at 1.0, and AdamW. fp16 adds a `GradScaler`, which bf16 doesn't need.
 
-| Size | d | Layers | Params | Trunk params | Inference GFLOP per decision | Training GFLOP per decision per epoch |
-|---|---|---|---|---|---|---|
-| 3M | 192 | 5 | 3.09M | 2.22M | 0.369 | 1.132 |
-| 5M | 256 | 5 | 5.06M | 3.95M | 0.644 | 1.963 |
-| 9M | 320 | 6 | 8.76M | 7.39M | 1.191 | 3.616 |
-| 5M@53 | 256 | 5 | 5.05M | 3.95M | 0.438 | 1.337 |
+| Size | d | Layers | Params | Trunk params | Tokens | Inference GFLOP per decision | Training GFLOP per decision per epoch |
+|---|---|---|---|---|---|---|---|
+| 3M | 192 | 5 | 3.09M | 2.22M | 77 | 0.369 | 1.132 |
+| 5M | 256 | 5 | 5.06M | 3.95M | 77 | 0.644 | 1.963 |
+| 9M | 320 | 6 | 8.76M | 7.39M | 77 | 1.191 | 3.616 |
+| 5M@53 | 256 | 5 | 5.05M | 3.95M | 53 | 0.438 | 1.337 |
+| 3M@33 | 192 | 5 | 3.09M | 2.22M | 33 | 0.154 | 0.477 |
+| 5M@33 | 256 | 5 | 5.05M | 3.95M | 33 | 0.271 | 0.831 |
+| 9M@33 | 320 | 6 | 8.74M | 7.39M | 33 | 0.502 | 1.530 |
 
-5M@53 is the 5M net without the opposing move tokens, 53 tokens, to show what the token count costs. 0.9–1.4M of each net's parameters (1.1M in the 5M) sit in embedding tables, input projections and heads, which cost few FLOPs.
+Each net has 0.9–1.4M parameters (1.1M in the 5M) in embedding tables, input projections and heads, which cost few FLOPs.
 
-**FLOP check:** `flops.py` counts the matmuls and attention with torch's `FlopCounterMode`, which leaves out elementwise ops. The 5M net costs **1.96 GFLOP per decision step per PPO epoch** (forward + backward), against plan.md's ~2.4. The plan's figure is 6 × 5M params × 80 tokens. Here only the 3.95M trunk parameters act on every token (6 × 3.95M × 77 = 1.82 GFLOP), and attention scores, input projections and heads add the rest. At the measured rates, MPS sustains ~4.2 TFLOP/s training the 5M net under bf16 (3.8 fp32) and ~7.3 TFLOP/s in inference. The training figure is within the plan's assumed 4–6 TFLOP/s.
+**FLOP check:** `flops.py` counts the matmuls and attention with torch's `FlopCounterMode`, which leaves out elementwise ops.
+- **The 5M net costs 1.96 GFLOP per decision step per PPO epoch at 77 tokens and 0.83 at 33** (forward + backward), against plan.md's ~2.4.
+- The plan's figure is 6 × 5M params × 80 tokens. Here only the 3.95M trunk parameters act on every token (6 × 3.95M × 77 = 1.82 GFLOP). Attention scores, input projections and heads add the rest.
+- At the measured rates, MPS sustains ~4.2 TFLOP/s training the 5M net under bf16 at either token count (3.8 at 77 in fp32), within the plan's assumed 4–6. Inference reaches 6.3 TFLOP/s at 33 tokens and 7.3 at 77.
 
 ### Throughput
 
-Median (min–max) over the 3 runs. Each configuration ran 3 untimed steps (MPS builds its graphs on a new shape), then timed steps for at least 2 s and 5 steps, with the GPU synchronized at both ends.
+Median (min–max) over 3 runs. Each configuration ran 3 untimed steps first, because MPS builds its graphs on a new shape. It then ran timed steps for at least 2 s and at least 5 steps, with the GPU synchronized at both ends.
 
 - **MPS inference** includes copying the batch to the GPU and the logits and value back, as an inference server would. It uses the policy and value heads only.
-- **MPS training** times one PPO minibatch step on data already on the GPU. The minibatch stops at 1024: the 9M net in fp32 at 2048 pushed the machine into swap in an unlogged trial run, and throughput is flat from 512 to 1024.
-- **CPU inference** is fp32 with `torch.set_num_threads` at 1, 2 and 4 and one interop thread, as an env process would set it, at the batch sizes one env process would send (up to 64: 32 battles, two players).
+- **MPS training** times one PPO minibatch step on data already on the GPU. Minibatches stop at 1024: in an unlogged trial run, the 9M net in fp32 at 2048 pushed the machine into swap.
+- **CPU inference** runs in fp32 with `torch.set_num_threads` at 1, 2 and 4 and one interop thread, as an env process would set it. The batch sizes are those one env process would send: up to 64, for 32 battles with two players.
 
 #### MPS inference, samples/s
 
@@ -95,6 +126,18 @@ Median (min–max) over the 3 runs. Each configuration ran 3 untimed steps (MPS 
 | 5M@53 | 64 | 10,673 (10,635–10,756) | 11,177 (11,136–11,200) | 11,214 (11,177–11,280) |
 | 5M@53 | 256 | 13,209 (13,205–13,304) | 16,175 (16,037–16,202) | 15,912 (15,877–16,367) |
 | 5M@53 | 1024 | 10,028 (9,947–10,172) | 13,604 (13,586–13,822) | 13,589 (13,519–13,863) |
+| 3M@33 | 16 | 6,984 (6,973–7,088) | 6,345 (6,283–6,452) | 6,226 (6,224–6,269) |
+| 3M@33 | 64 | 18,095 (18,082–18,132) | 17,757 (17,607–17,890) | 17,521 (17,506–17,614) |
+| 3M@33 | 256 | 29,407 (29,358–29,444) | 33,088 (33,036–33,151) | 32,774 (32,746–32,790) |
+| 3M@33 | 1024 | 24,149 (23,489–24,197) | 31,682 (31,634–31,941) | 31,479 (31,432–31,693) |
+| 5M@33 | 16 | 6,112 (6,085–6,165) | 5,587 (5,562–5,593) | 5,570 (5,567–5,610) |
+| 5M@33 | 64 | 13,887 (13,879–13,891) | 14,015 (14,001–14,119) | 13,974 (13,925–13,990) |
+| 5M@33 | 256 | 20,436 (20,401–20,468) | 23,437 (23,436–23,455) | 23,358 (23,351–23,402) |
+| 5M@33 | 1024 | 16,355 (16,351–16,380) | 21,401 (21,395–21,477) | 21,422 (21,402–21,463) |
+| 9M@33 | 16 | 4,780 (4,603–4,823) | 4,425 (4,359–4,449) | 4,428 (4,420–4,432) |
+| 9M@33 | 64 | 9,452 (9,266–9,469) | 9,647 (9,158–9,652) | 9,618 (9,571–9,705) |
+| 9M@33 | 256 | 12,094 (12,065–12,411) | 14,373 (14,006–14,402) | 14,351 (14,324–14,405) |
+| 9M@33 | 1024 | 9,847 (9,816–9,954) | 12,961 (12,912–12,986) | 12,985 (12,977–12,986) |
 
 #### MPS training, samples/s per epoch
 
@@ -112,6 +155,15 @@ Median (min–max) over the 3 runs. Each configuration ran 3 untimed steps (MPS 
 | 5M@53 | 256 | 2,846 (2,835–2,896) | 2,798 (2,793–2,828) | 3,150 (3,113–3,192) |
 | 5M@53 | 512 | 2,899 (2,895–2,903) | 2,973 (2,937–3,033) | 3,162 (3,141–3,237) |
 | 5M@53 | 1024 | 2,523 (2,491–2,564) | 2,845 (2,839–2,871) | 2,925 (2,893–2,988) |
+| 3M@33 | 256 | 7,034 (7,029–7,063) | 5,575 (5,551–5,586) | 7,133 (7,084–7,149) |
+| 3M@33 | 512 | 7,380 (7,370–7,404) | 6,644 (6,632–6,654) | 7,622 (7,618–7,657) |
+| 3M@33 | 1024 | 6,532 (6,528–6,562) | 6,781 (6,779–6,793) | 7,270 (7,266–7,298) |
+| 5M@33 | 256 | 5,068 (5,064–5,090) | 4,278 (4,254–4,288) | 5,237 (5,211–5,250) |
+| 5M@33 | 512 | 5,188 (5,176–5,190) | 4,841 (4,827–4,846) | 5,414 (5,408–5,423) |
+| 5M@33 | 1024 | 4,514 (4,505–4,525) | 4,767 (4,764–4,773) | 5,046 (4,987–5,065) |
+| 9M@33 | 256 | 3,062 (3,062–3,113) | 2,791 (2,790–2,793) | 3,261 (3,255–3,262) |
+| 9M@33 | 512 | 3,076 (3,050–3,141) | 3,056 (3,041–3,066) | 3,336 (3,328–3,341) |
+| 9M@33 | 1024 | 2,731 (2,705–2,751) | 2,965 (2,962–2,968) | 3,094 (3,093–3,095) |
 
 #### CPU inference (fp32), samples/s
 
@@ -133,163 +185,248 @@ Median (min–max) over the 3 runs. Each configuration ran 3 untimed steps (MPS 
 | 5M@53 | 8 | 1,301 (1,285–1,305) | 1,454 (1,449–1,463) | 1,695 (1,670–1,700) |
 | 5M@53 | 32 | 1,555 (1,534–1,557) | 2,114 (2,093–2,116) | 2,748 (2,705–2,748) |
 | 5M@53 | 64 | 1,601 (1,573–1,615) | 2,314 (2,260–2,329) | 2,942 (2,793–2,945) |
+| 3M@33 | 1 | 1,238 (1,232–1,245) | 1,121 (1,113–1,131) | 1,167 (1,167–1,178) |
+| 3M@33 | 8 | 2,781 (2,763–2,797) | 2,705 (2,693–2,706) | 2,814 (2,800–2,814) |
+| 3M@33 | 32 | 3,376 (3,374–3,383) | 4,328 (4,223–4,355) | 5,390 (5,229–5,393) |
+| 3M@33 | 64 | 3,482 (3,478–3,485) | 4,910 (4,842–4,926) | 6,246 (6,212–6,338) |
+| 5M@33 | 1 | 878 (876–880) | 783 (779–791) | 789 (787–789) |
+| 5M@33 | 8 | 1,901 (1,895–1,907) | 1,962 (1,957–1,962) | 2,050 (2,048–2,061) |
+| 5M@33 | 32 | 2,381 (2,343–2,428) | 3,101 (3,089–3,124) | 3,910 (3,897–3,956) |
+| 5M@33 | 64 | 2,554 (2,523–2,566) | 3,625 (3,586–3,626) | 4,468 (4,464–4,471) |
+| 9M@33 | 1 | 578 (576–579) | 540 (539–542) | 545 (545–551) |
+| 9M@33 | 8 | 1,301 (1,297–1,320) | 1,422 (1,412–1,440) | 1,530 (1,501–1,537) |
+| 9M@33 | 32 | 1,614 (1,594–1,620) | 2,128 (2,112–2,134) | 2,674 (2,673–2,678) |
+| 9M@33 | 64 | 1,666 (1,652–1,672) | 2,303 (2,301–2,339) | 2,929 (2,915–2,931) |
 
 Readings:
 
-- **Autocast:** bf16 trains the 5M net 12% faster than fp32 (2,163 against 1,936 at minibatch 1024) and infers 16% faster at batch 256 (11,286 against 9,720). fp16 is no faster than bf16, needs a `GradScaler`, and is slower than fp32 at minibatch 256. The 9M net gains least: 3% training under bf16, 6% under fp16.
-- **Batch size:** MPS inference peaks at batch 256 and drops 14–28% at 1024. One env process's batch (≤64) gets 68–83% of the peak for the 3M and 5M nets, so an inference server batching across env processes at 256 gains ~20–50% over each process sending its own. Training is flat from 512 to 1024.
-- **Size:** throughput tracks FLOPs. Relative to the 5M net, the 3M trains 1.44× as fast and the 9M 0.56× (bf16, 1024).
-- **Tokens:** cutting the 5M net to 53 tokens trains it 1.35× as fast (2,925 against 2,163) and infers 1.41× as fast: nearly as much as dropping to the 3M net (1.44× and 1.50×).
-- **CPU inference** of the 5M net at batch 64 costs 0.96 ms per decision on one thread and 1.29 and 1.95 core-ms on 2 and 4 threads. One thread per env process uses the cores best. At batch 1 it is ~570 decisions/s whatever the thread count.
+- **Autocast:** bf16 is 12–16% faster than fp32 for the 5M net at both token counts.
+  - Training at minibatch 1024: 2,163 against 1,936 at 77 tokens, 5,046 against 4,514 at 33.
+  - Inference at batch 256: +16% and +14%.
+  - fp16 is no faster than bf16, needs a `GradScaler`, and is slower than fp32 at minibatch 256.
+  - The 9M net gains least at 77 tokens: 3% under bf16.
+- **Batch size:**
+  - MPS inference peaks at batch 256. One env process's batch (64) reaches 68–83% of that peak for the 3M and 5M nets at 77 tokens, and 53–68% at 33. So an inference server batching across env processes at 256 gains about 20–90% over each process sending its own.
+  - Training is flat from 512 to 1024 at 77 tokens. At 33 tokens, 1024 is 5–13% below 512 in fp32 and bf16.
+- **Size:** throughput falls with FLOPs, though not in proportion. Against the 5M net under bf16 at minibatch 1024:
+
+  | Net | FLOPs (77 tokens) | Throughput, 77 tokens | Throughput, 33 tokens |
+  |---|---|---|---|
+  | 3M | 0.58× | 1.44× | 1.44× |
+  | 9M | 1.84× | 0.56× | 0.61× |
+
+- **Tokens:** going from 77 to 33 tokens cuts the 5M net's FLOPs 2.36×. It then trains 2.33× as fast (5,046 against 2,163) and infers 2.07× as fast. The token count moves throughput more than the size range does: the 9M net at 33 tokens trains faster than the 5M at 77.
+- **CPU inference** of the 5M net at batch 64 on one thread costs 0.96 ms per decision at 77 tokens and 0.39 at 33. More threads cost more core time per decision (1.29 and 1.95 core-ms on 2 and 4 threads at 77). So one thread per env process uses the cores best.
 
 ### Learner and env
 
-**The learner's decisions/s per PPO epoch** at minibatch 1024 is the training rate: **2,163 for the 5M net under bf16** (1,936 fp32), 3,120 for the 3M, 1,208 for the 9M.
+**The learner's decisions/s per PPO epoch** at minibatch 1024 is the training rate. **For the 5M net under bf16 that is 5,046 at 33 tokens and 2,163 at 77** (fp32: 4,514 and 1,936).
 
-**GPU time per decision** = MPS inference for every decision + 0.75 × epochs × training per decision. 0.75 is the share of decisions trained: half of games are against the latest policy (both sides trained) and half against frozen snapshots (one side). The snapshot side's inference costs the same as the learner's. Inference at batch 256, training at minibatch 1024. Training v0 fixes no epoch count. Selected rows; `summarize.py` prints 2–4 epochs for every size in fp32 and bf16. Decisions per game use T02's 2.29 per turn: 112 at random games' 48.9 turns, and 57 and 80 at T04's human 25 and 35 turns (plan.md, Compute). Full table: `uv run python summarize.py runs/2026-11-25.jsonl`.
+**The learner model** (`summarize.py` computes every figure below):
+- **GPU time per decision** = MPS inference for every decision + 0.75 × epochs × training time per decision.
+  - 0.75 is the share of decisions trained. Half of games are against the latest policy, where both sides train, and half against frozen snapshots, where one side does. The snapshot side's inference costs the same as the learner's.
+  - Inference runs at batch 256 and training at minibatch 1024.
+- **CPU load:** the learner's rate is cut 7%, the loss training showed with the CPU loaded (Shared GPU, below).
+- **Epochs:** Training v0 fixes no epoch count, so the table shows 2–4 where it matters.
+- **Decisions per game:** T02's 2.29 decisions per turn. That gives 112 at random games' 48.9 turns, and 57 and 80 at T04's human 25 and 35 turns (plan.md, Compute). Self-play lengths are unmeasured.
 
-| Size | dtype | Inference ms/decision | Training ms/decision/epoch | Epochs | Learner decisions/s | Games/day, T02 random games (112 decisions) | Games/day, T04 human, 25 turns (57 decisions) | Games/day, T04 human, 35 turns (80 decisions) |
-|---|---|---|---|---|---|---|---|---|
-| 3M | bf16 | 0.059 | 0.320 | 2 | 1,853 | 1.43M | 2.80M | 2.00M |
-| 3M | bf16 | 0.059 | 0.320 | 3 | 1,282 | 0.99M | 1.93M | 1.38M |
-| 5M | fp32 | 0.103 | 0.517 | 3 | 791 | 0.61M | 1.19M | 0.85M |
-| 5M | bf16 | 0.089 | 0.462 | 2 | 1,279 | 0.99M | 1.93M | 1.38M |
-| 5M | bf16 | 0.089 | 0.462 | 3 | 886 | 0.68M | 1.34M | 0.96M |
-| 5M | bf16 | 0.089 | 0.462 | 4 | 678 | 0.52M | 1.02M | 0.73M |
-| 9M | bf16 | 0.152 | 0.828 | 3 | 497 | 0.38M | 0.75M | 0.54M |
+The table shows selected rows. `uv run python summarize.py runs/2026-11-25.jsonl,runs/2026-11-25-33tok.jsonl` prints every size, both dtypes and 2–4 epochs. The last three columns use the env model under Env CPU budget.
 
-**Shared GPU** (`contend.py`, 5M, bf16, three 20 s windows per scenario; `runs/contend.jsonl`): run in separate processes at once, inference and training each kept 60% and 46% of its alone rate (median), which sum to 1.06 of the GPU. With 13 more processes spinning on the CPU, standing in for env workers, training alone lost 7% (1,969 against 2,124 decisions/s), and with inference too the shares summed to 0.97. **So the games/day above hold to within about ±6%,** from three windows each.
+| Size | dtype | Epochs | Learner decisions/s | Games/day, T02 random games (112 decisions) | Games/day, T04 human, 25 turns (57 decisions) | Games/day, T04 human, 35 turns (80 decisions) | Env / learner | Parsing + transfer ms to bound | ... to trip D7's 2x rule |
+|---|---|---|---|---|---|---|---|---|---|
+| 3M | bf16 | 3 | 1,192 | 0.92M | 1.80M | 1.29M | 11.0x | 9.1 | 4.1 |
+| 5M | bf16 | 2 | 1,189 | 0.92M | 1.79M | 1.28M | 11.0x | 9.2 | 4.1 |
+| 5M | bf16 | 3 | 824 | 0.64M | 1.24M | 0.89M | 15.9x | 13.6 | 6.4 |
+| 5M | bf16 | 4 | 630 | 0.49M | 0.95M | 0.68M | 20.8x | 18.1 | 8.6 |
+| 9M | bf16 | 3 | 462 | 0.36M | 0.70M | 0.50M | 28.3x | 25.1 | 12.1 |
+| 3M@33 | bf16 | 2 | 3,927 | 3.03M | 5.93M | 4.23M | 3.3x | 2.1 | 0.6 |
+| 3M@33 | bf16 | 3 | 2,735 | 2.11M | 4.13M | 2.95M | 4.8x | 3.5 | 1.3 |
+| 5M@33 | fp32 | 3 | 1,699 | 1.31M | 2.56M | 1.83M | 7.7x | 6.1 | 2.6 |
+| 5M@33 | bf16 | 2 | 2,735 | 2.11M | 4.13M | 2.95M | 4.8x | 3.5 | 1.3 |
+| 5M@33 | bf16 | 3 | 1,903 | 1.47M | 2.87M | 2.05M | 6.9x | 5.4 | 2.2 |
+| 5M@33 | bf16 | 4 | 1,459 | 1.13M | 2.20M | 1.57M | 9.0x | 7.3 | 3.2 |
+| 9M@33 | bf16 | 3 | 1,167 | 0.90M | 1.76M | 1.26M | 11.2x | 9.4 | 4.2 |
 
-**Env CPU budget** on the same machine, per decision per process, with 13 env processes and one core left for the learner:
+**Shared GPU** (`contend.py`; 5M net, 77 tokens, bf16; three 20 s windows per scenario; `runs/contend.jsonl`):
+- **Inference and training together:** run at the same time in separate processes, each kept 60% and 46% of its rate alone (medians). Those shares sum to 1.06 of the GPU, so summing their times, as the model does, is about right.
+- **With the CPU loaded:** 13 more processes spinning on the CPU stood in for env workers. Training alone lost 7% (1,969 against 2,124 decisions/s), and training is ~92% of the learner's GPU time. With inference running too, the shares summed to 0.97.
+- **So the model takes off 7%.** That is probably a lower bound: Python spin loops don't load memory bandwidth or caches the way Node sims and calcs would.
+
+**Env CPU budget** on the same machine, per decision per process. With MPS inference there are 12 env processes, since the learner and the inference server take a core each. With CPU inference there are 13.
 
 | Work | ms per decision | Source |
 |---|---|---|
-| Sim, `Battle` direct | 0.28 | T02, 14 processes |
+| Sim, `Battle` direct, slowed by interleaved calcs | 0.38 | T02 at 14 processes (0.28), × T06's 1.37 slowdown with calcs between sim steps |
 | 288 calc set, cached | 0.53 | T06, one process |
 | 48 calc set, cached | 0.25 | T06, one process |
-| CPU inference, 5M fp32, batch 64, 1 thread | 0.96 | this task |
+| CPU inference, 5M fp32, batch 64, 1 thread, unloaded | 0.39 (33 tokens), 0.96 (77) | this task |
 
-T06 timed calcs in one process only. If they slow under 14-process load as T02's sim did (0.18 to 0.28 ms, ×1.52), the 288 take 0.81 ms instead of 0.53, and sim plus calcs 1.09 ms instead of 0.81.
-
-- **MPS inference, 288 calcs:** 13 processes / (0.28 + 0.53) ms ≈ **16k env decisions/s against the learner's 886** (5M, bf16, 3 epochs): **18×.** With calcs slowed ×1.52 (13 / 1.09 ms): 12k, 13×.
-- **CPU inference, 288 calcs:** 13 / (0.28 + 0.53 + 0.96) ms ≈ 7.3k env decisions/s. The learner then trains only (962 decisions/s): 7.6×.
-- **What would flip it:** the env bounds the M4 Max once per-decision Python parsing and transfer (unmeasured until Phase 1's walking skeleton) cost more than 13 / 886 − 0.81 ≈ **13.9 ms per decision per process** with MPS inference, or 11.7 ms with CPU inference. D7's builder rule (it reopens if the env's decisions/s fall below ~2× the learner's) trips at 6.5 and 5.0 ms. For the fastest learner in the table (3M, bf16, 2 epochs, 1,853 decisions/s) these fall to 6.2 ms to bound and 2.7 ms for the 2× rule.
-- **For D7's calc revisit trigger:** S4 finds the learner bounds the M4 Max. Its first condition (the env bounding the M4 Max) can then come only from Phase 1's walking skeleton measuring parsing and transfer above those figures. On the M4 Max the 48 set would not raise games/day, since calcs aren't the bound.
+- **MPS inference, 288 calcs:** 12 processes / (0.38 + 0.53) ms ≈ 13k env decisions/s.
+  - For the 5M net under bf16 at 3 epochs, that is **6.9× the learner at 33 tokens (1,903) and 15.9× at 77 (824).**
+  - T06 timed calcs in one process only. If they slow under load as T02's sim did (×1.52, to 0.81 ms), the env does 10k decisions/s: 5.3× and 12×.
+- **CPU inference, 288 calcs:** the learner then only trains, at 2,090 decisions/s (33 tokens) and 895 (77).
+  - Inference loaded as T02's sim was (×1.52) costs 0.59 and 1.46 ms.
+  - The env gets 13 / (0.38 + 0.53 + 0.59) ≈ 8.6k and 5.5k decisions/s: 4.1× and 6.1× the learner. This is a worse margin than MPS inference at either token count.
+- **What would change it:** per-decision Python parsing and transfer (unmeasured until Phase 1's walking skeleton) add to the env's 0.92 ms. For the 5M net, bf16, 3 epochs and MPS inference:
+  - **D7's builder rule** ("reopens if the env's decisions/s ... falls below ~2× the learner's") trips at **~2.2 ms per decision per process at 33 tokens** and ~6.4 ms at 77.
+  - **The env becomes the bound** at ~5.4 ms and ~13.6 ms.
+  - Faster learner settings shrink these margins. The 3M net at 33 tokens and 2 epochs trips the builder rule at 0.6 ms.
+- **For D7's calc revisit trigger:** S4 finds the learner bounds the M4 Max, so the trigger's first condition can only come from Phase 1's walking skeleton. Cutting calcs to the 48 set would save 0.28 ms per decision. That matters only if parsing lands near the figures above.
 
 ### Autocast against fp32
 
-`converge.py`: 300 PPO steps at minibatch 256 on 8 fixed synthetic minibatches, cycled, from the same init, so the loss falls as the net memorizes them. A second fp32 run from another init seed shows how far two fp32 runs drift apart (`runs/converge.json`, `runs/checks.log`).
+`converge.py` (77 tokens): 300 PPO steps at minibatch 256 on 8 fixed synthetic minibatches, cycled, all from the same init. The loss falls as the net memorizes them. A second fp32 run from another init seed is the reference for how far two fp32 runs drift apart. That is a loose bar, so the absolute gaps are given too (`runs/converge.json`, `runs/checks.log`).
 
-| Size | fp32 loss, step 1 → mean of last 50 | fp16 last 50 | bf16 last 50 | fp32, other seed, last 50 | Mean relative gap to fp32, last 50: fp16 / bf16 / other seed |
+| Size | fp32 loss: step 1 → mean of last 50 | fp16, last 50 | bf16, last 50 | fp32, other seed, last 50 | Mean absolute gap to fp32 over the last 50 steps: fp16 / bf16 / other seed |
 |---|---|---|---|---|---|
-| 3M | 2.345 → 0.825 | 0.835 | 0.823 | 0.874 | 1.2% / 0.6% / 6.1% |
-| 5M | 2.283 → 0.497 | 0.493 | 0.487 | 0.515 | 1.4% / 2.0% / 3.9% |
-| 9M | 2.319 → 0.145 | 0.137 | 0.154 | 0.165 | 7.5% / 14.6% / 25.4% |
+| 3M | 2.345 → 0.825 | 0.835 | 0.823 | 0.874 | 0.010 / 0.005 / 0.049 |
+| 5M | 2.283 → 0.497 | 0.493 | 0.487 | 0.515 | 0.007 / 0.010 / 0.019 |
+| 9M | 2.319 → 0.145 | 0.137 | 0.154 | 0.165 | 0.008 / 0.009 / 0.020 |
 
-Every loss was finite. In every size, autocast's gap to fp32 is smaller than the gap between two fp32 seeds, so autocast doesn't diverge. The 9M net memorizes the data to a loss near 0.01 on some steps, where relative gaps are large: its largest single-step gaps (bf16 2.9×, other seed 3.3×) are both at step 287 of 300, where fp32's loss is 0.008.
+- Every loss was finite.
+- **Autocast's gaps to fp32 are under 0.5% of the starting loss**, and smaller than the gap between seeds, so autocast doesn't diverge.
+- The 9M net memorizes the data down to losses near 0 on some steps, so its relative gaps are large there. Both of its largest single-step gaps (bf16 2.9×, other seed 3.3×) fall at step 287 of 300, where fp32's loss is 0.008.
 
 ### Other findings
 
-- **No CPU fallback needed:** every op ran on MPS in all three dtypes (SDPA with a boolean mask, RMSNorm, embeddings, the losses, AdamW, `GradScaler`).
-- **`torch.compile`** of the 5M net sped training up 14% (2,504 against 2,187 decisions/s, bf16, 1024), in one unlogged 10-step probe with a 7 s compile, so not reproducible from Outputs. A lever for Phase 1's learner, unverified on the full net.
-- **Memory** (unlogged smoke test, 5 steps): the 5M net at minibatch 2048 used 14 GB of GPU driver memory under bf16 and 20 GB in fp32, and the 9M 21 and 28 GB, on a 36 GB machine.
+- **No CPU fallback was needed:** every op ran on MPS in all three dtypes. That covers SDPA with a boolean mask, RMSNorm, embeddings, the losses, AdamW and `GradScaler`.
+- **`torch.compile`** sped training of the 5M net at 77 tokens up 14% (2,504 against 2,187 decisions/s, bf16, minibatch 1024). This was a single unlogged 10-step probe with a 7 s compile, so it can't be reproduced from Outputs. It's a lever for Phase 1's learner, unverified on the full net.
+- **Memory** (unlogged smoke test, 5 steps, 77 tokens, minibatch 2048, on this 36 GB machine; GPU driver memory):
+
+  | Net | bf16 | fp32 |
+  |---|---|---|
+  | 5M | 14 GB | 20 GB |
+  | 9M | 21 GB | 28 GB |
 
 ### Limits
 
-- **A stand-in:** synthetic inputs, a guessed feature width, and one MLP shared by every token type. Per-type MLP weights, as Jaxcalibur's (prior-work.md), would add parameters but not FLOPs.
-- **Not timed:** rollout storage, GAE, moving rollouts to the GPU, and passing observations between processes. Inference times include copying each batch to the GPU and back, but not sending it between an env process and an inference process.
-- **Short runs:** each configuration ran a few seconds. On a laptop, days of sustained load may throttle, which wasn't measured.
+- **A stand-in:** synthetic inputs, guessed feature widths, and one MLP shared by every token type. Per-type MLP weights, as in Jaxcalibur's net (prior-work.md), would add parameters but not FLOPs.
+- **Not timed:**
+  - rollout storage, GAE, and moving rollouts to the GPU;
+  - passing observations between env and inference processes. Inference times include the copy to the GPU and back, but no inter-process transfer.
+- **Short runs:** each configuration ran a few seconds. Days of sustained load on a laptop may throttle; that wasn't measured.
+- **77 tokens only:** convergence and contention were checked at 77 tokens, not 33.
 - **Snapshot inference** is assumed to cost the same as the latest policy's. Holding several snapshots on the GPU adds memory, not time.
 
 ### Proposals
 
 **v0 net size: 5M parameters** (d=256, 5 layers, ~1.1M of them in embeddings and heads), trained and run under bf16 autocast.
 
-- On the M4 Max, games/day falls in proportion to FLOPs, since the learner is the bound: per 5M game, the 3M net plays 1.45× as many and the 9M 0.56×.
-- The #1 bots used 3–8.7M (prior-work.md). Jaxcalibur found smaller nets trained longer beat larger ones, which argues against 9M on a learner-bound machine. NatDex's larger content (species, items, Megas, Z-Moves) mostly adds embedding rows, which cost parameters but almost no FLOPs, so the trunk keeps most of the 5M (3.95M in the stand-in, whose embedding widths are guesses).
-- bf16 over fp32: 12–16% faster, and it tracked fp32 within the seed-to-seed gap. Over fp16: as fast and needs no loss scaling.
-- Fallback: the 3M net, or fewer tokens (53 tokens gives a similar speedup), if a Phase 2 run would pass D9's threshold below.
+- **Cost:** on a learner-bound M4 Max, games/day falls with FLOPs. Per 5M-net game, the 3M net plays ~1.45× as many and the 9M ~0.6×.
+- **Prior bots:** the #1 bots used 3–8.7M parameters (prior-work.md). Jaxcalibur found smaller nets trained longer beat larger ones, which argues against 9M on a learner-bound machine.
+- **NatDex content:** NatDex has more species, items, Megas and Z-Moves, but these mostly add embedding rows. Those cost parameters and almost no FLOPs, so the trunk keeps most of the 5M: 3.95M in the stand-in, whose embedding widths are guesses.
+- **bf16:** 12–16% faster than fp32, and its loss tracked fp32's within the seed-to-seed gap. It is as fast as fp16 and needs no loss scaling.
+- **Fallback:** the 3M net, if a Phase 2 run would pass D9's threshold below.
+- **The token count is the larger lever and isn't part of this proposal.** It needs a planning decision (For integration).
 
-**D9's threshold:** the M4 Max isn't enough when the next planned run needs more than 14 days on it, at the games/day the current pipeline measures. Until Phase 1's walking skeleton and learner measure their own, that is S4's ~1M games/day for the 5M net at 3 epochs, so runs above ~14M games.
+**D9's threshold:** the M4 Max isn't enough when the next planned run needs more than 14 days on it, at the games/day the current pipeline measures.
 
-- Why wall time: the bound is the learner's GPU, so renting buys time, not feasibility. Two weeks keeps a run inside one Showdown re-pin (monthly, plan.md) with room to look at results.
-- What it gives: Phase 2's PPO v0 runs stay on the M4 Max unless they pass ~14M games (plan.md gives no Phase 2 game count). Phase 3's 30–50M games (30–50 days here) are rented, as plan.md already plans.
+- **What that means now:** until Phase 1's walking skeleton and learner measure their own figures, use S4's estimate for the 5M net at bf16 and 3 epochs, at 35-turn games: ~2.05M games/day at 33 tokens and ~0.89M at 77. That makes the threshold about 29M and 12M games.
+- **Why wall time:** the learner's GPU is the bound, so renting buys time, not feasibility. Two weeks fits a run inside one monthly Showdown re-pin (plan.md, Versioning), with room to look at the results.
+- **What it gives:**
+  - Phase 2's PPO v0 runs stay on the M4 Max below that. plan.md gives no Phase 2 game count.
+  - Phase 3's 30–50M games would take 15–24 days at 33 tokens and 34–56 at 77, so Phase 3 is rented at 77 tokens and is borderline at 33.
 
 ### Acceptance checks
 
-- **No CPU fallback:** passed (Other findings), here and in the rerun.
+- **No CPU fallback:** passed (Other findings), in every run and rerun.
 - **Autocast tracks fp32:** passed (Autocast against fp32).
-- **Rerun from a clean checkout:** passed. A fresh clone of 17c2742 with its own `uv sync --locked` ran `bench.py` three times under the lock from 17:37 to 17:53 (load 0.7–5.1). `summarize.py runs/2026-11-25.jsonl runs/2026-11-25-clean-rerun.jsonl` exits 0: all 132 medians within 2.7% of the reported ones.
+- **Rerun from a clean checkout:** passed for both runs.
+  - A fresh clone of 17c2742, with its own `uv sync --locked`, ran `bench.py` three times under the lock, 17:37–17:53, load 0.7–5.1. `summarize.py runs/2026-11-25.jsonl runs/2026-11-25-clean-rerun.jsonl` exits 0: all 132 medians are within 2.7%.
+  - For the 33-token sizes, a fresh clone of a1f9e30 ran 18:37–18:48, load 0.8–2.7. `summarize.py runs/2026-11-25-33tok.jsonl runs/2026-11-25-33tok-clean-rerun.jsonl` exits 0: all 99 medians are within 4.3%.
 
 ## Outputs
 
-Setup: `uv sync --locked` (AGENTS.md, Conventions); no Showdown build is needed. From this folder, with `PYTORCH_ENABLE_MPS_FALLBACK` unset:
+Setup: `uv sync --locked` (AGENTS.md, Conventions); no Showdown build is needed. Run everything from this folder, with `PYTORCH_ENABLE_MPS_FALLBACK` unset.
+
+The benchmark runs, each about 17 minutes for the 77- and 53-token sizes and 11 for the 33-token sizes:
 
 ```bash
-./timed.sh zsh -c 'for i in 1 2 3; do uv run python bench.py runs/<date>.jsonl all || exit 1; done' > runs/<date>.log 2>&1    # ~17 minutes
+./timed.sh zsh -c 'for i in 1 2 3; do uv run python bench.py runs/<date>.jsonl all 2 3M,5M,9M,5M@53 || exit 1; done' > runs/<date>.log 2>&1
 ```
 
 ```bash
-uv run python summarize.py runs/2026-11-25.jsonl                          # the tables and games/day above
+./timed.sh zsh -c 'for i in 1 2 3; do uv run python bench.py runs/<date>-33tok.jsonl all 2 3M@33,5M@33,9M@33 || exit 1; done' > runs/<date>-33tok.log 2>&1
+```
+
+The tables, games/day and env model above:
+
+```bash
+uv run python summarize.py runs/2026-11-25.jsonl,runs/2026-11-25-33tok.jsonl
+```
+
+A rerun check, which exits 0 if every rerun median is within 10% of the reference:
+
+```bash
+uv run python summarize.py runs/2026-11-25.jsonl runs/<rerun>.jsonl
+```
+
+The convergence and contention checks, about 16 minutes:
+
+```bash
+./timed.sh zsh -c 'uv run python converge.py runs/converge.json && uv run python contend.py runs/contend.jsonl 5M bf16 20 3' > runs/checks.log 2>&1
+```
+
+FLOPs per decision, then sizes and parameter counts:
+
+```bash
+uv run python flops.py
 ```
 
 ```bash
-uv run python summarize.py runs/2026-11-25.jsonl runs/<rerun>.jsonl       # exit 0 if every rerun median is within 10%
+uv run python net.py
 ```
+
+`timed.sh` is T02's, with T07 as the lock owner. It takes the timing lock of the repository the current directory is in. To time a separate clone under the shared lock, run it from here with the clone's paths, as the clean reruns did:
 
 ```bash
-./timed.sh zsh -c 'uv run python converge.py runs/converge.json && uv run python contend.py runs/contend.jsonl 5M bf16 20 3' > runs/checks.log 2>&1    # ~16 minutes
+./timed.sh zsh -c "cd <clone>/tasks/T07-mps-throughput && for i in 1 2 3; do uv run python bench.py rerun.jsonl all || exit 1; done"
 ```
-
-```bash
-uv run python flops.py      # FLOPs per decision
-```
-
-```bash
-uv run python net.py        # sizes and parameter counts
-```
-
-`timed.sh` is T02's, with T07 as the lock owner: it takes the timing lock of the repository the current directory is in. To time a separate clone under the shared lock, run it from here with the clone's paths, as the clean rerun did: `./timed.sh zsh -c "cd <clone>/tasks/T07-mps-throughput && for i in 1 2 3; do uv run python bench.py rerun.jsonl all || exit 1; done"`.
 
 | File | What it is |
 |---|---|
-| `net.py` | The stand-in net, its sizes, synthetic observations and rollouts, the PPO loss and one training step (`Trainer`) |
-| `bench.py` | `bench.py <out.jsonl> [mps\|cpu\|all] [seconds=2]`: one run, appending a JSON line per configuration with samples/s and the load averages before and after |
-| `summarize.py` | Median (min–max) tables and games/day from one or more runs (comma-separated), or a 10% rerun check against a second file |
-| `converge.py` | Autocast against fp32 over 300 steps; `runs/converge.json` holds every loss curve |
+| `net.py` | The stand-in net, its sizes and token layouts, synthetic observations and rollouts, the PPO loss, and one training step (`Trainer`) |
+| `bench.py` | `bench.py <out.jsonl> [mps\|cpu\|all] [seconds=2] [sizes]`: one run. It appends a JSON line per configuration with samples/s and the load averages before and after |
+| `summarize.py` | Median (min–max) tables, games/day and the env model, from one or more runs (comma-separated). Given a second file, it runs the 10% rerun check against it instead |
+| `converge.py` | Autocast against fp32 over 300 steps. `runs/converge.json` holds every loss curve |
 | `contend.py` | Inference and training sharing the GPU, with and without 13 CPU-spinning processes |
-| `flops.py` | FLOPs per decision from `FlopCounterMode` |
-| `runs/2026-11-25.jsonl`, `.log` | The three reported runs |
-| `runs/2026-11-25-clean-rerun.jsonl`, `.log` | The three runs from a fresh clone (Acceptance checks) |
+| `flops.py` | FLOPs per decision, from `FlopCounterMode` |
+| `runs/2026-11-25.jsonl`, `.log` | The three reported runs for the 77- and 53-token sizes |
+| `runs/2026-11-25-33tok.jsonl`, `.log` | The three reported runs for the 33-token sizes. The `.log` also covers their clean rerun |
+| `runs/2026-11-25-clean-rerun.jsonl`, `runs/2026-11-25-33tok-clean-rerun.jsonl` | The runs from fresh clones (Acceptance checks) |
 | `runs/converge.json`, `runs/contend.jsonl`, `runs/checks.log` | The autocast and contention checks |
 
 ## For integration
 
-Proposed edits. The two proposals need the user's OK first. The Compute and D7 edits record measurements; their ~890 decisions/s is the proposed 5M net at bf16 and 3 epochs, so reword them if the user picks another size. `<date>` is the date of the user's OK.
+**Ask the user (Needs you):** plan.md's Network v0 lists tokens that come to 33, while its Size line says "about 45–80 tokens". Which is v0's? It decides the learner's speed (about 2.3× between 33 and 77) and how close D7's builder rule is.
+
+The edits below record measurements. Their 5M figures are for the proposed size at bf16 and 3 epochs, so reword them if the user picks another size. The two proposals need the user's OK first. `<date>` is the date of that OK.
 
 **plan.md, Compute:** replace the M4 Max bullet and its three sub-bullets with:
 
 ```markdown
-- **M4 Max** (S4: T07, 2026-11-25, torch 2.15.0, M4 Max with a 32-core GPU and 36 GB), on a stand-in for Network v0 with 77 tokens:
-  - The 5M net (3.95M of it in the trunk) costs 1.96 GFLOP per decision per PPO epoch. Under bf16 autocast it trains at ~2,160 decisions/s per epoch at minibatch 1024 (1,940 in fp32) and infers at ~11,300/s at batch 256 on MPS: ~4.2 and ~7.3 TFLOP/s. The 3M net is ~1.45× as fast and the 9M ~0.56×. bf16 tracked fp32; fp16 is no faster and needs loss scaling.
-  - With inference on MPS for every decision and 75% of decisions trained (half of games are against frozen snapshots: Training v0, League), the 5M net at 3 PPO epochs gives the learner ~890 decisions/s. That is ~0.7M games/day at random games' length and ~1.0–1.3M at T04's human lengths. Inference and training sharing the GPU cost the sum of their times, and a fully loaded CPU cut that by ~3%.
-  - The learner bounds the M4 Max. Sim plus the cached 288 calcs (~0.81 ms per decision per process, T02 and T06) give ~16k env decisions/s on 13 processes, ~18× the learner. Python parsing and transfer would have to cost ~14 ms per decision per process to change that, and ~6.5 ms to trip D7's 2× builder rule.
+- **M4 Max** (S4: T07, 2026-11-25, torch 2.15.0, M4 Max with a 32-core GPU and 36 GB). Measured on a stand-in for Network v0 at 33 tokens (the token list above as written) and at 77 (adding every mon's moves as tokens):
+  - The learner's cost tracks FLOPs per decision, which scale with net size and token count. The 5M net (3.95M of it in the trunk) costs 0.83 GFLOP per decision per PPO epoch at 33 tokens and 1.96 at 77.
+  - Under bf16 autocast, the 5M net trains at ~5,050 decisions/s per epoch at 33 tokens and ~2,160 at 77 (minibatch 1024). It infers at ~23,400/s and ~11,300/s on MPS (batch 256), and training sustains ~4.2 TFLOP/s. The 3M net is ~1.45× as fast and the 9M ~0.6×. bf16 is 12–16% faster than fp32 and tracked it. fp16 is no faster and needs loss scaling.
+  - The learner model: inference on MPS for every decision, 75% of decisions trained (half of games are against frozen snapshots: Training v0, League), and 7% lost to a loaded CPU. On it, the 5M net at 3 PPO epochs gives an estimated ~1,900 learner decisions/s at 33 tokens and ~820 at 77. That is ~2.0–2.9M and ~0.9–1.2M games/day at T04's human lengths.
+  - The learner bounds the M4 Max, but at 33 tokens by less than D7's builder rule needs. The env's cost is the sim, slowed by interleaved calcs (0.38 ms per decision per process, T02 and T06), plus the cached 288 calcs (0.53 ms, T06, one process). That gives an estimated ~13k env decisions/s on 12 processes: ~7× the 33-token learner and ~16× the 77-token one.
+  - Python parsing and transfer are unmeasured until Phase 1's walking skeleton. They would trip D7's 2× builder rule at ~2.2 ms per decision per process at 33 tokens (~6.4 ms at 77), and make the env the bound at ~5.4 ms (~13.6 ms).
 ```
 
 **decisions.md, D7** (v0 carries all 288 calcs): replace "On the M4 Max the learner likely bounds throughput (planning estimate, ~500–700 decisions/s: plan.md, Compute)" with:
 
 ```markdown
-On the M4 Max the learner bounds throughput: S4 measured ~890 learner decisions/s (5M net, bf16, 3 epochs) against ~16k env decisions/s from the sim and cached calcs (plan.md, Compute)
+On the M4 Max the learner bounds throughput: S4's timings give an estimated ~1,900 learner decisions/s at 33 tokens and ~820 at 77 (5M net, bf16, 3 epochs), against ~13k env decisions/s from the sim and cached calcs (plan.md, Compute)
 ```
 
-**If the user approves the net size, plan.md, Network v0:** its last sentence is a measurement, not part of the size decision. Replace "- **Size:** 3–9M params, pre-RMSNorm, about 45–80 tokens." with:
+**If the user approves the net size, plan.md, Network v0:** replace "- **Size:** 3–9M params, pre-RMSNorm, about 45–80 tokens." with the line below. Put the user's answer on the token count in place of `<tokens>`.
 
 ```markdown
-- **Size:** 5M params (d=256, 5 layers; ~1.1M of them in embeddings, input projections and heads), pre-RMSNorm, about 45–80 tokens, trained and run under bf16 autocast (S4: T07). On the M4 Max throughput tracks FLOPs, so tokens cost as much as size: 53 tokens instead of 77 train 1.35× as fast.
+- **Size:** 5M params (d=256, 5 layers; ~1.1M of them in embeddings, input projections and heads), pre-RMSNorm, <tokens>, trained and run under bf16 autocast (S4: T07).
 ```
 
 **If the user approves the threshold, decisions.md, D9:** replace "**Open:** the threshold for "isn't enough". S4 proposes one (plan.md, Phase 0)." with:
 
 ```markdown
-**Threshold (decided <date>):** the M4 Max isn't enough when the next planned run needs more than 14 days on it, at the games/day the current pipeline measures. Until Phase 1 measures its own, that is S4's ~1M games/day for the 5M net at 3 epochs (plan.md, Compute), so runs above ~14M games. Phase 2 runs below that stay on the M4 Max, and Phase 3's 30–50M games are rented.
+**Threshold (decided <date>):** the M4 Max isn't enough when the next planned run needs more than 14 days on it, at the games/day the current pipeline measures. Until Phase 1 measures its own, S4's estimate for the 5M net at 3 epochs and 35-turn games is ~2M games/day at 33 tokens and ~0.9M at 77 (plan.md, Compute). So the threshold is runs above ~29M or ~12M games.
 ```

@@ -10,12 +10,17 @@ import statistics
 import sys
 from collections import defaultdict
 
-# Learner model (README, Result: games/day).
+# Learner model (README, Result: Learner and env).
 TRAINED = 0.75  # half of games vs the latest policy (both sides trained), half vs frozen snapshots (one side)
 EPOCHS = (2, 3, 4)
 INFER_BATCH, TRAIN_BATCH = 256, 1024
+CPU_LOAD = 0.93  # contend.py: training alone kept 0.93 of its rate with 13 processes spinning on the CPU
 DECISIONS_PER_TURN = 2.29  # T02's random games
 GAME_TURNS = {"T02 random games": 48.9, "T04 human, 25 turns": 25, "T04 human, 35 turns": 35}
+# Env CPU per decision per process, with MPS inference (README, Env CPU budget).
+SIM_MS = 0.28 * 0.230 / 0.168  # T02 at 14 processes, slowed by interleaved calcs as T06 measured
+CALC_MS = 0.534  # T06: the 288 set, cached, one process
+ENV_PROCS = 12  # 14 cores less one for the learner and one for the inference server
 
 
 def load(paths):
@@ -57,18 +62,24 @@ def tables(g):
 
 def games_per_day(g):
     print(f"### Learner on MPS: inference at batch {INFER_BATCH}, training at minibatch {TRAIN_BATCH}, "
-          f"{TRAINED:.0%} of decisions trained\n")
-    print("| Size | dtype | Inference ms/decision | Training ms/decision/epoch | Epochs | Learner decisions/s | "
+          f"{TRAINED:.0%} of decisions trained, x{CPU_LOAD} for a loaded CPU; env on {ENV_PROCS} processes at "
+          f"{SIM_MS + CALC_MS:.2f} ms per decision\n")
+    print("| Size | dtype | Epochs | Learner decisions/s | "
           + " | ".join(f"Games/day, {k} ({v * DECISIONS_PER_TURN:.0f} decisions)" for k, v in GAME_TURNS.items())
-          + " |\n|---|---|---|---|---|---|" + "---|" * len(GAME_TURNS))
-    for s in ("3M", "5M", "9M"):
+          + " | Env / learner | Parsing + transfer ms to bound | ... to trip D7's 2x rule |\n|---|---|---|---|"
+          + "---|" * (len(GAME_TURNS) + 3))
+    sizes = list(dict.fromkeys(k[1] for k in g if k[0] == "mps_train"))
+    for s in sizes:
         for d in ("fp32", "bf16"):
             inf = 1e3 / med(g[("mps_infer", s, d, INFER_BATCH, None)])
             tr = 1e3 / med(g[("mps_train", s, d, TRAIN_BATCH, None)])
             for e in EPOCHS:
-                rate = 1e3 / (inf + TRAINED * e * tr)
+                rate = CPU_LOAD * 1e3 / (inf + TRAINED * e * tr)
                 days = " | ".join(f"{rate * 86400 / (t * DECISIONS_PER_TURN) / 1e6:.2f}M" for t in GAME_TURNS.values())
-                print(f"| {s} | {d} | {inf:.3f} | {tr:.3f} | {e} | {rate:,.0f} | {days} |")
+                env = ENV_PROCS * 1e3 / (SIM_MS + CALC_MS)
+                bound = ENV_PROCS * 1e3 / rate - SIM_MS - CALC_MS
+                rule = ENV_PROCS * 1e3 / (2 * rate) - SIM_MS - CALC_MS
+                print(f"| {s} | {d} | {e} | {rate:,.0f} | {days} | {env / rate:.1f}x | {bound:.1f} | {rule:.1f} |")
     print()
 
 
