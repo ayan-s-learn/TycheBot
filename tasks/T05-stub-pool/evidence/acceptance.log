@@ -1,0 +1,52 @@
+== commit eae2f40, Node v24.22.3
+== type check
+ok
+== pool validates
+20/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== pool matches the source snapshot
+25 sample teams, 0 failed validation, 20 taken
+ok
+== pool contents
+20 teams, 20 distinct; most species two teams share: 4
+Species (40 distinct, 120 sets): Zamazenta 12, Ogerpon-Wellspring 8, Iron Treads 7, Slowking-Galar 7, Zapdos 7, Garchomp 5, Tapu Lele 5, Gholdengo 4, Great Tusk 4, Kingambit 4, Kyurem 4, Pecharunt 4, Terapagos 4, Alomomola 3, Diancie 3, Landorus-Therian 3, Samurott-Hisui 3, Ting-Lu 3, Tornadus-Therian 3, Urshifu-Rapid-Strike 3, Corviknight 2, Dragonite 2, Ferrothorn 2, Latios 2, Ceruledge 1, Cinderace 1, Cresselia 1, Hatterene 1, Heatran 1, Lopunny 1, Mawile 1, Moltres 1, Moltres-Galar 1, Ninetales 1, Raging Bolt 1, Slowbro 1, Tyranitar 1, Venusaur 1, Volcarona 1, Weavile 1
+Mega Stones (8; 12 teams with 0, 8 teams with 1): Diancite 3, Latiosite 2, Lopunnite 1, Mawilite 1, Tyranitarite 1
+Z-Crystals (19; 1 teams with 0, 19 teams with 1): Dragonium Z 4, Darkinium Z 3, Fightinium Z 3, Psychium Z 3, Flyinium Z 2, Ghostium Z 2, Groundium Z 1, Rockium Z 1
+Hidden at Team Preview (15): Zamazenta-* 12, Urshifu-* 3
+== a banned Pokemon is rejected
+FAIL smogon-sample-06 (line 7):
+  Mewtwo is tagged ND Uber, which is banned.
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== a set the validator would silently repair is rejected
+FAIL smogon-sample-06 (line 7):
+  Terapagos: the validator changes ability "Wonder Guard" to "Tera Shift"
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== a truncated team is rejected
+FAIL smogon-sample-06 (line 7):
+  a pool team has 6 Pokemon, this one has 5
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== a malformed field is rejected
+FAIL smogon-sample-06 (line 7):
+  "team" is not a canonical packed team
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== a miscased Hidden Power type, which crashes the sim, is rejected
+FAIL smogon-sample-06 (line 7):
+  Latios: the validator changes hpType "ice" to "Ice"
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== a nickname the validator would clean is rejected
+FAIL smogon-sample-06 (line 7):
+  Zamazenta: the validator changes name "x\nwin" to "x win"
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== other silent edits are rejected
+FAIL smogon-sample-06 (line 7):
+  Mimikyu-Busted: the validator changes species "Mimikyu-Busted" to "Mimikyu"
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+FAIL smogon-sample-06 (line 7):
+  Latios: the validator changes moves ["Draco Meteor","","Psyshock"] to ["Draco Meteor","Psyshock"]
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+FAIL smogon-sample-06 (line 7):
+  Latios: the validator changes gender "F" to "M"
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+FAIL smogon-sample-06 (line 7):
+  Latios: the validator changes teraType "Fire" to undefined
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== acceptance checks passed
