@@ -24,30 +24,30 @@
 ## Progress
 
 ```text
-State: active
-Verified: nothing yet
-Pending: pool, validate script, area notes, acceptance checks
-Next: set up vendor/, then fetch the sample teams and validate them at the pin
+State: done
+Verified: all acceptance checks (evidence/acceptance.log, code at e4269e1, Showdown 29f2d99).
+Pending: none
+Next: a planning session reviews the PR.
 ```
 
 ## Result
 
-All 25 of Smogon's sample teams validate at Showdown 29f2d99, so the pool is entries 0–19 of them, in file order. No stop condition was hit.
+All 25 of Smogon's sample teams validate at Showdown 29f2d99, so the pool is entries 0–19 of them, in file order.
 
-| Source (D4 order) | Teams checked | Failed validation | In the pool |
+| Source | Teams checked | Failed validation | In the pool |
 |---|---|---|---|
 | Smogon NatDex sample teams | 25 | 0 | 20 |
 | Tour pastes | not needed | – | 0 |
-
-Analysis sets are single sets, not teams, so none were used.
 
 Source: `https://pkmn.github.io/smogon/data/teams/gen9nationaldex.json`, fetched 2026-11-24, 36,674 bytes, SHA-256 `f35934eb5238b3069139fa6a67de999e654873e5da4f8f5142b84446c60a1fe1`, saved as `evidence/sample-teams.json`.
 
 Acceptance checks (`acceptance.sh`, Node 24.22.3; log in `evidence/acceptance.log`):
 
-- The pool validates: 20/20, 20 distinct. The `validate-team gen9nationaldex` CLI also accepts each packed team (command in Outputs).
+- The pool validates: 20/20, 20 distinct.
 - With Mewtwo swapped into the team on line 7, the validator exits 1 with `FAIL smogon-sample-06 (line 7)` and `Mewtwo is tagged ND Uber, which is banned.`
 - Mega Stones, Z-Crystals and hidden formes are all present (below).
+
+Separately, the `validate-team gen9nationaldex` CLI accepts each of the 20 packed teams (command in Outputs).
 
 ### Counts
 
@@ -60,9 +60,9 @@ From `node tasks/T05-stub-pool/report.ts data/pool/v0/teams.jsonl`:
 
 ### Limits
 
-- Entries 20–24 are left out. They are the only sample teams with Blissey, Clodsire, Gliscor or Toxapex (44 species across all 25), so Phase 1's growth to ~50 has them available.
-- The pool is narrower than the ladder in places: 19 of 20 teams carry a Z-Crystal, against plan.md's ~0.5 per team (research agent's count, not checked here), and Zamazenta is on 12.
-- Six pairs of teams share 4 species, the most any pair shares. D4's deferred group split would hold such teams out together.
+- Entries 20–24 are left out. Blissey, Clodsire, Gliscor and Toxapex are in no pool team: of all 25 samples, only entries 23 and 24 have any of them.
+- The pool is skewed: 19 of 20 teams carry a Z-Crystal, against plan.md's ~0.5 per team (research agent's count, not checked here), and Zamazenta is on 12, against its 15.2% usage at the 1760 cutoff (plan.md).
+- Two teams share at most 4 species.
 - Teams were validated and taken to Team Preview. No full battles were played with them.
 
 ## Outputs
@@ -87,9 +87,6 @@ ok=0; while IFS= read -r l; do node -p 'JSON.parse(process.argv[1]).team' "$l" |
 
 | File | What it is |
 |---|---|
-| `data/pool/v0/teams.jsonl` | The stub pool |
-| `scripts/validate-pool.ts` | Validates a pool file at the pin |
-| `docs/areas/team-pool.md` | Format, command, contents |
 | `acceptance.sh`, `tsconfig.json` | Type check and the brief's acceptance checks |
 | `build-pool.ts` | Packs the snapshot's sets, checks that unpacking returns every field, validates, writes the pool |
 | `report.ts` | Counts, and the contents criteria |
