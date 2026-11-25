@@ -22,6 +22,16 @@
 ## Progress
 
 ```text
+2026-11-25 (2)
+State: done
+Verified: all acceptance checks, with the accepted exception: `stats.py` exits 0 on 6447229. A
+  separate Sonnet agent reviewed the task and each fix commit up to 6447229, and found it ready to
+  merge. This entry and one parenthetical in For integration 1 came after that.
+Pending: nothing.
+Next: planning session review; merging needs the user's OK.
+```
+
+```text
 2026-11-25
 State: done
 Verified: all acceptance checks, with the accepted exception: `uv run tasks/T04-replay-corpus/stats.py`
@@ -176,7 +186,7 @@ Limits:
 
 1. plan.md, Compute: add this bullet before **M4 Max:**.
 
-   > - **Turns per game** (T04: 1,000 public replays of human games, uploaded 2026-11-22 to 11-25 UTC): mean 24.6, median 22, p90 38, including 35 custom-rule games (without them: mean 24.9, p90 39). 42% ended by forfeit or inactivity, so these are too low for games played to the end. A Kaplan-Meier correction gives median 27, p90 56 and mean 35.0 counted up to turn 137, likely too high: counting the nearly decided cut games as ended gives 26, 47 and 30.8. Games not ended by forfeit or inactivity: mean 26.2, median 24, p90 39; the ladder ones among them (403 of 794 ladder games): mean 25.7, median 23, p90 38. Self-play lengths are unmeasured.
+   > - **Turns per game** (T04: 1,000 public replays of human games, uploaded 2026-11-22 to 11-25 UTC): mean 24.6, median 22, p90 38, including 35 custom-rule games (without them: mean 24.9, p90 39). 42% ended by forfeit or inactivity, so these are too low for games played to the end. A Kaplan-Meier correction gives median 27, p90 56 and mean 35.0 counted up to turn 137, likely too high: counting the nearly decided cut games (a side down to one Pokémon or none) as ended gives 26, 47 and 30.8. Games not ended by forfeit or inactivity: mean 26.2, median 24, p90 39; the ladder ones among them (403 of 794 ladder games): mean 25.7, median 23, p90 38. Self-play lengths are unmeasured.
 
 2. plan.md, Training v0: T04's lengths give no reason to change the starting cap of 300, and can't confirm it. Replace the "Turn cap" line, keeping its indent under **Reward:**, with:
 
