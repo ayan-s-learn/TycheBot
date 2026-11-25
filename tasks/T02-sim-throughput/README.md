@@ -25,6 +25,14 @@
 
 ## Progress
 
+```text
+2026-11-24
+State: active
+Verified: nothing yet
+Pending: all acceptance checks
+Next: set up the worktree, then build the recorder and its sample (Megas, Z-Moves, Illusion, hidden formes)
+```
+
 ## Result
 
 ## Outputs
