@@ -93,7 +93,7 @@ Five runs of `node bench.ts 200 20`, back to back in one process each, under the
 - **Where calc time goes:** in one CPU profile of a 10-game run (`node --cpu-prof bench.ts 10 3`, output not kept), `calculate` was 71% of the process's time, and `Pokemon.clone`, which `calculate` runs on both mons for every call, 36%. So roughly half of the time inside `calculate` went to @smogon/calc copying its inputs. Building our own calc objects was 4% of the process.
 - **Hit rate under D7's prior sets:** these runs use true sets for both sides, so it may differ there. A player's own mons keep their true sets. An opposing mon's prior set changes whenever a reveal changes which library set is consistent, which invalidates that mon's entries, so the per-game hit rate may be somewhat lower early in a game and about the same once sets are revealed. Prior sets are shared across games, so a worker-wide cache could hit across games, unlike this one. Not measured: the set library doesn't exist yet.
 - **Reruns** (acceptance check 1):
-  - Before the sim-alone pass existed, the same benchmark ran 5 times at load 14.7 falling to 4.1 (`runs/2026-11-24.jsonl`, summarized by `summarize.ts` at 89d7a24): sim 0.243 (0.236–0.256), µs per calc 15.5 and 16.2, the 48 cached at 0.261 ms per decision, 51% of sim + calc. The calc rows above are 1–4% below those runs, at lower load.
+  - Before the sim-alone pass existed, the same benchmark ran 5 times at load 14.7 falling to 4.1 (`runs/2026-11-24.jsonl`, summarized by `summarize.ts` at 89d7a24): sim 0.243 (0.236–0.256), µs per calc 15.5 and 16.2, the 48 cached at 0.261 ms per decision, 51% of sim + calc. The calc rows above are ~3% below those runs, at lower load.
   - Clean checkout: a fresh clone of 719b754, sharing this worktree's `vendor/` and `node_modules/` (same pin and lockfile), 3 runs (`runs/2026-11-24-clean-rerun.jsonl`) at load 31.9 falling to 10.3: sim 0.274 (0.273–0.283), µs per calc 15.6 and 16.3, the 48 cached at 0.263 ms, 48.9% of sim + calc. `support.json` was identical.
   - So the timings move with load by up to ~7% (sim) and ~4% (calcs), more than any one set of runs' spread. The clean checkout's run used the bench before its sim-alone pass; the sim-alone runs weren't repeated on a clean checkout.
 
@@ -107,7 +107,7 @@ At full load, T02 measured the sim slowing from 0.21 to 0.38–0.43 ms per decis
 
 Two levers:
 
-- The cache key includes current HP, which changes most turns for an active mon. Dropping HP from the key raises the 48's hit rate from 26.3% to 59.4% (`node hitrate.ts 100`, key counts only). Most damage results don't depend on current HP, but some do (Eruption, Multiscale, Nature's Madness), so a real key would keep HP for those. The review agent's estimate for such a key, not reproduced here, is about 0.17 ms per decision for the 48 cached, which is still ~40–50% of sim + calc. So this lever alone doesn't reach 30%.
+- The cache key includes current HP, which changes most turns for an active mon. Dropping HP from the key raises the 48's hit rate from 26.3% to 59.4% (`node hitrate.ts 100`, key counts only). Most damage results don't depend on current HP, but some do (Eruption, Multiscale, Nature's Madness), so a real key would keep HP for those. A bound from the measured numbers: the cached 48 cost 0.254 ms per decision with 74% misses at ~15.7 µs each (0.235 ms), so ~0.02 ms is keys and lookups. With the no-HP hit rate, misses would cost 0.406 × 20.2 × 15.7 µs ≈ 0.129 ms, so ≥0.15 ms in all, still ≥39% of sim + calc next to calcs (47% against the sim alone). A key that keeps HP where it matters hits less often than the no-HP key, so its share is higher still. This lever alone doesn't reach 30%.
 - The calc's per-call copying of its inputs: roughly half of `calculate` in the profile above (34% of process time in the review's own profile). Avoiding it needs a patched or forked @smogon/calc. Not tested.
 
 ### NatDex support
@@ -126,10 +126,10 @@ Two levers:
 | The defender used Roost this turn and lost its Flying type; the calc has no input for that | 7 |
 | Pursuit on a target switching out: the calc supports this (`isSwitching`), but this harness didn't set it. Not a calc gap | 1 |
 
-What "exact" shows (the review agent's counts on the same 100 games, not reproduced here):
-- In 35% of hits the calc's 16 rolls cover every integer in their range, so for those an exact roll is the same as being in range. A wrong modifier of ×1.10 would still pass 35% of the exact hits, and one of ×1.2 3%.
-- Among hits with ≥14 distinct rolls, the sim's damage sits uniformly across the rolls, so no systematic modifier bias shows.
-- Field coverage is thin: weather was Snow (252 hits), Sun (32) and Sand (29), with no Rain; terrain was Psychic only (372); screens 50; Protosynthesis/Quark Drive 17.
+What "exact" shows (`support.json`, `range.power` and `range.fieldCoverage`):
+- In 1,270 hits (35%) the calc's rolls cover every integer in their range, so for those an exact roll is the same as being in range. On average 72% of the integers in a range are rolls.
+- If the calc's rolls were all off by a constant factor, 1,897 of the 3,554 exact hits (53%) would still pass at ×1.05, 1,258 (35%) at ×1.1 and 121 (3%) at ×1.2. So the check rules out errors of ~20% or more on its own, and smaller ones only in aggregate.
+- Field coverage is thin: weather was Snow (252 hits), Sun (32) and Sand (29), with no Rain; terrain was Psychic only (372); screens 50; Protosynthesis/Quark Drive 17; `abilityOn` 19.
 
 Skipped: 179 crits, 49 multi-hit moves, 549 calls where `getDamage` returned no number (Showdown's code comments: immunity, failure or no damage), and 42 Future Sight hits, whose user wasn't active.
 

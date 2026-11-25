@@ -2,7 +2,13 @@
 // Usage: node hitrate.ts [games=100]
 import { gameIds, loadPool, play } from './sim.ts';
 import { readMon, readField } from './calcs.ts';
-const variants = { full: (m: any) => m.key, noHP: (m: any) => m.key.split(',').filter((_: string, i: number) => i !== 24).join(',') };
+const HP = 24; // readMon's key field for current HP
+const noHP = (m: any) => {
+	const fields = m.key.split(',');
+	if (fields[HP] !== String(m.options.curHP)) throw new Error(`key field ${HP} isn't current HP: ${m.key}`);
+	return fields.filter((_: string, i: number) => i !== HP).join(',');
+};
+const variants = { full: (m: any) => m.key, noHP };
 const stats: any = { full: [0, 0], noHP: [0, 0] };
 let caches: any;
 play(gameIds(0, Number(process.argv[2] ?? 100), loadPool()), {

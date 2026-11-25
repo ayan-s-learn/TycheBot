@@ -124,6 +124,28 @@
    "exactMega": 377,
    "exactPast": 1412
   },
+  "power": {
+   "contiguous": 1270,
+   "meanRollDensity": 0.719,
+   "exactStillPassingIfScaled": {
+    "1.05": 1897,
+    "1.1": 1258,
+    "1.2": 121
+   }
+  },
+  "fieldCoverage": {
+   "weather": {
+    "Snow": 252,
+    "Sand": 29,
+    "Sun": 32
+   },
+   "terrain": {
+    "Psychic": 372
+   },
+   "screens": 50,
+   "boostedStat": 17,
+   "abilityOn": 19
+  },
   "causes": {
    "no half-HP rule in the calc for this move (it has one for Nature's Madness), so it returns 0": 25,
    "the defender used Roost this turn and lost its Flying type; the calc has no input for that": 7,

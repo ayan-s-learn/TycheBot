@@ -240,11 +240,39 @@ const coverage = {
 	exactMega: hits.filter(h => (isMega(h.attacker) || isMega(h.defender)) && h.exact).length,
 	exactPast: hits.filter(h => past(h) && h.exact).length,
 };
-out.range = { games, hits: hits.length, coverage, causes, exact: hits.length - misses.length, inRange: hits.filter(h => h.inRange).length,
+// How much an exact-roll match shows: the share of in-range integers that are rolls, and how many exact
+// hits would still pass if the calc were off by a constant factor (rolls scaled and floored).
+const distinct = (h: Hit) => new Set(h.rolls).size;
+const width = (h: Hit) => h.rolls[h.rolls.length - 1] - h.rolls[0] + 1;
+const exactHits = hits.filter(h => h.exact);
+const power = {
+	contiguous: hits.filter(h => distinct(h) === width(h)).length,
+	meanRollDensity: +(hits.reduce((a, h) => a + distinct(h) / width(h), 0) / hits.length).toFixed(3),
+	exactStillPassingIfScaled: Object.fromEntries([1.05, 1.1, 1.2].map(f =>
+		[f, exactHits.filter(h => h.rolls.map(r => Math.floor(r * f)).includes(h.sim)).length])),
+};
+const tally = (f: (h: Hit) => string | undefined) => {
+	const t: { [k: string]: number } = {};
+	for (const h of hits) {
+		const k = f(h);
+		if (k) t[k] = (t[k] ?? 0) + 1;
+	}
+	return t;
+};
+const fieldCoverage = {
+	weather: tally(h => h.field.weather), terrain: tally(h => h.field.terrain),
+	screens: hits.filter(h => h.field.defenderSide.isReflect || h.field.defenderSide.isLightScreen ||
+		h.field.defenderSide.isAuroraVeil).length,
+	boostedStat: hits.filter(h => h.atk.boostedStat || h.def.boostedStat).length,
+	abilityOn: hits.filter(h => h.atk.abilityOn || h.def.abilityOn).length,
+};
+out.range = { games, hits: hits.length, coverage, power, fieldCoverage, causes, exact: hits.length - misses.length, inRange: hits.filter(h => h.inRange).length,
 	skipped, mismatches: misses };
 log(`range check: ${games} games, ${hits.length} hits, ${hits.length - misses.length} exact roll, ` +
 	`${out.range.inRange} in range, skipped ${JSON.stringify(skipped)}`);
 log('hits with a Z-Move, a Mega, Past content (and exact):', coverage);
+log('exact-roll power:', power);
+log('field coverage (hits):', fieldCoverage);
 log(causes);
 for (const m of misses) {
 	log(`  g${m.game} t${m.turn} ${m.attacker} ${m.move}${m.z ? ' (Z)' : ''} -> ${m.defender}: sim ${m.sim}, ` +
