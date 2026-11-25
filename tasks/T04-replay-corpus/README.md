@@ -22,6 +22,15 @@
 ## Progress
 
 ```text
+2026-11-24 (3)
+State: done
+Verified: all acceptance checks, with the exception the user accepted on 2026-11-24 (Result):
+  `uv run tasks/T04-replay-corpus/stats.py` exits 0 on the data committed at 79f37d0, Python 3.14.
+Pending: nothing.
+Next: planning session review.
+```
+
+```text
 2026-11-24 (2)
 State: blocked (a ruling on 20 ladder games without rating lines)
 Verified: every other acceptance check, `uv run tasks/T04-replay-corpus/stats.py` on the data
@@ -30,7 +39,6 @@ Pending: "In rated games, `|raw|` rating lines follow `|win|`" fails for 20 of 7
   (Result), so stats.py exits 1.
 Next: the user or planning session rules. Accept them: make stats.py report them as known and set
   State done. Replace them: drop such games in fetch.py and rerun it with a cache directory.
-Handoff: open
 ```
 
 ```text
@@ -46,12 +54,13 @@ Next: probe search.json paging, filters and fields, then write the fetch script
 1,000 public `gen9nationaldex` replays uploaded 2026-11-22 07:04 to 11-25 01:30 UTC, the newest at
 fetch time, and a separate 100 rated ≥1500. Figures come from `stats.py`.
 
-**One acceptance check fails.** 20 of the 794 ladder games have a result but no rating lines and a
-null rating. The likely cause, from Showdown's code at the pin: a replay saved during a battle is
-uploaded again when it ends, before the ladder update has added the rating
-(`server/room-battle.ts`). 17 of the 20 were uploaded before their log's last timestamp. They are
-finished games and are still in the corpus. Recommendation: accept them. Replacing them would drop
-ladder games because of how they were saved, and these run longer (mean 32.5 turns).
+All acceptance checks pass, with one exception the user accepted on 2026-11-24: 20 of the 794 ladder
+games have a result but no rating lines and a null rating, so "In rated games, `|raw|` rating lines
+follow `|win|`" holds only for games with a rating. The likely cause, from Showdown's code at the
+pin: a replay saved during a battle is uploaded again when it ends, before the ladder update has
+added the rating (`server/room-battle.ts`). 17 of the 20 were uploaded before their log's last
+timestamp. They are finished games and stay in the corpus: replacing them would drop ladder games
+because of how they were saved, and these run longer (mean 32.5 turns).
 
 - **Turns** are the number on the log's last `|turn|` line. p90 interpolates linearly.
 - **Rating** is the lower of the two players' ratings after the game (`server/ladders-remote.ts` and

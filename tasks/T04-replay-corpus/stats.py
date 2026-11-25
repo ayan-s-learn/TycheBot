@@ -108,13 +108,16 @@ def check_games(name, games):
     check(len({g["id"] for g in games}) == len(games), f"{len(games)} replays, all ids distinct")
     check(all(g["formatid"] == FORMAT for g in games), f"every formatid is {FORMAT}")
     check(all(g["results"] == 1 for g in games), "every log has exactly one |win| or |tie line")
-    rated = [g for g in games if g["rating"] is not None or g["kind"] == "ladder"]
+    ladder = [g for g in games if g["rating"] is not None or g["kind"] == "ladder"]
+    # Accepted by the user on 2026-11-24 (Result): ladder games with neither a rating nor rating lines.
+    unscored = [g for g in ladder if g["rating"] is None and not g["new_ratings"]]
+    rated = [g for g in ladder if g not in unscored]
     bad = [g["id"] for g in rated if not g["rating_lines_ok"]]
-    check(not bad, f"{len(rated)} ladder games: |raw| rating lines follow the result "
-                   f"({len(bad)} without them {bad[:5]})")
-    if bad:
-        early = sum(g["uploadtime"] < g["last_timestamp"] for g in games if g["id"] in bad)
-        print(f"info  of those, uploaded before the log's last |t:| timestamp: {early}")
+    check(not bad, f"{len(rated)} rated games: |raw| rating lines follow the result {bad[:10]}")
+    if unscored:
+        early = sum(g["uploadtime"] < g["last_timestamp"] for g in unscored)
+        print(f"info  accepted exception: {len(unscored)} ladder games have no rating and no rating lines; "
+              f"{early} were uploaded before the log's last |t:| timestamp")
     check(not any(g["chat"] for g in games), "no |c| or |c:| lines")
     differ = [g["id"] for g in rated if g["new_ratings"] and g["rating"] != min(g["new_ratings"])]
     print(f"info  rating differs from the lower new rating in the log: {len(differ)} games {differ[:10]}")
