@@ -2,16 +2,25 @@
 // player's chunks (protocol lines, requests, errors), the winner, the turn count and the input log:
 //   - Battle direct and BattleStream, each with 16 battles interleaved and with one at a time;
 //   - Showdown's own split, getPlayerStreams over a BattleStream, as the reference.
-// Usage: node check.ts [games=200] [first=0]   (exit code 1 on any difference)
+// The games are the pool's (gameIds, as the timing runs play), or with `recorder` the recorder's,
+// which include the Illusion team.
+// Usage: node check.ts [games=200] [first=0] [pool|recorder]   (exit code 1 on any difference)
 import { createHash } from 'node:crypto';
 import {
-	direct, stream, freezeClock, gameIds, getPlayerStreams, loadPool, play, BattleStream, Player, SIDES, FORMAT,
+	direct, stream, freezeClock, gameIds, getPlayerStreams, loadPool, play, recorderGame, recorderTeams,
+	BattleStream, Player, SIDES, FORMAT,
 	type Driver, type Ended, type Game,
 } from './sim.ts';
 
-const [games = 200, first = 0] = process.argv.slice(2).map(Number);
+const [games = 200, first = 0] = process.argv.slice(2, 4).map(Number);
+const set = process.argv[4] ?? 'pool';
+if (set !== 'pool' && set !== 'recorder') throw new Error(`the game set must be pool or recorder, not ${set}`);
 freezeClock();
-const pool = loadPool();
+const teams = set === 'recorder' ? recorderTeams() : loadPool();
+function* theGames() {
+	if (set === 'pool') return yield* gameIds(first, teams, games);
+	for (let id = first; id < first + games; id++) yield recorderGame(id, teams);
+}
 const digest = (chunks: string[][], winner: string | undefined, turns: number, inputLog: string[]) =>
 	createHash('sha256').update(JSON.stringify([chunks, winner, turns, inputLog])).digest('hex');
 
@@ -26,7 +35,7 @@ async function run(driver: Driver<any>, concurrency: number, tally = false) {
 		counts.mega += lines.filter(l => l.startsWith('|-mega|')).length / 2; // public: once per player
 		counts.zmove += lines.filter(l => l.startsWith('|-zpower|')).length / 2;
 	};
-	const stats = await play(driver, gameIds(first, pool, games), { concurrency, onEnd });
+	const stats = await play(driver, theGames(), { concurrency, onEnd });
 	if (tally) Object.assign(counts, { turns: stats.turns, decisions: stats.decisions, invalid: stats.invalid });
 	return out;
 }
@@ -63,7 +72,7 @@ const variants: [string, Map<number, string>][] = [
 	['stream, 1 at a time', await run(stream, 1)],
 ];
 const ref = new Map<number, string>();
-for (const game of gameIds(first, pool, games)) ref.set(game.id, await reference(game));
+for (const game of theGames()) ref.set(game.id, await reference(game));
 variants.push(['getPlayerStreams', ref]);
 
 let failures = 0;
@@ -73,7 +82,7 @@ for (const [label, result] of variants) {
 	console.log(`${label}: ${result.size} games, ${differ.length ? `differ from direct in ${differ.join(', ')}` :
 		'all match direct, 16 interleaved'}`);
 }
-console.log(`games ${first}..${first + games - 1}: ${counts.turns} turns, ${counts.decisions} decisions, ` +
+console.log(`${set} games ${first}..${first + games - 1}: ${counts.turns} turns, ${counts.decisions} decisions, ` +
 	`${counts.invalid} [Invalid choice] and ${counts.unavailable} [Unavailable choice] errors, ` +
 	`${counts.mega} mega evolutions, ${counts.zmove} z-moves`);
 process.exit(failures ? 1 : 0);

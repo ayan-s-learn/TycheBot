@@ -31,6 +31,8 @@ export function loadPool(): string[] {
 	return readFileSync(here('teams/pool.jsonl'), 'utf8').trim().split('\n').map(l => JSON.parse(l).team);
 }
 export const illusionTeam = () => Teams.pack(Teams.import(readFileSync(here('teams/illusion.txt'), 'utf8')));
+/** The recorder's teams: the Illusion team, then the pool in order. */
+export const recorderTeams = () => [illusionTeam(), ...loadPool()];
 
 /** The sim writes `|t:|` timestamps from Date.now(). Freezing it makes output reproducible byte for byte. */
 export function freezeClock() {
@@ -45,6 +47,8 @@ export function makeGame(id: number, pool: string[], p1team?: string): Game {
 	const p1 = p1team ?? draw.sample(pool);
 	return { id, seed: seed(4 * id), aiSeeds: [seed(4 * id + 1), seed(4 * id + 2)], teams: [p1, draw.sample(pool)] };
 }
+/** The recorder's game `id`: p1 plays team id mod T of `teams`, p2 a seeded draw from them. */
+export const recorderGame = (id: number, teams: string[]) => makeGame(id, teams, teams[id % teams.length]);
 
 /**
  * One battle's output for each player, chunked as getPlayerStreams chunks it: a player's view of one
@@ -171,6 +175,8 @@ export interface Stats {
 	invalid: number,
 	/** Wall time from the first counted step to the end. */
 	windowMs: number,
+	/** This process's CPU time (user + system, all threads) over the same window. */
+	cpuMs: number,
 }
 export interface PlayOptions {
 	concurrency: number;
@@ -189,7 +195,9 @@ export interface PlayOptions {
  */
 export async function play<H>(driver: Driver<H>, games: Iterator<Game>, opts: PlayOptions): Promise<Stats> {
 	interface Slot { game: Game, out: Collector, h: H, players: [Player, Player], turn0: number, invalid0: number }
-	const stats: Stats = { games: 0, turns: 0, decisions: 0, steps: 0, driverMs: 0, choiceMs: 0, invalid: 0, windowMs: 0 };
+	const stats: Stats = {
+		games: 0, turns: 0, decisions: 0, steps: 0, driverMs: 0, choiceMs: 0, invalid: 0, windowMs: 0, cpuMs: 0,
+	};
 	const clock = Date.now; // freezeClock() may replace Date.now later
 	let counting = opts.countFrom === undefined;
 	const open = (): Slot | null => {
@@ -205,6 +213,7 @@ export async function play<H>(driver: Driver<H>, games: Iterator<Game>, opts: Pl
 	const choices: [Slot, 0 | 1, string][] = [];
 	let t0 = performance.now();
 	let countStart = t0;
+	let cpu0 = process.cpuUsage();
 	for (let i = 0; i < opts.concurrency; i++) {
 		const slot = open();
 		if (slot) slots.push(slot);
@@ -241,6 +250,7 @@ export async function play<H>(driver: Driver<H>, games: Iterator<Game>, opts: Pl
 		if (!counting && now >= opts.countFrom!) {
 			counting = true;
 			countStart = t1;
+			cpu0 = process.cpuUsage();
 			for (const slot of slots) {
 				slot.turn0 = driver.battle(slot.h).turn;
 				slot.invalid0 = slot.out.invalid;
@@ -267,6 +277,8 @@ export async function play<H>(driver: Driver<H>, games: Iterator<Game>, opts: Pl
 		for (const [slot, i, choice] of choices) driver.choose(slot.h, i, choice);
 	}
 	stats.windowMs = performance.now() - countStart;
+	const cpu = process.cpuUsage(cpu0);
+	stats.cpuMs = (cpu.user + cpu.system) / 1000;
 	return stats;
 }
 

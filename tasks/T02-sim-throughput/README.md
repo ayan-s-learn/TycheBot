@@ -26,6 +26,19 @@
 ## Progress
 
 ```text
+2026-11-25
+State: active
+Verified: an adversarial review of PR #4 found the 2026-11-24 timings inflated by other load: a 1-process
+  rerun on 2026-11-25 gave 0.180 ms/decision (direct, 32 battles), below the reported 0.209-0.219. The
+  harness now records other load and CPU time, and waits for a quiet machine (sweep.ts); check.ts
+  covers the recorder's games (recorder games 0-51 match); the sample is games 0-10 and 15, adding an
+  Urshifu-* game, and reproduces byte for byte (sha256 bd0ece9a...). Result below still has the old
+  timings.
+Pending: the new sweep, its clean-checkout rerun (compare.ts), and Result.
+Next: run the sweep under the lock, then the same command from a clean clone, then rewrite Result.
+```
+
+```text
 2026-11-24 (3)
 State: done
 Verified: all three acceptance checks ran (Result, Acceptance checks). check.ts: no differences on games
