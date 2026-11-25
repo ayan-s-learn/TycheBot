@@ -15,13 +15,15 @@ if [ ! -d "$dir/.git" ]; then
   git init -q "$dir"
   git -C "$dir" remote add origin https://github.com/smogon/pokemon-showdown.git
 fi
+# Removed before anything can fail, so a failed setup never leaves an old build under the new HEAD.
+# The build only adds files, so a re-pin would otherwise keep stale modules too.
+rm -rf "$dir/dist"
 if [ "$(git -C "$dir" rev-parse -q --verify HEAD || true)" != "$sha" ]; then
   git -C "$dir" fetch -q --depth 1 origin "$sha"
   git -C "$dir" checkout -q --detach "$sha"
 fi
 cd "$dir"
 npm ci --no-audit --no-fund --loglevel=error
-rm -rf dist  # the build only adds files, so a re-pin would keep stale modules
 node build
 node node_modules/typescript/bin/tsc --ignoreConfig sim/global-types.ts sim/index.ts \
   sim/tools/runner.ts sim/tools/exhaustive-runner.ts \
