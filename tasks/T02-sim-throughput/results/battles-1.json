@@ -1,0 +1,263 @@
+{
+ "node": "v24.22.3",
+ "records": [
+  {
+   "run": 1,
+   "procs": 1,
+   "driver": "direct",
+   "loadavg": "{ 0.63 5.41 7.96 }",
+   "seconds": 20,
+   "concurrency": 1,
+   "waitedS": 5,
+   "otherBefore": 0.8421655686049843,
+   "otherCores": 0.6485301880344623,
+   "msPerDecision": 0.15280486724596637,
+   "msPerTurn": 0.3502618519611834,
+   "choiceMsPerDecision": 0.009154781372478143,
+   "decisionsPerTurn": 2.292216591487071,
+   "decisionsPerSecond": 6174.369139124605,
+   "perProcessMsPerDecision": [
+    0.15280486724596637,
+    0.15280486724596637
+   ],
+   "cpuPerWall": [
+    1.0363022382044378,
+    1.0363022382044378
+   ],
+   "games": 1108,
+   "processes": [
+    {
+     "driver": "direct",
+     "first": 1000000,
+     "concurrency": 1,
+     "node": "v24.22.3",
+     "pin": "29f2d9969159fd23f8bb96e177a70072fe573b0e",
+     "games": 1108,
+     "turns": 53871,
+     "decisions": 123484,
+     "steps": 68353,
+     "driverMs": 18868.956227000912,
+     "choiceMs": 1130.469022999091,
+     "invalid": 0,
+     "windowMs": 19999.452125,
+     "cpuMs": 20725.477
+    }
+   ]
+  },
+  {
+   "run": 1,
+   "procs": 1,
+   "driver": "stream",
+   "loadavg": "{ 0.77 4.99 7.72 }",
+   "seconds": 20,
+   "concurrency": 1,
+   "waitedS": 5,
+   "otherBefore": 1.1168719564594671,
+   "otherCores": 0.6166074605915984,
+   "msPerDecision": 0.17031141994191423,
+   "msPerTurn": 0.3907826434628341,
+   "choiceMsPerDecision": 0.00952136451673717,
+   "decisionsPerTurn": 2.294518145618849,
+   "decisionsPerSecond": 5560.713728281647,
+   "perProcessMsPerDecision": [
+    0.17031141994191423,
+    0.17031141994191423
+   ],
+   "cpuPerWall": [
+    0.9787612170439898,
+    0.9787612170439898
+   ],
+   "games": 999,
+   "processes": [
+    {
+     "driver": "stream",
+     "first": 1000000,
+     "concurrency": 1,
+     "node": "v24.22.3",
+     "pin": "29f2d9969159fd23f8bb96e177a70072fe573b0e",
+     "games": 999,
+     "turns": 48469,
+     "decisions": 111213,
+     "steps": 61613,
+     "driverMs": 18940.843946000106,
+     "choiceMs": 1058.8995119998908,
+     "invalid": 0,
+     "windowMs": 19999.770791000003,
+     "cpuMs": 19575
+    }
+   ]
+  },
+  {
+   "run": 2,
+   "procs": 1,
+   "driver": "stream",
+   "loadavg": "{ 0.97 4.64 7.50 }",
+   "seconds": 20,
+   "concurrency": 1,
+   "waitedS": 5,
+   "otherBefore": 0.7776664280601289,
+   "otherCores": 0.5851249394784039,
+   "msPerDecision": 0.1723472926693856,
+   "msPerTurn": 0.39470238777254457,
+   "choiceMsPerDecision": 0.00968813885753764,
+   "decisionsPerTurn": 2.2901571684662527,
+   "decisionsPerSecond": 5493.428703164975,
+   "perProcessMsPerDecision": [
+    0.1723472926693856,
+    0.1723472926693856
+   ],
+   "cpuPerWall": [
+    0.9841477421719529,
+    0.9841477421719529
+   ],
+   "games": 971,
+   "processes": [
+    {
+     "driver": "stream",
+     "first": 2000000,
+     "concurrency": 1,
+     "node": "v24.22.3",
+     "pin": "29f2d9969159fd23f8bb96e177a70072fe573b0e",
+     "games": 971,
+     "turns": 47974,
+     "decisions": 109868,
+     "steps": 60804,
+     "driverMs": 18935.452351000054,
+     "choiceMs": 1064.4164399999454,
+     "invalid": 0,
+     "windowMs": 19999.8955,
+     "cpuMs": 19682.852
+    }
+   ]
+  },
+  {
+   "run": 2,
+   "procs": 1,
+   "driver": "direct",
+   "loadavg": "{ 1.00 4.29 7.27 }",
+   "seconds": 20,
+   "concurrency": 1,
+   "waitedS": 5,
+   "otherBefore": 0.7416953035509737,
+   "otherCores": 0.5901547281970612,
+   "msPerDecision": 0.15910172354592367,
+   "msPerTurn": 0.36433444110551977,
+   "choiceMsPerDecision": 0.009459489570073946,
+   "decisionsPerTurn": 2.2899465385135005,
+   "decisionsPerSecond": 5932.556056897884,
+   "perProcessMsPerDecision": [
+    0.15910172354592367,
+    0.15910172354592367
+   ],
+   "cpuPerWall": [
+    1.0425187872126107,
+    1.0425187872126107
+   ],
+   "games": 1049,
+   "processes": [
+    {
+     "driver": "direct",
+     "first": 2000000,
+     "concurrency": 1,
+     "node": "v24.22.3",
+     "pin": "29f2d9969159fd23f8bb96e177a70072fe573b0e",
+     "games": 1049,
+     "turns": 51813,
+     "decisions": 118649,
+     "steps": 65661,
+     "driverMs": 18877.260397000297,
+     "choiceMs": 1122.3589779997037,
+     "invalid": 0,
+     "windowMs": 19999.642458000002,
+     "cpuMs": 20850.003
+    }
+   ]
+  },
+  {
+   "run": 3,
+   "procs": 1,
+   "driver": "direct",
+   "loadavg": "{ 1.00 3.97 7.05 }",
+   "seconds": 20,
+   "concurrency": 1,
+   "waitedS": 5,
+   "otherBefore": 0.759954167860212,
+   "otherCores": 0.5843209675678509,
+   "msPerDecision": 0.15863825772624118,
+   "msPerTurn": 0.36401309268292614,
+   "choiceMsPerDecision": 0.009415992269557479,
+   "decisionsPerTurn": 2.2946110093512004,
+   "decisionsPerSecond": 5950.451206300109,
+   "perProcessMsPerDecision": [
+    0.15863825772624118,
+    0.15863825772624118
+   ],
+   "cpuPerWall": [
+    1.0395066260456667,
+    1.0395066260456667
+   ],
+   "games": 1080,
+   "processes": [
+    {
+     "driver": "direct",
+     "first": 3000000,
+     "concurrency": 1,
+     "node": "v24.22.3",
+     "pin": "29f2d9969159fd23f8bb96e177a70072fe573b0e",
+     "games": 1080,
+     "turns": 51865,
+     "decisions": 119010,
+     "steps": 65919,
+     "driverMs": 18879.539051999964,
+     "choiceMs": 1120.5972400000355,
+     "invalid": 0,
+     "windowMs": 20000.163999999997,
+     "cpuMs": 20790.303
+    }
+   ]
+  },
+  {
+   "run": 3,
+   "procs": 1,
+   "driver": "stream",
+   "loadavg": "{ 0.92 3.67 6.84 }",
+   "seconds": 20,
+   "concurrency": 1,
+   "waitedS": 5,
+   "otherBefore": 0.7438063869397107,
+   "otherCores": 0.5537093469406023,
+   "msPerDecision": 0.17602780705683396,
+   "msPerTurn": 0.403499858837814,
+   "choiceMsPerDecision": 0.009824197914730583,
+   "decisionsPerTurn": 2.2922506709836834,
+   "decisionsPerSecond": 5380.617834326844,
+   "perProcessMsPerDecision": [
+    0.17602780705683396,
+    0.17602780705683396
+   ],
+   "cpuPerWall": [
+    0.9938149440493229,
+    0.9938149440493229
+   ],
+   "games": 972,
+   "processes": [
+    {
+     "driver": "stream",
+     "first": 3000000,
+     "concurrency": 1,
+     "node": "v24.22.3",
+     "pin": "29f2d9969159fd23f8bb96e177a70072fe573b0e",
+     "games": 972,
+     "turns": 46946,
+     "decisions": 107612,
+     "steps": 59560,
+     "driverMs": 18942.704373000015,
+     "choiceMs": 1057.2015859999874,
+     "invalid": 0,
+     "windowMs": 19999.933708999997,
+     "cpuMs": 19876.233
+    }
+   ]
+  }
+ ]
+}

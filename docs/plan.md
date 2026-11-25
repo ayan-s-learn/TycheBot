@@ -39,7 +39,7 @@ Training runs on Showdown's simulator through the first scale-up. A Rust engine 
 
 ## Components
 
-1. **Env workers:** Node processes that drive Showdown's sim, through `Battle` directly or `BattleStream` (S1 picks). Many battles run per process, batched to Python.
+1. **Env workers:** Node processes that drive Showdown's sim through `Battle` directly (S1 picked it by its 10% rule: T02, 2026-11-25). Many battles run per process, batched to Python.
 2. **Observation builder** (D7): Python, in env processes separate from the learner. Reads each player's protocol stream and request JSON, requests damage calcs from the Node workers in one batch per step, and emits tensors. Used for both training and online play.
 3. **Network:** PyTorch (D6).
 4. **Learner and actors:** PPO + GAE with asynchronous collection (D10), plus a snapshot store for the league.
@@ -65,6 +65,7 @@ Training runs on Showdown's simulator through the first scale-up. A Rust engine 
   - 4 moves × {plain, Mega Evolve, as Z-Move}, plus a switch logit per team slot. Masked by the request.
   - Map moves by the request's current index: the move list shrinks for locked moves, Struggle and Recharge, and switching reorders `side.pokemon`.
   - When a choice is rejected as `[Unavailable choice]` (for example, trapping by a hidden ability), re-query the policy on the updated request, both in training and online. Under `strictChoices` that rejection also throws (`sim/side.ts`), so the training env runs without it.
+  - A request can also allow a choice the sim rejects as `[Invalid choice]`, with no updated request. When a forced switch comes mid-turn (for example Eject Pack, set off by Intimidate) while the side's own switch is still queued, the request still lists the Pokémon being switched in, but choosing it is rejected (`Side.clearChoice` seeds `switchIns` from the queue). The mask excludes it, using the player's own queued choice (T02).
   - A mon can't Mega and Z in one game because both need its item slot.
 - **Other heads:**
   - Team-preview lead, reusing the switch logits. In singles only the lead matters, except with Illusion, which copies the last party slot.
@@ -86,7 +87,7 @@ Training runs on Showdown's simulator through the first scale-up. A Rust engine 
 These are estimates; Phase 0 spikes replace them.
 
 - **Env:**
-  - ~2.0 ms per median turn per Node process (PokaiTrainer, VGC doubles). No singles figure found.
+  - Measured by S1 (T02, 2026-11-25, Showdown 29f2d99, Node 24, M4 Max) between random players, driving `Battle` directly with 32 battles per process, while the rest of the machine used under 2 cores: 0.18 ms per decision (0.42 ms per turn) in one process. The machine does ~45k decisions/s with 10 processes and ~48k with 12 or 14, where each process pays 0.24–0.28 ms per decision. With one battle per process instead of 32, one process took 0.16 ms per decision. These figures reproduce to about ±5% between sessions. This covers the sim and the per-player split only: no transfer to Python (S5), calcs (S3) or observation building. Random games averaged 2.3 decisions per turn; games per day follow from T04's turns per game. PokaiTrainer's VGC doubles figure was ~2.0 ms per median turn.
   - MissingNo ran gen 9 on Showdown at ~64 games/s (~$7 per million games). After optimization it reached ~205/s (~$1.80 per million) on one rented GPU box (its README).
 - **M4 Max:**
   - Assume 0.5–3M games/day until measured, probably limited by the learner.
@@ -126,7 +127,7 @@ Each phase ends at its exit criteria. Durations are a planning agent's estimates
      - **Leak tests:**
        - Two opposing teams that differ only in content never revealed must produce bit-identical tensors.
        - Opponent features built from the player stream must match those built from the spectator stream.
-     - **Action masks:** fuzzed over 1M requests, from policy games and from Showdown's `exhaustive-runner.ts` (adapted to NatDex: at the pin its pools leave out Mega Stones, Z-Crystals and Past Pokémon), which cycles every species, move, item and ability. Each candidate action is probed with `strictChoices` on a clone of the battle (`sim/state.ts`), so probes don't change what the player sees. No legal action masked, no illegal one unmasked. `[Unavailable choice]` rejections (hidden trapping or disabling) count as expected.
+     - **Action masks:** fuzzed over 1M requests, from policy games and from Showdown's `exhaustive-runner.ts` (adapted to NatDex: at the pin its pools leave out Mega Stones, Z-Crystals and Past Pokémon), which cycles every species, move, item and ability. Each candidate action is probed with `strictChoices` on a clone of the battle (`sim/state.ts`), so probes don't change what the player sees. No legal action masked, no illegal one unmasked. `[Unavailable choice]` rejections (hidden trapping or disabling) count as expected. The mid-turn switch case (Network v0, Action head) is masked from the player's own queued choice, since the request doesn't show it.
      - **Robustness:** ≥1,000 public replays parse without error. This covers the protocol parser only, since replays carry no request JSON.
      - **Online parity:** live tensors equal an offline re-parse of the same game.
 2. **PPO v0 (M4 Max, 5–8 weeks).**
