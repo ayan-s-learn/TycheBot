@@ -37,4 +37,35 @@ Next: set up the worktree, then build the recorder and its sample (Megas, Z-Move
 
 ## Outputs
 
+Setup as in AGENTS.md (Conventions), then run from this folder on Node 24.
+
+### Recorder
+
+```bash
+node record.ts sample.jsonl 12    # reproduces the committed sample byte for byte
+```
+
+`node record.ts <out.jsonl> [games=10] [first=0]` plays games `first`… between Showdown's `RandomPlayerAI`s with `Runner.AI_OPTIONS` (move 0.7, mega 0.6), driving `Battle` directly. Game g's p1 plays team g mod 26 of [`teams/illusion.txt`, then `teams/pool.jsonl` in order], and p2 a draw from the same list seeded by g. Game 0 is the Illusion team's. Every seed derives from g (`makeGame` in `sim.ts`), and the recorder freezes `Date.now()` at 0, since the sim stamps `|t:|` lines with it.
+
+One JSON line per game:
+
+| Field | Content |
+|---|---|
+| `game`, `format`, `pin` | Game id, `gen9nationaldex`, the Showdown commit |
+| `seed`, `aiSeeds` | The battle's PRNG seed, and p1's and p2's `RandomPlayerAI` seeds |
+| `winner`, `turns` | `Battle.winner` (`Bot 1`, `Bot 2`, or empty for a tie) and `Battle.turn` at the end |
+| `p1`, `p2` | That player's chunks, in the order it receives them. A chunk is the player's view of one sim update (protocol lines joined by `\n`, `\|split\|` resolved for that player), or a `\|request\|<JSON>` or `\|error\|…` line. These are the chunks Showdown's `getPlayerStreams` gives that player (`check.ts`) |
+| `inputLog` | Showdown's input log (`>start`, `>player` with the packed team, then each choice), which replays the game exactly |
+
+`sample.jsonl` (4.35 MB, sha256 `0241e7a3…403c4b`) holds games 0–11: 499 turns, 14 Mega Evolutions, 10 Z-Moves, 6 Illusions broken (Zoroark-Hisui leads as Zamazenta in game 0), and 16 `|poke|` lines with a `-*` forme (Zamazenta), counted in p1's view.
+
+### Teams
+
+`teams/pool.jsonl` holds Smogon's 25 NatDex sample teams, packed, with source, index, name and author. All 25 pass `validate-team gen9nationaldex` at the pin. `teams/illusion.txt` is sample team 0 with Ceruledge replaced by a Zoroark-Hisui lead, and it validates too. To rebuild the pool from a fresh download:
+
+```bash
+curl -sS -o /tmp/gen9nationaldex.json https://pkmn.github.io/smogon/data/teams/gen9nationaldex.json
+node teams.ts /tmp/gen9nationaldex.json
+```
+
 ## For integration
