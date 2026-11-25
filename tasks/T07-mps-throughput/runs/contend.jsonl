@@ -1,0 +1,15 @@
+{"run": 0, "scenario": "train", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 0.67 0.98 1.30 }", "train": 2123.8725830427215}
+{"run": 0, "scenario": "infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 0.53 0.91 1.27 }", "infer": 10971.331644778109}
+{"run": 0, "scenario": "train+infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 0.44 0.86 1.23 }", "train": 993.2302234228724, "infer": 6553.637025649495}
+{"run": 0, "scenario": "train+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 6.11 2.20 1.71 }", "train": 1968.9061973062844}
+{"run": 0, "scenario": "train+infer+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 10.27 3.69 2.27 }", "train": 968.6984632987354, "infer": 5476.10656042723}
+{"run": 1, "scenario": "train", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 6.80 3.48 2.24 }", "train": 2111.7334784237214}
+{"run": 1, "scenario": "infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 4.79 3.33 2.23 }", "infer": 10937.989198178897}
+{"run": 1, "scenario": "train+infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 3.22 3.09 2.18 }", "train": 975.5750949568252, "infer": 6525.821739898927}
+{"run": 1, "scenario": "train+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 8.34 4.40 2.70 }", "train": 1958.5874196389461}
+{"run": 1, "scenario": "train+infer+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 11.38 5.55 3.17 }", "train": 968.4243327767346, "infer": 5608.750015933637}
+{"run": 2, "scenario": "train", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 7.12 5.14 3.12 }", "train": 2156.218832329337}
+{"run": 2, "scenario": "infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 4.39 4.66 3.02 }", "infer": 11400.721572225742}
+{"run": 2, "scenario": "train+infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 2.97 4.28 2.94 }", "train": 961.4742066070459, "infer": 7011.693247827947}
+{"run": 2, "scenario": "train+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 7.88 5.33 3.37 }", "train": 2047.4728921105766}
+{"run": 2, "scenario": "train+infer+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 11.64 6.54 3.89 }", "train": 1004.0668384718228, "infer": 5655.676139495313}

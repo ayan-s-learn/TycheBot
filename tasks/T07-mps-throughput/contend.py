@@ -16,7 +16,7 @@ import time
 SCENARIOS = (("train",), ("infer",), ("train", "infer"), ("train", "burn"), ("train", "infer", "burn"))
 BURNERS = 13
 INFER_BATCH, TRAIN_BATCH = 256, 1024
-WARMUP_S = 8
+WARMUP_S = 12
 
 
 def worker(role, size, dtype, start, end):
