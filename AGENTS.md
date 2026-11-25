@@ -54,6 +54,7 @@ Toolchain decided 2026-11-24 ([T01](tasks/T01-toolchain/README.md)).
 - **Timed runs** share this machine with other sessions. Run each timed command under the lock in the git common dir, in one shell command so the lock is released even if the run fails:
   `L="$(git rev-parse --path-format=absolute --git-common-dir)/timing.lock"; until mkdir "$L" 2>/dev/null; do sleep 30; done; echo "<task ID> $(date +%FT%T)" > "$L/owner"; trap 'rm -f "$L/owner"; rmdir "$L" 2>/dev/null' EXIT; trap 'exit 143' INT TERM HUP; <command>`. Agent shells are zsh, which skips an EXIT trap on a signal unless the signal trap exits.
   Record `sysctl -n vm.loadavg` with each run. If the lock has been held for over an hour, tell the user; `owner` says which task holds it and since when.
+  In an agent session isolated in a worktree, the sandbox can refuse the inline lock command and `source ~/.nvm/nvm.sh`. T02's `timed.sh` holds the same lock command, and prefixing `PATH` with `~/.nvm/versions/node/v24.<x>/bin` stands in for `nvm use`. The lock command finds the git common dir from the current directory, so a timed run of a separate clone must start from inside this repository to take the shared lock.
 - **Spike code is throwaway.** It stays in its task folder. Phase 1 code may copy from it but doesn't import it.
 
 ## Areas

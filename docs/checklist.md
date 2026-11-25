@@ -2,7 +2,7 @@
 
 What's in flight. Only planning sessions edit this file ([workflow.md](workflow.md)).
 
-Updated 2026-11-24.
+Updated 2026-11-25.
 
 ## Milestone
 
@@ -10,7 +10,7 @@ Phase 0 exit ([plan.md](plan.md), Phases): the toolchain is recorded (done 2026-
 
 ## Next replan
 
-When T02 (S1) pushes a checkpoint whose `Verified:` line starts `Recorder ready`: S6's brief can then be written on that commit, without waiting for T02's timing work. Earlier if any task opens a PR or stops on a stop condition.
+Now: T02 (S1) is done and its [PR #4](https://github.com/ayan-s-learn/TycheBot/pull/4) waits to merge, so S6's brief can be written. It builds on T02's recorder and sample as of d0ab75e (T02's README, Outputs: Recorder), not the `Recorder ready: 8e01572` checkpoint, whose sample was replaced.
 
 ## Needs you
 
@@ -24,7 +24,7 @@ None yet.
 
 Start these four now, each in its own session (`/do-task T02` and so on). They share no files.
 
-- T02: S1 sim throughput. [Brief](../tasks/T02-sim-throughput/README.md). Start it first: S1 → S6 → S5 is the longest chain.
+- T02: S1 sim throughput. [Brief](../tasks/T02-sim-throughput/README.md). Done 2026-11-25: [PR #4](https://github.com/ayan-s-learn/TycheBot/pull/4) waits to merge.
 - T06: S3 damage-calc cost. [Brief](../tasks/T06-calc-cost/README.md). Early because it may reopen D7, and S5 needs its numbers.
 - T04: replay corpus. [Brief](../tasks/T04-replay-corpus/README.md). Gives turns per game for S1's numbers, and Phase 1's robustness test reuses it.
 - T05: stub pool. [Brief](../tasks/T05-stub-pool/README.md).
@@ -38,7 +38,7 @@ T02, T06 and T07 take timed runs under a shared lock and record load averages (A
 
 ## Blocked
 
-- S6: battle-tracker comparison. Needs T02's recorder output. Its brief comes at the next replan.
+- S6: battle-tracker comparison. T02's recorder output is ready: `record.ts` and `sample.jsonl` in `tasks/T02-sim-throughput/`, as of d0ab75e. Its brief comes at the next replan.
 - S5: transfer overhead. Needs T06's calc cost and T07's CPU inference numbers. Planned after S6, or else measuring both architectures: if S6 picks @pkmn/client, tracking moves into Node and the calc round trip S5 would measure goes away (D7).
 
 ## Done

@@ -17,13 +17,25 @@
   - Under For integration: replacement text for plan.md's Compute env bullet.
 - **Acceptance checks:**
   - For the same seeds, both drivers play the same games, with matching per-player streams and requests, or Result lists every difference.
-  - The timing commands in Outputs rerun from a clean checkout and land within the reported spread.
+  - The timing commands in Outputs rerun from a clean checkout, and each rerun median ms/decision lies within 10% of the reported median (amended 2026-11-25 with the user's OK; it was "land within the reported spread").
   - The recorder reproduces the committed sample byte for byte from its seeds.
 - **May change:** `tasks/T02-sim-throughput/` only.
 - **Limits:** one or two sessions, no paid services. Take timings as in AGENTS.md, Conventions (Timed runs), on Node 24.
 - **Stop and report if:** either driver needs a Showdown patch to give per-player streams and requests, or the same seed and choices give different games.
 
 ## Progress
+
+```text
+2026-11-25 (5)
+State: done
+Verified: at the user's request, this branch applies the For integration edits a planning session
+  would: plan.md (Components 1, Action head, Compute env bullet, Action masks exit criterion),
+  AGENTS.md (Timed runs), checklist.md (T02, S6 and Next replan lines) and this brief's timing check.
+  T05's stricter validator (scripts/validate-pool.ts on its branch) passes teams/pool.jsonl (25) and
+  teams/illusion.txt.
+Pending: For integration's one item waits for T05's area notes to merge.
+Next: merge this PR; S6's brief builds on the recorder and sample as of d0ab75e.
+```
 
 ```text
 2026-11-25 (4)
@@ -143,14 +155,14 @@ Two sweeps of 3 runs each, the second from a fresh clone (Acceptance checks): `r
 
 ### Gotchas
 
-- **A request can allow a choice the sim rejects as `[Invalid choice]`, with no updated request.** In game 1070337 both players switched on turn 3, and p1's Landorus-T came in first, so its Intimidate set off Great Tusk's Eject Pack. p2's forced-switch request still listed Diancie, already queued to switch in, and choosing it gave `[Invalid choice] Can't switch: The Pokémon in slot 3 can only switch in once` (`Side.clearChoice` seeds `switchIns` from queued switches). `RandomPlayerAI`, and so `Runner`, throws here. The env now answers the same request again (`Collector` in `sim.ts`), which happened 32 times across the two sweeps. Phase 1's action mask has to exclude that Pokémon from the player's own queued choice (For integration).
-- `Teams.import` on the JSON sample teams cuts species names to 18 characters (`Urshifu-Rapid-Stri`), so `teams.ts` packs the sets directly (For integration, item 3).
-- In this worktree the sandbox refused `source ~/.nvm/nvm.sh` and the inline timing-lock command, and `timed.sh` takes the lock of whichever repository the current directory is in (For integration, item 4).
+- **A request can allow a choice the sim rejects as `[Invalid choice]`, with no updated request.** In game 1070337 both players switched on turn 3, and p1's Landorus-T came in first, so its Intimidate set off Great Tusk's Eject Pack. p2's forced-switch request still listed Diancie, already queued to switch in, and choosing it gave `[Invalid choice] Can't switch: The Pokémon in slot 3 can only switch in once` (`Side.clearChoice` seeds `switchIns` from queued switches). `RandomPlayerAI`, and so `Runner`, throws here. The env now answers the same request again (`Collector` in `sim.ts`), which happened 32 times across the two sweeps. Phase 1's action mask has to exclude that Pokémon from the player's own queued choice (now in plan.md, Network v0: Action head, and Phase 1's Action masks).
+- `Teams.import` on the JSON sample teams cuts species names to 18 characters (`Urshifu-Rapid-Stri`), so `teams.ts` packs the sets directly (For integration).
+- In this worktree the sandbox refused `source ~/.nvm/nvm.sh` and the inline timing-lock command, and `timed.sh` takes the lock of whichever repository the current directory is in (now in AGENTS.md, Conventions: Timed runs).
 
 ### Acceptance checks
 
 - **Same games:** passed (the driver check, above), here and in the fresh clone of cf61f48.
-- **Timing rerun from a clean checkout:** sweep 2 reran sweep 1's Outputs command from a fresh clone of be58e92. By the rule fixed beforehand (`compare.ts`: each rerun median within the reported min–max), **it failed: 9 of 14 medians fell outside sweep 1's ranges**, all on the slow side, by up to 6% (median 2%). The figures above therefore pool both sessions, and sweep 3, from another fresh clone of cf61f48, checks them by the same rule. **It failed too: 4 of 14 medians fell outside the pooled ranges**, each above the maximum by 0.3–1.5%. Its medians are all within about 5% of the pooled ones (`compare.ts` prints each). A configuration's three runs typically spanned 2–5% within one sweep, with single runs up to 16% off, and sessions drifted a few percent on top of that, so a rerun's median often lands just outside a min–max. So the user accepted a tolerance instead on 2026-11-25 (For integration, item 5): each rerun median within 10% of the reported median. **By that rule check 2 passes:** `compare.ts` exits 0 for sweep 2 against sweep 1 (farthest 6.1%) and for sweep 3 against the pooled figures (farthest 5.0%).
+- **Timing rerun from a clean checkout:** sweep 2 reran sweep 1's Outputs command from a fresh clone of be58e92. By the rule fixed beforehand (`compare.ts`: each rerun median within the reported min–max), **it failed: 9 of 14 medians fell outside sweep 1's ranges**, all on the slow side, by up to 6% (median 2%). The figures above therefore pool both sessions, and sweep 3, from another fresh clone of cf61f48, checks them by the same rule. **It failed too: 4 of 14 medians fell outside the pooled ranges**, each above the maximum by 0.3–1.5%. Its medians are all within about 5% of the pooled ones (`compare.ts` prints each). A configuration's three runs typically spanned 2–5% within one sweep, with single runs up to 16% off, and sessions drifted a few percent on top of that, so a rerun's median often lands just outside a min–max. So the user accepted a tolerance instead on 2026-11-25, and the brief's check now says so: each rerun median within 10% of the reported median. **By that rule check 2 passes:** `compare.ts` exits 0 for sweep 2 against sweep 1 (farthest 6.1%) and for sweep 3 against the pooled figures (farthest 5.0%).
 - **Recorder:** `node record.ts sample.jsonl 0-10,15` reproduces the committed sample byte for byte, here and in fresh clones of be58e92 and cf61f48.
 
 ### Not checked
@@ -222,22 +234,6 @@ node compare.ts results/sweep-1.json,results/sweep-2.json <rerun.json>   # check
 
 ## For integration
 
-1. **plan.md, Compute:** replace the Env bullet's first sub-bullet (`~2.0 ms per median turn per Node process (PokaiTrainer, VGC doubles). No singles figure found.`) with:
+Applied on this branch at the user's request, 2026-11-25, apart from this item, which waits for T05's PR because the file is new there:
 
-   ```markdown
-     - Measured by S1 (T02, 2026-11-25, Showdown 29f2d99, Node 24, M4 Max) between random players, driving `Battle` directly with 32 battles per process, while the rest of the machine used under 2 cores: 0.18 ms per decision (0.42 ms per turn) in one process. The machine does ~45k decisions/s with 10 processes and ~48k with 12 or 14, where each process pays 0.24–0.28 ms per decision. With one battle per process instead of 32, one process took 0.16 ms per decision. These figures reproduce to about ±5% between sessions. This covers the sim and the per-player split only: no transfer to Python (S5), calcs (S3) or observation building. Random games averaged 2.3 decisions per turn; games per day follow from T04's turns per game. PokaiTrainer's VGC doubles figure was ~2.0 ms per median turn.
-   ```
-
-2. **plan.md, Network v0, Action head:** after the `[Unavailable choice]` bullet, add:
-
-   ```markdown
-     - A request can also allow a choice the sim rejects as `[Invalid choice]`, with no updated request. When a forced switch comes mid-turn (for example Eject Pack, set off by Intimidate) while the side's own switch is still queued, the request still lists the Pokémon being switched in, but choosing it is rejected (`Side.clearChoice` seeds `switchIns` from the queue). The mask excludes it, using the player's own queued choice (T02).
-   ```
-
-   And in Phase 1's Action masks exit criterion, after "`[Unavailable choice]` rejections (hidden trapping or disabling) count as expected.", add: "The mid-turn switch case above is masked from the player's own queued choice, since the request doesn't show it."
-
-3. **docs/areas/team-pool.md** (T05's notes), if they don't already say it, under gotchas: "`Teams.import` on pkmn.github.io's JSON teams passes species through `Dex.getName`, which cuts names to 18 characters, so Urshifu-Rapid-Strike fails validation (sample teams 14, 17 and 18). Pack the sets directly, as T02's `teams.ts` does."
-
-4. **AGENTS.md, Conventions, Timed runs:** add: "In an agent session isolated in a worktree, the sandbox can refuse the inline lock command and `source ~/.nvm/nvm.sh`. T02's `timed.sh` holds the same lock command, and prefixing `PATH` with `~/.nvm/versions/node/v24.<x>/bin` stands in for `nvm use`. The lock command finds the git common dir from the current directory, so a timed run of a separate clone must start from inside this repository to take the shared lock."
-
-5. **This brief's acceptance check on timing** (planning sessions edit briefs; the user accepted the rule on 2026-11-25): replace "The timing commands in Outputs rerun from a clean checkout and land within the reported spread." with "The timing commands in Outputs rerun from a clean checkout, and each rerun median ms/decision lies within 10% of the reported median." By that rule both reruns pass: sweep 2's medians are within about 6% of sweep 1's, and sweep 3's within about 5% of the pooled ones (`compare.ts`). The three sessions' medians differed by up to 8.4% from each other (direct, 14 processes), so a tolerance much under 10% would fail on session drift alone, and no conclusion here rests on a smaller difference.
+- **docs/areas/team-pool.md**, Gotchas: "`Teams.import` on pkmn.github.io's JSON teams passes species through `Dex.getName`, which cuts names to 18 characters, so Urshifu-Rapid-Strike fails validation (sample teams 14, 17 and 18). Pack the sets directly, as T02's `teams.ts` and T05's `build-pool.ts` do."
