@@ -30,8 +30,9 @@
 State: blocked (stop condition met: the 48 calcs, cached, take 51% of env time, so D7 reopens)
 Verified: benchmark, 5 runs of 200 games (Result); NatDex support and range check, 100 games, every
   mismatch with a confirmed cause. Node 24.22.3, Showdown 29f2d99, @smogon/calc 0.12.0.
-Pending: the clean-checkout rerun (acceptance check 1); For integration's D7 text, which waits on the
-  user's decision.
+  Clean-checkout rerun: support.json identical; timings 0-7% above the spread under higher load (Result).
+Pending: acceptance check 1 strictly (timings within the spread) needs a rerun at lower load; For
+  integration's D7 text, which waits on the user's decision.
 Next: planning session: put D7's calc cost to the user (Result, What D7's rule gives).
 ```
 
@@ -73,6 +74,7 @@ Five runs of `node bench.ts 200 20`, back to back in one process each, under the
 - **Cache:** one Map per player per game, keyed on every input passed to the calc: both mons' species, level, gender, ability, `abilityOn`, item, nature, EVs, IVs, boosts, current HP, status, Supreme Overlord's fallen count, Protosynthesis/Quark Drive stat; the move; weather, terrain, Gravity, Magic Room, Wonder Room and both sides' screens. Calc objects are built only on a miss. Cached time includes building the keys.
 - **Where calc time goes:** in a CPU profile of a 10-game run (`node --cpu-prof bench.ts 10 3`), `calculate` was 71% of the process's time, and `Pokemon.clone`, which `calculate` runs on both mons for every call, 36%. So about half of a calc is @smogon/calc copying its inputs. Building our own calc objects was 4%.
 - **Hit rate under D7's prior sets:** these runs use true sets for both sides, so it may differ there. A player's own mons keep their true sets. An opposing mon's prior set changes whenever a reveal changes which library set is consistent, which invalidates that mon's entries, so the per-game hit rate should be somewhat lower early in a game and about the same once sets are revealed. Prior sets are shared across games, so a worker-wide cache could hit across games, unlike this one. Not measured: the set library doesn't exist yet.
+- **Clean-checkout rerun** (acceptance check 1): a fresh clone of 719b754, sharing this worktree's `vendor/` and `node_modules/` (same pin and lockfile), 3 runs (`runs/2026-11-24-clean-rerun.jsonl`). Load averages were higher, 31.9 falling to 10.3. Sim time landed above the spread, at 0.274 ms per decision (0.273–0.283). The calc rows were at or up to 2% above it: µs per calc 15.6 (all) and 16.3 (active), cached ms per decision 0.556 and 0.263, the same hit rates. Calc shares: 67% (288, cached) and **48.9% (48, cached)**. So the check doesn't pass strictly, but the conclusion holds. `support.json` was identical.
 - **Cross-check with T02:** T02's Result wasn't out when this was written.
 
 ### What D7's rule gives
