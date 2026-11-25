@@ -10,7 +10,7 @@ A self-play RL bot for [Gen 9] National Dex OU on Pokémon Showdown. GitHub: [ay
 
 Replace this line, don't append to it, when the phase changes. What's in flight is in [docs/checklist.md](docs/checklist.md).
 
-- 2026-11-23: Phase 0 (plan.md, Phases). There is no code or data, and there are no build or test commands.
+- 2026-11-24: Phase 0 (plan.md, Phases). The toolchain is set (Conventions). There is no project code or data yet.
 
 ## Docs
 
@@ -39,6 +39,19 @@ On anything a D-number covers, decisions.md wins. When docs disagree with each o
 - **Stale facts:** Showdown code, format rules, usage stats and bot policy change. The docs say when they were checked. Re-check an old fact before relying on it.
 - **Hidden information:** the bot sees only what its player is shown (D7). Changes to the env, observation builder, damage calcs or online client must keep plan.md's leak tests (Phase 1 exit) passing once those tests exist.
 - **Secrets:** the repo is public. Showdown account credentials and API keys never go in it.
+
+## Conventions
+
+Toolchain decided 2026-11-24 ([T01](tasks/T01-toolchain/README.md)).
+
+- **Setup,** in every checkout or worktree, from the root: `nvm use`, `npm ci`, `uv sync`, then `scripts/setup-showdown.sh`. `vendor/` is gitignored, so each worktree builds its own Showdown (~300 MB).
+- **Python 3.14 with uv.** `pyproject.toml`, `uv.lock` and `.python-version` are at the root. `uv sync` builds `.venv`; run Python with `uv run`.
+- **Node 24** (`.nvmrc`), with `package.json` and `package-lock.json` at the root.
+- **Dependencies:** only planning sessions edit `pyproject.toml`, `uv.lock`, `package.json` and `package-lock.json`, so parallel tasks don't conflict on them. A task that needs another package uses `uv run --with <pkg>` or `npm install --no-save <pkg>`, and proposes adding it under For integration. @pkmn/data and @pkmn/dex stay on the 0.10 line that @pkmn/client 0.7.4 depends on.
+- **Showdown** is the commit in `showdown.pin`. `scripts/setup-showdown.sh` fetches and builds it into `vendor/pokemon-showdown/` and emits its type declarations. Rerun it after the pin changes.
+- **Node code is TypeScript,** run directly with `node file.ts`. Type stripping allows erasable syntax only: no enums, namespaces or parameter properties. Load Showdown's CommonJS `dist/` with a default import or `createRequire`; named imports fail. Type-check with `node vendor/pokemon-showdown/node_modules/typescript/bin/tsc -p <tsconfig>`, using a tsconfig like `tasks/T01-toolchain/tsconfig.json` with its `typeRoots` and `files` paths pointed at the root `vendor/`.
+- **Re-pin Showdown monthly** (plan.md, Versioning): write master's head into `showdown.pin`, read the compare (`gh api repos/smogon/pokemon-showdown/compare/<old>...<new>`) for `config/formats.ts`, `data/` and `sim/`, rerun the setup script, validate every pool team and rerun the tests that exist, then commit the pin.
+- **Spike code is throwaway.** It stays in its task folder. Phase 1 code may copy from it but doesn't import it.
 
 ## Areas
 

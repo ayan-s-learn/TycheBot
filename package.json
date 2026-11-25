@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@pkmn/client": "0.7.4",
+    "@pkmn/data": "0.10.15",
+    "@pkmn/dex": "0.10.15",
+    "@smogon/calc": "0.12.0"
+  }
+}

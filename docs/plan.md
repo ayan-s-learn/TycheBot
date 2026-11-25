@@ -126,7 +126,7 @@ Each phase ends at its exit criteria. Durations are a planning agent's estimates
      - **Leak tests:**
        - Two opposing teams that differ only in content never revealed must produce bit-identical tensors.
        - Opponent features built from the player stream must match those built from the spectator stream.
-     - **Action masks:** fuzzed over 1M requests, from policy games and from Showdown's `exhaustive-runner.ts` (adapted to NatDex), which cycles every species, move, item and ability. Each candidate action is probed with `strictChoices` on a clone of the battle (`sim/state.ts`), so probes don't change what the player sees. No legal action masked, no illegal one unmasked. `[Unavailable choice]` rejections (hidden trapping or disabling) count as expected.
+     - **Action masks:** fuzzed over 1M requests, from policy games and from Showdown's `exhaustive-runner.ts` (adapted to NatDex: at the pin its pools leave out Mega Stones, Z-Crystals and Past Pokémon), which cycles every species, move, item and ability. Each candidate action is probed with `strictChoices` on a clone of the battle (`sim/state.ts`), so probes don't change what the player sees. No legal action masked, no illegal one unmasked. `[Unavailable choice]` rejections (hidden trapping or disabling) count as expected.
      - **Robustness:** ≥1,000 public replays parse without error. This covers the protocol parser only, since replays carry no request JSON.
      - **Online parity:** live tensors equal an offline re-parse of the same game.
 2. **PPO v0 (M4 Max, 5–8 weeks).**
@@ -170,5 +170,5 @@ Each phase ends at its exit criteria. Durations are a planning agent's estimates
 - **Pairings:** duplicate games: a second game with the same seed in which the two agents swap teams, so each agent plays both teams. The shared seed aligns the RNG only until the first differing action.
 - **Ratings:** fit Bradley-Terry over all internal games, as the PokéAgent paper does. Use ladder Elo and GXE for public results, recording the team used.
 - **Tests:** comparisons that drive a decision use SPRT (prior-work.md, Methods), with duplicate games scored as pairs. Each test states its null and alternative win-rate gaps before it starts, uses α = β = 0.05, and records both with the result. For scale: near 50%, a fixed 1,000 games gives ±3.1 pp (95% CI).
-- **Versioning:** pin the Showdown version (how: Phase 0 toolchain), re-pinned monthly. Every checkpoint records the commit, the obs version, the vocab hash and the pool version.
+- **Versioning:** pin the Showdown commit (`showdown.pin`, AGENTS.md Conventions), re-pinned monthly. Every checkpoint records the commit, the obs version, the vocab hash and the pool version.
   - When the observation, vocab or action space changes, carry trained weights across the change instead of retraining (prior-work.md, Methods).
