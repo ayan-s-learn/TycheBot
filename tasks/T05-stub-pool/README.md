@@ -106,17 +106,3 @@ ok=0; while IFS= read -r l; do node -p 'JSON.parse(process.argv[1]).team' "$l" |
 | `build-pool.ts` | Packs the snapshot's sets, checks that unpacking returns every field, validates, writes the pool (or the file given as an argument) |
 | `report.ts` | Counts, and the contents criteria |
 | `evidence/` | Source snapshot and the acceptance log |
-
-## For integration
-
-AGENTS.md, Current state: replace "There is no project code or data yet." with:
-
-> A 20-team stub pool is in `data/pool/v0/`.
-
-AGENTS.md, Areas: replace "No areas yet. Add a row" with "Add a row", and add this row:
-
-> | Team pool and set priors | 20-team stub pool; no priors | `data/pool/`, `scripts/validate-pool.ts` | [team-pool](docs/areas/team-pool.md) |
-
-AGENTS.md, Conventions, "Re-pin Showdown monthly": replace "validate every pool team and rerun the tests that exist" with:
-
-> validate every pool team (`node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl`, once per pool version in use) and rerun the tests that exist

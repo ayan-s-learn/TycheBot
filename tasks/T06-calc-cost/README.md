@@ -89,7 +89,7 @@ Five runs of `node bench.ts 200 20`, back to back in one process each, under the
 | active: calc share of env time, cached | 0.524 | 0.519–0.526 |
 | active: calc share of env time, cached, sim alone | 0.601 | 0.595–0.602 |
 
-- **Two sim figures:** the calc passes between sim steps leave garbage and cold caches, which slow the sim by about 37% (0.230 against 0.168 ms). In a Node worker that runs both, that slowdown is a cost of the calcs. So the share against the sim alone (60% for the 48) is closer to the calcs' full cost, and the share next to calcs (52%) is a lower bound. T02's sim figure, 0.21 ms per decision at 1 process with 32 battles interleaved (0.218 on its clean rerun), falls between the two.
+- **Two sim figures:** the calc passes between sim steps leave garbage and cold caches, which slow the sim by about 37% (0.230 against 0.168 ms). In a Node worker that runs both, that slowdown is a cost of the calcs. So the share against the sim alone (60% for the 48) is closer to the calcs' full cost, and the share next to calcs (52%) is a lower bound. T02's final sim figure, 0.184 ms per decision at 1 process with 32 battles interleaved, falls between the two. (Corrected at merge, 2026-11-25: this cited T02's earlier 0.21, which T02's review found inflated by other load.)
 - **Calc sets as run** (`calcs.ts`): fainted mons and status moves get no calcs, which is why the sets average 96 and 20 calcs rather than 288 and 48. The "at 288/48 calcs" rows scale µs per calc to the full sets. "active" has no calcs at Team Preview or for a fainted active.
 - **Cache:** one Map per player per game, keyed on every input passed to the calc, current HP included (`readMon`, `readField` in `calcs.ts`). Calc objects are built only on a miss. Cached time includes building the keys.
 - **Where calc time goes:** in one CPU profile of a 10-game run (`node --cpu-prof bench.ts 10 3`, output not kept), `calculate` was 71% of the process's time, and `Pokemon.clone`, which `calculate` runs on both mons for every call, 36%. So roughly half of the time inside `calculate` went to @smogon/calc copying its inputs. Building our own calc objects was 4% of the process.
@@ -105,7 +105,7 @@ D7: if calcs take more than 30% of env time, use the 48. On the brief's measure,
 
 That measure leaves out the env's other per-decision work: Python parsing, the observation builder, transfer and inference (S5, S4). **The 48 stay over 30% of the whole env only if that other work comes to less than 0.36–0.42 ms per decision** (0.254 / 0.3 − 0.254, less the sim next to calcs or alone). So the full test can't be settled until S5 and S4 report.
 
-At full load, T02 measured the sim slowing from 0.21 to 0.38–0.43 ms per decision per process at 14 processes. If calcs didn't slow at all under that contention, the 48 cached would still be 40% of sim + calc (0.254 / (0.254 + 0.38)). Calcs under contention weren't measured.
+At full load, T02 measured the sim slowing from 0.18 to 0.28 ms per decision per process at 14 processes. If calcs didn't slow at all under that contention, the 48 cached would still be 48% of sim + calc (0.254 / (0.254 + 0.28)). (Corrected at merge, 2026-11-25: this used T02's earlier 0.38–0.43 and gave 40%.) Calcs under contention weren't measured.
 
 Two levers:
 
@@ -163,22 +163,3 @@ node support.ts 100 > support.json 2> support.txt
 - `bench.ts` prints one JSON line per run (~62 s each here, plus ~4 s for the sim-alone pass). `summarize.ts` gives the Result table. `support.ts` and `hitrate.ts` are deterministic.
 - `teams/pool.jsonl`: T02's 25 Smogon NatDex sample teams, copied from `task/T02-sim-throughput` at 4664b14 (sha256 `cfebf44c…6d2a4d`). Games are seeded as in T02's `makeGame`.
 - Type-check: `node ../../vendor/pokemon-showdown/node_modules/typescript/bin/tsc -p tsconfig.json`.
-
-## For integration
-
-plan.md, Compute, a new bullet after Env:
-
-```markdown
-- **Damage calcs** (S3, T06): @smogon/calc 0.12.0 takes ~15–16 µs per calc on the M4 Max, in one process. In random-AI games, skipping fainted mons and status moves, the 288 set averaged 96 calcs (1.45 ms per decision uncached, 0.53 ms cached) and the 48 set 20 (0.32 ms, 0.25 ms cached). The sim takes 0.17 ms per decision alone and 0.23 ms when calcs run between its steps (T02: 0.21). In one profile, roughly half the time inside the calc went to copying its inputs.
-```
-
-plan.md, Network v0, the Damage calcs bullet, appended:
-
-```markdown
-  - @smogon/calc's gen 9 data covers NatDex content; it lacks only cosmetic formes and names Aegislash differently (T06). Its gaps found against the sim: Ruination returns 0 (so does Super Fang, checked directly); Payback is doubled by Speed order; no input for Roost's type loss or for damage taken this turn (Counter, Mirror Coat). Field-wide effects (Ruin abilities, Auras) must be passed as field flags for pairs that don't hold the ability.
-```
-
-D7, Damage calcs, the last bullet: waits on the user. Measured, the 48 cached are 52–60% of sim + calc time (T06), so "restrict them to the active mons' moves" doesn't bring calcs under 30% unless the env's other work is ≥0.36–0.42 ms per decision. Options for the user:
-- wait for S5 and S4, and apply the 30% rule to the whole env time;
-- accept the cost, for example by revising the 30% threshold;
-- reduce it, then remeasure. An HP-aware cache key alone was estimated to leave ~40–50%, so it would likely need a patched calc without the per-call copies as well (Result, What D7's rule gives).

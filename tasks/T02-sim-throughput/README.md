@@ -155,8 +155,8 @@ Two sweeps of 3 runs each, the second from a fresh clone (Acceptance checks): `r
 
 ### Gotchas
 
-- **A request can allow a choice the sim rejects as `[Invalid choice]`, with no updated request.** In game 1070337 both players switched on turn 3, and p1's Landorus-T came in first, so its Intimidate set off Great Tusk's Eject Pack. p2's forced-switch request still listed Diancie, already queued to switch in, and choosing it gave `[Invalid choice] Can't switch: The Pokémon in slot 3 can only switch in once` (`Side.clearChoice` seeds `switchIns` from queued switches). `RandomPlayerAI`, and so `Runner`, throws here. The env now answers the same request again (`Collector` in `sim.ts`), which happened 32 times across the two sweeps. Phase 1's action mask has to exclude that Pokémon from the player's own queued choice (now in plan.md, Network v0: Action head, and Phase 1's Action masks).
-- `Teams.import` on the JSON sample teams cuts species names to 18 characters (`Urshifu-Rapid-Stri`), so `teams.ts` packs the sets directly (For integration).
+- **A request can allow a choice the sim rejects as `[Invalid choice]`, with no updated request.** In game 1070337 both players switched on turn 3, and p1's Landorus-T came in first, so its Intimidate set off Great Tusk's Eject Pack. p2's forced-switch request still listed Diancie, already queued to switch in, and choosing it gave `[Invalid choice] Can't switch: The Pokémon in slot 3 can only switch in once` (`Side.clearChoice` seeds `switchIns` from queued switches). `RandomPlayerAI`, and so `Runner`, throws here. The env now answers the same request again (`Collector` in `sim.ts`), which happened 32 times across the two sweeps. Phase 1's action mask has to exclude that Pokémon from the player's own queued choice (now in plan.md, Network v0: Action head, and Phase 1's Action masks). Noted at merge, 2026-11-25: `Collector` retries every `[Invalid choice]`, which also covers incomplete choices and disabled moves, up to 100 per game. Code copied from it should retry only this case, or a mask bug would go unseen.
+- `Teams.import` on the JSON sample teams cuts species names to 18 characters (`Urshifu-Rapid-Stri`), so `teams.ts` packs the sets directly (now in docs/areas/team-pool.md, Gotchas).
 - In this worktree the sandbox refused `source ~/.nvm/nvm.sh` and the inline timing-lock command, and `timed.sh` takes the lock of whichever repository the current directory is in (now in AGENTS.md, Conventions: Timed runs).
 
 ### Acceptance checks
@@ -231,9 +231,3 @@ node compare.ts results/sweep-1.json,results/sweep-2.json <rerun.json>   # check
 | `sim.ts` | Showdown at the pin, the pool, seeds, the output collector, both drivers and the step loop (`play`), shared by every script |
 | `results/` | For each sweep, `.json` has every process's counts and `.log` each configuration and that sweep's median table. Sweeps 1 and 2 are the reported ones (sweep 2 from a fresh clone of be58e92); sweep 3, from a fresh clone of cf61f48, is the check. `battles-1` is one process with one battle |
 | `tsconfig.json` | `node ../../vendor/pokemon-showdown/node_modules/typescript/bin/tsc -p tsconfig.json` type-checks every script |
-
-## For integration
-
-Applied on this branch at the user's request, 2026-11-25, apart from this item, which waits for T05's PR because the file is new there:
-
-- **docs/areas/team-pool.md**, Gotchas: "`Teams.import` on pkmn.github.io's JSON teams passes species through `Dex.getName`, which cuts names to 18 characters, so Urshifu-Rapid-Strike fails validation (sample teams 14, 17 and 18). Pack the sets directly, as T02's `teams.ts` and T05's `build-pool.ts` do."

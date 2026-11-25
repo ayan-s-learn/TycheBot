@@ -55,6 +55,7 @@ node tasks/T05-stub-pool/report.ts data/pool/v0/teams.jsonl
 ## Gotchas
 
 - Packing hand-typed export text can fail the round trip on capitalization (`U-Turn`). One `Teams.pack(Teams.unpack(packed))` fixes the move name.
+- `Teams.import` on pkmn.github.io's JSON teams passes species through `Dex.getName`, which cuts names to 18 characters, so Urshifu-Rapid-Strike fails validation (sample teams 14, 17 and 18). Pack the sets directly, as T02's `teams.ts` and T05's `build-pool.ts` do.
 - At `29f2d99` an `hpType` of `ice` passes `validate-team`, and a `Battle` throws when that set uses Hidden Power.
 - `validateTeam` repairs some illegal sets in place and passes them: at `29f2d99`, Terapagos with Wonder Guard becomes Tera Shift and Mawile with Huge Power becomes Hyper Cutter. A `Battle` started on the unrepaired string plays it as written. So Showdown's `validate-team` passing isn't enough for a pool team; use the script above.
 - 17 v0 sets carry an `hpType` but no Hidden Power move. At `29f2d99` the validator accepts only the listed type on 13 of them (Ogerpon-Wellspring 8, Terapagos 4, Raging Bolt 1) and every type but Normal, Fairy and Stellar on the 4 Great Tusk sets.

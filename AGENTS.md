@@ -10,7 +10,7 @@ A self-play RL bot for [Gen 9] National Dex OU on Pokémon Showdown. GitHub: [ay
 
 Replace this line, don't append to it, when the phase changes. What's in flight is in [docs/checklist.md](docs/checklist.md).
 
-- 2026-11-24: Phase 0 (plan.md, Phases). The toolchain is set (Conventions). There is no project code or data yet.
+- 2026-11-25: Phase 0 (plan.md, Phases). The toolchain is set (Conventions). `data/pool/v0/` holds a 20-team stub pool and `data/replays/v0/` the public replay corpus ([T04](tasks/T04-replay-corpus/README.md), Outputs). The only project code is `scripts/`.
 
 ## Docs
 
@@ -50,19 +50,20 @@ Toolchain decided 2026-11-24 ([T01](tasks/T01-toolchain/README.md)).
 - **Dependencies:** only planning sessions edit `pyproject.toml`, `uv.lock`, `package.json` and `package-lock.json`, so parallel tasks don't conflict on them. A task that needs another package uses `uv run --with <pkg>` or `npm install --no-save <pkg>`, and proposes adding it under For integration. @pkmn/data and @pkmn/dex stay on the 0.10 line, because @pkmn/client 0.7.4 depends on @pkmn/data ^0.10.12 (npm, 2026-11-24).
 - **Showdown** is the commit in `showdown.pin`. `scripts/setup-showdown.sh` fetches and builds it into `vendor/pokemon-showdown/` and emits its type declarations. Rerun it after the pin changes.
 - **Node code is TypeScript,** run directly with `node file.ts`. Type stripping allows erasable syntax only: no enums, namespaces or parameter properties. Load Showdown's CommonJS `dist/` with a default import or `createRequire`; named imports fail. Type-check with `node vendor/pokemon-showdown/node_modules/typescript/bin/tsc -p <tsconfig>`, using a tsconfig like `tasks/T01-toolchain/tsconfig.json` with its `typeRoots` and `files` paths pointed at the root `vendor/`.
-- **Re-pin Showdown monthly** (plan.md, Versioning): fetch master's head into `vendor/pokemon-showdown` (`git fetch --depth 1 origin <new>`) and read `git diff <old> <new> -- config/formats.ts data sim` there (GitHub's compare API lists at most 300 files). Write the new commit into `showdown.pin`, rerun the setup script, validate every pool team and rerun the tests that exist, then commit the pin.
+- **Re-pin Showdown monthly** (plan.md, Versioning): fetch master's head into `vendor/pokemon-showdown` (`git fetch --depth 1 origin <new>`) and read `git diff <old> <new> -- config/formats.ts data sim` there (GitHub's compare API lists at most 300 files). Write the new commit into `showdown.pin`, rerun the setup script, validate every pool team (`node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl`, once per pool version in use) and rerun the tests that exist, then commit the pin.
 - **Timed runs** share this machine with other sessions. Run each timed command under the lock in the git common dir, in one shell command so the lock is released even if the run fails:
   `L="$(git rev-parse --path-format=absolute --git-common-dir)/timing.lock"; until mkdir "$L" 2>/dev/null; do sleep 30; done; echo "<task ID> $(date +%FT%T)" > "$L/owner"; trap 'rm -f "$L/owner"; rmdir "$L" 2>/dev/null' EXIT; trap 'exit 143' INT TERM HUP; <command>`. Agent shells are zsh, which skips an EXIT trap on a signal unless the signal trap exits.
   Record `sysctl -n vm.loadavg` with each run. If the lock has been held for over an hour, tell the user; `owner` says which task holds it and since when.
-  In an agent session isolated in a worktree, the sandbox can refuse the inline lock command and `source ~/.nvm/nvm.sh`. T02's `timed.sh` holds the same lock command, and prefixing `PATH` with `~/.nvm/versions/node/v24.<x>/bin` stands in for `nvm use`. The lock command finds the git common dir from the current directory, so a timed run of a separate clone must start from inside this repository to take the shared lock.
+  In an agent session isolated in a worktree, the sandbox can refuse the inline lock command and `source ~/.nvm/nvm.sh`. T02's `timed.sh` holds the same lock command (writing T02 as owner), and prefixing `PATH` with `~/.nvm/versions/node/v24.<x>/bin` stands in for `nvm use`. The lock command finds the git common dir from the current directory, so a timed run of a separate clone must start from inside this repository to take the shared lock.
 - **Spike code is throwaway.** It stays in its task folder. Phase 1 code may copy from it but doesn't import it.
 
 ## Areas
 
-No areas yet. Add a row when work in one starts, using the component names from plan.md (Components) where one fits:
+Add a row when work in one starts, using the component names from plan.md (Components) where one fits:
 
 | Area | Status | Code | Notes |
 |---|---|---|---|
+| Team pool and set priors | 20-team stub pool; no priors | `data/pool/`, `scripts/validate-pool.ts` | [team-pool](docs/areas/team-pool.md) |
 
 Status lives in the row (a few words) and the detail in the area's notes, `docs/areas/<area>.md`. Put in the notes only what has been verified, and skip what doesn't apply yet:
 

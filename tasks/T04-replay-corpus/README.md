@@ -181,17 +181,3 @@ Limits:
   79f37d0. The cache holds replays with chat.
 - [fetch-log.json](fetch-log.json): this run's times, search pages, rejected replays (none), and the
   search entries scanned for the high-rated sample (100 of 1,049 were rated ≥1500).
-
-## For integration
-
-1. plan.md, Compute: add this bullet before **M4 Max:**.
-
-   > - **Turns per game** (T04: 1,000 public replays of human games, uploaded 2026-11-22 to 11-25 UTC): mean 24.6, median 22, p90 38, including 35 custom-rule games (without them: mean 24.9, p90 39). 42% ended by forfeit or inactivity, so these are too low for games played to the end. A Kaplan-Meier correction gives median 27, p90 56 and mean 35.0 counted up to turn 137, likely too high: counting the nearly decided cut games (a side down to one Pokémon or none) as ended gives 26, 47 and 30.8. Games not ended by forfeit or inactivity: mean 26.2, median 24, p90 39; the ladder ones among them (403 of 794 ladder games): mean 25.7, median 23, p90 38. Self-play lengths are unmeasured.
-
-2. plan.md, Training v0: T04's lengths give no reason to change the starting cap of 300, and can't confirm it. Replace the "Turn cap" line, keeping its indent under **Reward:**, with:
-
-   > - Turn cap: start at 300 and tune from game-length data. None of T04's 1,100 public replays passed 300 turns, but that is a weak check: the longest (263) was cut off by a tournament disqualification with no Pokémon fainted, 5 of the 7 games over 100 turns ended early, and no game past turn 137 was played out. A Kaplan-Meier correction on the 1,000-game corpus puts 4.7% of games past turn 100 (95% interval 2.5 to 8.0; 0.6% observed), likely too high (2.2% if the nearly decided cut games count as ended), and can't estimate the share past 300. These are human games, and self-play lengths are unmeasured. Capped games are truncated and bootstrap from V(s) (D10). Log the cap-hit rate.
-
-3. AGENTS.md, Current state: replace the line (dated at merge, and combined with other tasks' changes to it) with:
-
-   > - 2026-11-24: Phase 0 (plan.md, Phases). The toolchain is set (Conventions). There is no project code yet. `data/replays/v0/` holds the public replay corpus ([T04](tasks/T04-replay-corpus/README.md), Outputs).
