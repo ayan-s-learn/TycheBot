@@ -10,11 +10,11 @@ Phase 0 exit ([plan.md](plan.md), Phases): the toolchain is recorded (done 2026-
 
 ## Next replan
 
-When T02 (S1) has a PR up, since its result unblocks S6's brief. Earlier if any other task opens a PR or stops on a stop condition.
+When T02 (S1) pushes a Progress entry starting `Recorder ready`: S6's brief can then be written on that commit, without waiting for T02's timing work. Earlier if any task opens a PR or stops on a stop condition.
 
 ## Needs you
 
-Nothing now. T07 (S4) will bring the v0 net size and D9's threshold for sign-off, and S6 the tracker choice.
+Nothing to decide now. Later: T07 (S4) brings the v0 net size and D9's threshold for sign-off, and S6 the tracker choice. T06 (S3) may reopen D7's calcs, if even the 48 active-mon calcs take over 30% of env time.
 
 ## Active
 
@@ -25,20 +25,20 @@ None yet.
 Start these four now, each in its own session (`/do-task T02` and so on). They share no files.
 
 - T02: S1 sim throughput. [Brief](../tasks/T02-sim-throughput/README.md). Start it first: S1 → S6 → S5 is the longest chain.
-- T03: S2 server game replayed in-process. [Brief](../tasks/T03-server-replay/README.md).
+- T06: S3 damage-calc cost. [Brief](../tasks/T06-calc-cost/README.md). Early because it may reopen D7, and S5 needs its numbers.
 - T04: replay corpus. [Brief](../tasks/T04-replay-corpus/README.md). Gives turns per game for S1's numbers, and Phase 1's robustness test reuses it.
 - T05: stub pool. [Brief](../tasks/T05-stub-pool/README.md).
 
 Then start these as sessions free up, keeping to four at once:
 
-- T07: S4 MPS throughput. [Brief](../tasks/T07-mps-throughput/README.md). Before T06, because its proposals need your sign-off.
-- T06: S3 damage-calc cost. [Brief](../tasks/T06-calc-cost/README.md). Applies D7's 30% rule once T02's result is in.
+- T07: S4 MPS throughput. [Brief](../tasks/T07-mps-throughput/README.md). Its proposals need your sign-off, and S5 needs its CPU inference numbers.
+- T03: S2 server game replayed in-process. [Brief](../tasks/T03-server-replay/README.md). Last, because no Phase 0 choice waits on it; it checks D7's one-builder premise for Phase 1's online client.
 
-T02, T06 and T07 take their timed runs under a shared lock (each brief's Limits), so their sessions can overlap without skewing each other's numbers.
+T02, T06 and T07 take timed runs under a shared lock and record load averages (AGENTS.md, Conventions: Timed runs). That keeps their timed runs apart, though not clear of the other sessions' lighter work.
 
 ## Blocked
 
-- S6: battle-tracker comparison. Needs T02's recorded per-player streams. Its brief comes at the next replan.
+- S6: battle-tracker comparison. Needs T02's recorder output. Its brief comes at the next replan.
 - S5: transfer overhead. Needs T06's calc cost and T07's CPU inference numbers. Planned after S6, or else measuring both architectures: if S6 picks @pkmn/client, tracking moves into Node and the calc round trip S5 would measure goes away (D7).
 
 ## Done

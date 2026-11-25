@@ -8,12 +8,12 @@
   - Showdown's replay server. On 2026-11-24, `https://replay.pokemonshowdown.com/search.json?format=gen9nationaldex` returned 51 replays per page, newest first, about 6 hours of uploads, each with a `rating`. `https://replay.pokemonshowdown.com/<id>.json` returns one replay with its log. Check paging, filters and fields before relying on them.
   - No Showdown build is needed.
 - **Deliverables:**
-  - `data/replays/v0/replays.jsonl.gz`: one replay per line with at least its id, upload time, rating and full log. Outputs documents the format.
+  - `data/replays/v0/replays.jsonl.gz`: one replay per line with at least its id, upload time, rating and log. Drop the chat lines (`|c|`, `|c:|`) before committing: the repo is public, and the parser test doesn't need other players' chat. Outputs documents the format.
   - The fetch and stats scripts, in this folder.
-  - Result: turns per game (median, mean, p90, max) over all games, over games not ended by forfeit or inactivity, and by rating band, with ≥1500 reported separately if there are at least 100 such games. Also the forfeit share, the date range and the rating distribution.
+  - Result: turns per game (median, mean, p90, max) over all games, over games not ended by forfeit or inactivity, and by rating band. Include at least 100 games rated ≥1500 as their own band, with their dates: the newest uploads rarely reach 1500, and `&sort=rating` returns the highest-rated, which on 2026-11-24 went back to 2023. Also the forfeit share, the date range and the rating distribution.
   - Under For integration: the turns-per-game figures for plan.md (Compute), and whether game lengths support Training v0's starting cap of 300.
 - **Acceptance checks:**
-  - At least 1,000 distinct replays, each with format id exactly `gen9nationaldex` (not another NatDex format), and each log ending in `|win|` or `|tie|`.
+  - At least 1,000 distinct replays, each with format id exactly `gen9nationaldex` (not another NatDex format), and each log containing exactly one `|win|` or `|tie` line. Rated logs go on past `|win|` with rating lines.
   - The stats script reproduces Result's numbers from the committed file alone.
 - **May change:** `tasks/T04-replay-corpus/`, `data/replays/v0/`.
 - **Limits:** one session. Requests one at a time with a pause between them, and a generic User-Agent with no personal details.

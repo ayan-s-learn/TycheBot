@@ -6,7 +6,7 @@
 - **Inputs:**
   - Setup first (AGENTS.md, Conventions), including `scripts/setup-showdown.sh`: each worktree builds its own `vendor/`.
   - D4's decided parts (sources through Phase 2, validation, interface), plan.md (Components 5).
-  - Sources, in order: Smogon's NatDex sample teams (`https://pkmn.github.io/smogon/data/teams/gen9nationaldex.json`; T01 used entries 0 and 2), then recent tournament pastes through pokepast.es JSON.
+  - Sources, in order: Smogon's NatDex sample teams (`https://pkmn.github.io/smogon/data/teams/gen9nationaldex.json`; T01 used entries 0 and 2), then recent tournament pastes through pokepast.es JSON. The replan's review found all 25 sample teams valid at the pin on 2026-11-24, so pastes should only be needed to replace any that fail.
 - **Deliverables:**
   - `data/pool/v0/teams.jsonl`: one team per line, with the team in Showdown's packed format and its source (URL, and name and date where given). The task picks any other fields.
   - `scripts/validate-pool.ts`: validates every team in a pool file at the pin and exits non-zero if any fails, naming it. The monthly re-pin (Conventions) will use it.
@@ -16,7 +16,7 @@
 - **Acceptance checks:**
   - `node scripts/validate-pool.ts data/pool/v0/teams.jsonl` exits 0 at the pin, with 20 distinct teams.
   - On a copy in which one team has a banned Pokémon, it exits non-zero and its output names that team and the ban, so a crash can't pass for a rejection.
-  - Between them, the teams include at least one Mega Stone, one Z-Crystal, one Illusion user, and one forme that Team Preview hides (plan.md, Format facts). If the sources lack any of these, Result says which. S6 and Phase 1 test against them.
+  - Between them, the teams include at least one Mega Stone, one Z-Crystal, and one forme that Team Preview hides (plan.md, Format facts). No sample team has an Illusion user (checked 2026-11-24); T02 covers Illusion with a test team instead.
 - **May change:** `tasks/T05-stub-pool/`, `data/pool/v0/`, `scripts/validate-pool.ts`, `docs/areas/team-pool.md`.
 - **Limits:** one session, no paid services.
 - **Stop and report if:** fewer than 20 teams from D4's sources validate.

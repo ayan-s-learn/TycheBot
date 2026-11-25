@@ -3,6 +3,11 @@
 # and emits type declarations for sim/ and sim/tools/ so TS code can type-check against dist/.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+want=$(tr -d '[:space:]v' < .nvmrc)
+if [ "$(node --version | sed 's/^v//; s/\..*//')" != "$want" ]; then
+  echo "Node $(node --version), but .nvmrc wants $want: run nvm use first" >&2
+  exit 1
+fi
 sha=$(tr -d '[:space:]' < showdown.pin)
 dir=vendor/pokemon-showdown
 
