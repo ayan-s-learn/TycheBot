@@ -1,7 +1,7 @@
 """Throughput of the stand-in net: MPS inference and PPO training in fp32 and under fp16/bf16 autocast,
 and CPU inference at a fixed thread count. One process is one run; it appends one JSON line per configuration.
 
-Usage: uv run python bench.py <out.jsonl> [mps|cpu|all] [seconds=2]
+Usage: uv run python bench.py <out.jsonl> [mps|cpu|all] [seconds=2] [sizes=all, comma-separated]
 """
 
 import json
@@ -93,6 +93,7 @@ def main():
     out = sys.argv[1]
     part = sys.argv[2] if len(sys.argv) > 2 else "all"
     seconds = float(sys.argv[3]) if len(sys.argv) > 3 else 2.0
+    sizes = sys.argv[4].split(",") if len(sys.argv) > 4 else list(SIZES)
     assert "PYTORCH_ENABLE_MPS_FALLBACK" not in os.environ, "run with CPU fallback disabled"
     torch.set_num_interop_threads(1)
     gen = torch.Generator().manual_seed(0)
@@ -100,12 +101,12 @@ def main():
     meta = {"run": run, "torch": torch.__version__, "python": platform.python_version()}
     configs = []
     if part in ("mps", "all"):
-        for size in SIZES:
+        for size in sizes:
             for dtype in DTYPES:
                 configs += [("mps_infer", size, dtype, b, None) for b in MPS_INFER_BATCHES]
                 configs += [("mps_train", size, dtype, b, None) for b in TRAIN_BATCHES]
     if part in ("cpu", "all"):
-        for size in SIZES:
+        for size in sizes:
             for threads in CPU_THREADS:
                 configs += [("cpu_infer", size, "fp32", b, threads) for b in CPU_BATCHES]
     with open(out, "a") as f:

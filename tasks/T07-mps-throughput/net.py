@@ -1,7 +1,8 @@
 """Stand-in for plan.md's Network v0: same token layout, trunk and heads, fed synthetic inputs.
 
-Token layout (77 tokens; 53 with opp_moves=0): field (1), own mons (6), opposing mons (6),
-own mons' moves (24), opposing mons' moves (24), last events (16). Own mon 0 is the active one.
+Token layout (77 tokens): field (1), own mons (6), opposing mons (6), own mons' moves (24), opposing mons' moves (24),
+last events (16). Own mon 0 is the active one, and the first 4 own move tokens are its moves. The @53 sizes drop the
+opposing moves; the @33 sizes keep only the active mon's 4 moves, which is plan.md's token list as written.
 """
 
 import math
@@ -25,18 +26,22 @@ class Size:
     name: str
     d: int
     layers: int
+    own_moves: int = 24
     opp_moves: int = 24
 
     @property
     def tokens(self):
-        return 1 + 12 + 24 + self.opp_moves + 16
+        return 1 + 12 + self.own_moves + self.opp_moves + 16
 
 
 SIZES = {
     "3M": Size("3M", 192, 5),
     "5M": Size("5M", 256, 5),
     "9M": Size("9M", 320, 6),
-    "5M@53": Size("5M@53", 256, 5, opp_moves=0),  # 5M with no opposing move tokens: 53 tokens
+    "5M@53": Size("5M@53", 256, 5, opp_moves=0),
+    "3M@33": Size("3M@33", 192, 5, own_moves=4, opp_moves=0),
+    "5M@33": Size("5M@33", 256, 5, own_moves=4, opp_moves=0),
+    "9M@33": Size("9M@33", 320, 6, own_moves=4, opp_moves=0),
 }
 
 
@@ -137,8 +142,8 @@ def obs(size: Size, b, gen):
         "opp_ids": torch.stack([i(N_SPECIES, b, 6), i(N_ITEMS, b, 6), i(N_ABILITIES, b, 6)]
                                + [i(N_MOVES, b, 6) for _ in range(4)], -1),
         "opp_num": r(b, 6, MON_F),
-        "move_ids": i(N_MOVES, b, 24 + size.opp_moves),
-        "move_num": r(b, 24 + size.opp_moves, MOVE_F),
+        "move_ids": i(N_MOVES, b, size.own_moves + size.opp_moves),
+        "move_num": r(b, size.own_moves + size.opp_moves, MOVE_F),
         "event_ids": torch.stack([i(N_EVENT_TYPES, b, 16), i(N_SPECIES, b, 16), i(N_MOVES, b, 16)], -1),
         "event_num": r(b, 16, EVENT_F),
         "present": present,
