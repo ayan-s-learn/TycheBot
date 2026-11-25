@@ -26,6 +26,18 @@
 ## Progress
 
 ```text
+2026-11-24 (2)
+State: active
+Verified: Recorder ready: 8e01572. record.ts and sample.jsonl (Outputs, Recorder): 12 games, 4.35 MB,
+  with Mega Evolutions, Z-Moves, Zoroark-Hisui's Illusion and Zamazenta-* in Team Preview.
+  `node record.ts sample.jsonl 12` reproduces it byte for byte. check.ts: Battle direct, BattleStream
+  and getPlayerStreams give the same chunks, results and input logs on games 0-49. Node 24.22.3,
+  Showdown 29f2d99.
+Pending: the timing harness and runs; the acceptance checks on more games.
+Next: write bench.ts and sweep.ts, then the timed sweep (1 to 14 processes, 3 runs) under the lock.
+```
+
+```text
 2026-11-24
 State: active
 Verified: nothing yet
