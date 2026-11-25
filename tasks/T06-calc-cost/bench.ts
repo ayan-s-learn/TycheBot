@@ -44,7 +44,10 @@ run(1_000_000, warmup); // other games than the timed ones, so JIT warm-up isn't
 const start = performance.now();
 const sim = run(0, games);
 const wallMs = performance.now() - start;
+// The same games again with no calcs: the calc passes above leave garbage and cold caches that slow the
+// sim steps between them, so `sim` is the sim's cost next to calcs and `simAlone` its cost without them.
+const simAlone = play(gameIds(0, games, pool));
 console.log(JSON.stringify({
 	date: new Date().toISOString(), node: process.version, pin: PIN, games, warmup, wallMs: Math.round(wallMs),
-	loadavgBefore: before, loadavgAfter: loadavg(), sim, calcs: results,
+	loadavgBefore: before, loadavgAfter: loadavg(), sim, simAlone, calcs: results,
 }));

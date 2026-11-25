@@ -3,11 +3,18 @@
 import { readFileSync } from 'node:fs';
 
 const runs = process.argv.slice(2).flatMap(f => readFileSync(f, 'utf8').trim().split('\n').map(l => JSON.parse(l)));
-const rows: [string, (r: any) => number, number][] = [['sim ms per decision', r => r.sim.simMs / r.sim.decisions, 3]];
+if (!runs.every(r => r.simAlone)) {
+	throw new Error('runs without simAlone (from bench.ts before its sim-alone pass): summarize them with git show 89d7a24:tasks/T06-calc-cost/summarize.ts');
+}
+const rows: [string, (r: any) => number, number][] = [
+	['sim ms per decision, next to calcs', r => r.sim.simMs / r.sim.decisions, 3],
+	['sim ms per decision, alone', r => r.simAlone.simMs / r.simAlone.decisions, 3],
+];
 for (const [mode, max] of [['all', 288], ['active', 48]] as const) {
 	const c = (r: any) => r.calcs[mode];
 	const perDecision = (r: any, k: 'uncached' | 'cached') => c(r)[`${k}Ms`] / c(r)[k].decisions;
 	const sim = (r: any) => r.sim.simMs / r.sim.decisions;
+	const alone = (r: any) => r.simAlone.simMs / r.simAlone.decisions;
 	rows.push(
 		[`${mode}: calcs per decision (max ${max})`, r => c(r).uncached.calcs / c(r).uncached.decisions, 1],
 		[`${mode}: µs per calc, uncached`, r => 1000 * c(r).uncachedMs / c(r).uncached.calcs, 1],
@@ -17,6 +24,7 @@ for (const [mode, max] of [['all', 288], ['active', 48]] as const) {
 		[`${mode}: ms per decision at ${max} calcs, uncached`, r => max * c(r).uncachedMs / c(r).uncached.calcs, 3],
 		[`${mode}: calc share of env time, uncached`, r => perDecision(r, 'uncached') / (sim(r) + perDecision(r, 'uncached')), 3],
 		[`${mode}: calc share of env time, cached`, r => perDecision(r, 'cached') / (sim(r) + perDecision(r, 'cached')), 3],
+		[`${mode}: calc share of env time, cached, sim alone`, r => perDecision(r, 'cached') / (alone(r) + perDecision(r, 'cached')), 3],
 	);
 }
 const fmt = (x: number, d: number) => x.toFixed(d);
