@@ -23,6 +23,15 @@
 
 ## Progress
 
+2026-11-25, claim:
+
+```text
+State: active
+Verified: torch 2.15.0, Python 3.14.7, MPS available (M4 Max, 32-core GPU, 36 GB)
+Pending: everything
+Next: write the stand-in net and benchmark
+```
+
 ## Result
 
 ## Outputs
