@@ -26,6 +26,17 @@
 ## Progress
 
 ```text
+2026-11-25 (4)
+State: done
+Verified: the user accepted item 5's tolerance on 2026-11-25: each rerun median within 10% of the
+  reported median. By it acceptance check 2 passes: `node compare.ts results/sweep-1.json results/sweep-2.json`
+  and `node compare.ts results/sweep-1.json,results/sweep-2.json results/sweep-3.json` exit 0 (farthest
+  6.1% and 5.0%), and a 4-second smoke sweep (not kept) exits 1. The other two checks passed (entry (3)).
+Pending: none. The brief's wording of check 2 still says "within the reported spread": item 5.
+Next: a planning session reviews the PR, applies For integration, and edits the brief per item 5.
+```
+
+```text
 2026-11-25 (3)
 State: blocked (acceptance check 2 as written fails twice; passing it needs a tolerance, For
   integration item 5)
@@ -139,7 +150,7 @@ Two sweeps of 3 runs each, the second from a fresh clone (Acceptance checks): `r
 ### Acceptance checks
 
 - **Same games:** passed (the driver check, above), here and in the fresh clone of cf61f48.
-- **Timing rerun from a clean checkout:** sweep 2 reran sweep 1's Outputs command from a fresh clone of be58e92. By the rule fixed beforehand (`compare.ts`: each rerun median within the reported min–max), **it failed: 9 of 14 medians fell outside sweep 1's ranges**, all on the slow side, by up to 6% (median 2%). The figures above therefore pool both sessions, and sweep 3, from another fresh clone of cf61f48, checks them by the same rule. **It failed too: 4 of 14 medians fell outside the pooled ranges**, each above the maximum by 0.3–1.5%. Its medians are all within about 5% of the pooled ones (`compare.ts` prints each). A configuration's three runs typically spanned 2–5% within one sweep, with single runs up to 16% off, and sessions drifted a few percent on top of that, so a rerun's median often lands just outside a min–max. **Passing the check needs a tolerance instead, which changes the brief** (For integration, item 5).
+- **Timing rerun from a clean checkout:** sweep 2 reran sweep 1's Outputs command from a fresh clone of be58e92. By the rule fixed beforehand (`compare.ts`: each rerun median within the reported min–max), **it failed: 9 of 14 medians fell outside sweep 1's ranges**, all on the slow side, by up to 6% (median 2%). The figures above therefore pool both sessions, and sweep 3, from another fresh clone of cf61f48, checks them by the same rule. **It failed too: 4 of 14 medians fell outside the pooled ranges**, each above the maximum by 0.3–1.5%. Its medians are all within about 5% of the pooled ones (`compare.ts` prints each). A configuration's three runs typically spanned 2–5% within one sweep, with single runs up to 16% off, and sessions drifted a few percent on top of that, so a rerun's median often lands just outside a min–max. So the user accepted a tolerance instead on 2026-11-25 (For integration, item 5): each rerun median within 10% of the reported median. **By that rule check 2 passes:** `compare.ts` exits 0 for sweep 2 against sweep 1 (farthest 6.1%) and for sweep 3 against the pooled figures (farthest 5.0%).
 - **Recorder:** `node record.ts sample.jsonl 0-10,15` reproduces the committed sample byte for byte, here and in fresh clones of be58e92 and cf61f48.
 
 ### Not checked
@@ -196,7 +207,7 @@ Each exits non-zero if any game differs. It compares each game's per-player chun
 ```bash
 ./timed.sh node sweep.ts results/sweep-1.json > results/sweep-1.log    # about 22 minutes
 node compare.ts results/sweep-1.json,results/sweep-2.json                # the pooled table
-node compare.ts results/sweep-1.json,results/sweep-2.json <rerun.json>   # checks a rerun (Acceptance checks)
+node compare.ts results/sweep-1.json,results/sweep-2.json <rerun.json>   # checks a rerun: exit 0 if every median is within 10%
 ```
 
 `timed.sh` takes the timing lock (AGENTS.md, Conventions) of the repository the current directory is in, and prints the load averages before and after. To time a separate clone under the shared lock, run this folder's `timed.sh` from here with the clone's paths: `./timed.sh node <clone>/tasks/T02-sim-throughput/sweep.ts <clone>/tasks/T02-sim-throughput/results/sweep.json`.
@@ -229,4 +240,4 @@ node compare.ts results/sweep-1.json,results/sweep-2.json <rerun.json>   # check
 
 4. **AGENTS.md, Conventions, Timed runs:** add: "In an agent session isolated in a worktree, the sandbox can refuse the inline lock command and `source ~/.nvm/nvm.sh`. T02's `timed.sh` holds the same lock command, and prefixing `PATH` with `~/.nvm/versions/node/v24.<x>/bin` stands in for `nvm use`. The lock command finds the git common dir from the current directory, so a timed run of a separate clone must start from inside this repository to take the shared lock."
 
-5. **This brief's acceptance check on timing** (planning sessions edit briefs): replace "The timing commands in Outputs rerun from a clean checkout and land within the reported spread." with "The timing commands in Outputs rerun from a clean checkout, and each rerun median ms/decision lies within 10% of the reported median." By that rule both reruns pass: sweep 2's medians are within about 6% of sweep 1's, and sweep 3's within about 5% of the pooled ones (`compare.ts`). The three sessions' medians differed by up to 8.4% from each other (direct, 14 processes), so a tolerance much under 10% would fail on session drift alone, and no conclusion here rests on a smaller difference.
+5. **This brief's acceptance check on timing** (planning sessions edit briefs; the user accepted the rule on 2026-11-25): replace "The timing commands in Outputs rerun from a clean checkout and land within the reported spread." with "The timing commands in Outputs rerun from a clean checkout, and each rerun median ms/decision lies within 10% of the reported median." By that rule both reruns pass: sweep 2's medians are within about 6% of sweep 1's, and sweep 3's within about 5% of the pooled ones (`compare.ts`). The three sessions' medians differed by up to 8.4% from each other (direct, 14 processes), so a tolerance much under 10% would fail on session drift alone, and no conclusion here rests on a smaller difference.
