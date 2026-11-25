@@ -25,6 +25,13 @@
 
 ## Progress
 
+```text
+State: active
+Verified: nothing yet (claimed 2026-11-24)
+Pending: setup, benchmark, NatDex support check, range check
+Next: run setup, then write the benchmark
+```
+
 ## Result
 
 ## Outputs
