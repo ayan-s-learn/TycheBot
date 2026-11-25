@@ -23,6 +23,13 @@
 
 ## Progress
 
+```text
+State: active
+Verified: nothing yet
+Pending: pool, validate script, area notes, acceptance checks
+Next: set up vendor/, then fetch the sample teams and validate them at the pin
+```
+
 ## Result
 
 ## Outputs
