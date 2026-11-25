@@ -1,8 +1,11 @@
-== commit e4269e1, Node v24.22.3
+== commit 767e8f4, Node v24.22.3
 == type check
 ok
 == pool validates
 20/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== pool matches the source snapshot
+25 sample teams, 0 failed validation, 20 taken
+ok
 == pool contents
 20 teams, 20 distinct; most species two teams share: 4
 Species (40 distinct, 120 sets): Zamazenta 12, Ogerpon-Wellspring 8, Iron Treads 7, Slowking-Galar 7, Zapdos 7, Garchomp 5, Tapu Lele 5, Gholdengo 4, Great Tusk 4, Kingambit 4, Kyurem 4, Pecharunt 4, Terapagos 4, Alomomola 3, Diancie 3, Landorus-Therian 3, Samurott-Hisui 3, Ting-Lu 3, Tornadus-Therian 3, Urshifu-Rapid-Strike 3, Corviknight 2, Dragonite 2, Ferrothorn 2, Latios 2, Ceruledge 1, Cinderace 1, Cresselia 1, Hatterene 1, Heatran 1, Lopunny 1, Mawile 1, Moltres 1, Moltres-Galar 1, Ninetales 1, Raging Bolt 1, Slowbro 1, Tyranitar 1, Venusaur 1, Volcarona 1, Weavile 1
@@ -12,5 +15,17 @@ Hidden at Team Preview (15): Zamazenta-* 12, Urshifu-* 3
 == a banned Pokemon is rejected
 FAIL smogon-sample-06 (line 7):
   Mewtwo is tagged ND Uber, which is banned.
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== a set the validator would silently repair is rejected
+FAIL smogon-sample-06 (line 7):
+  Terapagos: the validator changes ability "Wonder Guard" to "Tera Shift"
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== a truncated team is rejected
+FAIL smogon-sample-06 (line 7):
+  a pool team has 6 Pokemon, this one has 5
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== a malformed field is rejected
+FAIL smogon-sample-06 (line 7):
+  "team" is not a canonical packed team
 19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
 == acceptance checks passed

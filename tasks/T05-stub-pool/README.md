@@ -25,7 +25,7 @@
 
 ```text
 State: done
-Verified: all acceptance checks (evidence/acceptance.log, code at e4269e1, Showdown 29f2d99).
+Verified: all acceptance checks (evidence/acceptance.log, code at 767e8f4, Showdown 29f2d99).
 Pending: none
 Next: a planning session reviews the PR.
 ```
