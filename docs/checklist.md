@@ -32,7 +32,7 @@ Start these four now, each in its own session (`/do-task T02` and so on). They s
 Then start these as sessions free up, keeping to your limit of four at once:
 
 - T07: S4 MPS throughput. [Brief](../tasks/T07-mps-throughput/README.md). Its proposals need your sign-off, and S5 needs its CPU inference numbers.
-- T03: S2 server game replayed in-process. [Brief](../tasks/T03-server-replay/README.md). Last, because no other task needs its output. It checks D7's one-builder premise, which the online client and S6's tracker choice rely on.
+- T03: S2 server game replayed in-process. [Brief](../tasks/T03-server-replay/README.md). Last, because no task needs it to start. It checks D7's one-builder premise, so S6's sign-off should wait for its Result.
 
 T02, T06 and T07 take timed runs under a shared lock and record load averages (AGENTS.md, Conventions: Timed runs). That keeps their timed runs apart, though not clear of the other sessions' lighter work.
 
