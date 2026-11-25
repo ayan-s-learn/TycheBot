@@ -47,9 +47,11 @@ Acceptance checks (`acceptance.sh`, Node 24.22.3; log in `evidence/acceptance.lo
 - With Mewtwo swapped into the team on line 7, the validator exits 1 with `FAIL smogon-sample-06 (line 7)` and `Mewtwo is tagged ND Uber, which is banned.`
 - Mega Stones, Z-Crystals and hidden formes are all present (below).
 - Rebuilding from the snapshot gives the committed file byte for byte.
-- The validator also rejects a set it would otherwise silently repair, a 5-mon team, a malformed field, a miscased `hpType` and a nickname containing a newline.
+- The validator also rejects a 5-mon team, a malformed field, and sets it would otherwise silently edit: changed ability, species, moves, gender, Tera type, `hpType` or nickname.
 
 The validator is stricter than D4's `validate-team`, which passes sets it repairs, such as Terapagos with Wonder Guard (notes, Gotchas). It also requires 6 Pokemon and canonical packed form.
+
+`scripts/setup-showdown.sh` is outside the brief's May change; the user OK'd this fix on 2026-11-25. The script checked out the new pin before `npm ci`, so a failure there left the old `dist/`, which then passed the pin check. It now removes `dist/` before touching the checkout. Reproduced on copies with a stand-in pin and a failing `npm`: with the old script the validator reported 20/20 at the new pin, with the new one it fails for lack of a build. A failed fetch leaves no `dist/` either, so it now removes a good build too. A `node build` failing partway wasn't tried.
 
 Separately, the `validate-team gen9nationaldex` CLI accepts each of the 20 packed teams (command in Outputs).
 
@@ -71,11 +73,17 @@ From `node tasks/T05-stub-pool/report.ts data/pool/v0/teams.jsonl`:
 
 ## Outputs
 
-After setup (AGENTS.md, Conventions), from the root, with `nvm use` in the same shell:
+From a clean clone, on macOS with git, nvm and uv:
 
 ```bash
-tasks/T05-stub-pool/acceptance.sh
+git clone --branch task/T05-stub-pool https://github.com/ayan-s-learn/TycheBot.git && cd TycheBot
 ```
+
+```bash
+nvm use && npm ci && uv sync --locked && scripts/setup-showdown.sh && tasks/T05-stub-pool/acceptance.sh
+```
+
+Once the branch is merged and deleted, clone `main` instead. In a checkout that's already set up, run `acceptance.sh` alone, with `nvm use` in the same shell.
 
 To rebuild `teams.jsonl` from the snapshot (reproduces it byte for byte):
 
@@ -109,9 +117,3 @@ AGENTS.md, Areas: replace "No areas yet. Add a row" with "Add a row", and add th
 AGENTS.md, Conventions, "Re-pin Showdown monthly": replace "validate every pool team and rerun the tests that exist" with:
 
 > validate every pool team (`node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl`, once per pool version in use) and rerun the tests that exist
-
-`scripts/setup-showdown.sh`: it checks out the pin before `npm ci`, so a failure there can leave the old `dist/` under the new HEAD, which `validate-pool.ts` accepts. Delete the line `rm -rf dist  # the build only adds files, so a re-pin would keep stale modules`, and add this before the `if` that compares HEAD with `$sha`. A review subagent tried it on a copy: after a lockfile mismatch, an offline `npm ci` or a failed fetch, no `dist/` remains (so a failed fetch also removes a good build). A partial `node build` failure wasn't tried.
-
-```bash
-rm -rf "$dir/dist"  # first, so a failed setup can't leave an old build; the build only adds files
-```

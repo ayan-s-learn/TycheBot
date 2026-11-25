@@ -65,7 +65,7 @@ rejects 'sets[0] = "Latios||ChoiceSpecs|Levitate|HiddenPowerIce,DracoMeteor|Timi
 echo "== a nickname the validator would clean is rejected"
 rejects 'sets[0] = sets[0].replace("Zamazenta||", "x\nwin|Zamazenta|")' 'Zamazenta: the validator changes name'
 
-echo "== every other kind of silent edit is rejected"
+echo "== other silent edits are rejected"
 rejects 'sets[0] = "Mimikyu-Busted||Leftovers|Disguise|PlayRough|Jolly|4,252,,,,252|||||"' \
 	'changes species "Mimikyu-Busted" to "Mimikyu"'
 rejects 'sets[0] = "Latios||Leftovers|Levitate|DracoMeteor,,Psyshock|Timid|4,,,252,,252|M||||"' \
