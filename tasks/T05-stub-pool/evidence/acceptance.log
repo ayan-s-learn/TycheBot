@@ -1,4 +1,4 @@
-== commit f95d4b1, Node v24.22.3
+== commit eae2f40, Node v24.22.3
 == type check
 ok
 == pool validates
@@ -34,7 +34,19 @@ FAIL smogon-sample-06 (line 7):
 19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
 == a nickname the validator would clean is rejected
 FAIL smogon-sample-06 (line 7):
-  Zamazenta: the validator changes name "x
-win" to "x win"
+  Zamazenta: the validator changes name "x\nwin" to "x win"
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== other silent edits are rejected
+FAIL smogon-sample-06 (line 7):
+  Mimikyu-Busted: the validator changes species "Mimikyu-Busted" to "Mimikyu"
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+FAIL smogon-sample-06 (line 7):
+  Latios: the validator changes moves ["Draco Meteor","","Psyshock"] to ["Draco Meteor","Psyshock"]
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+FAIL smogon-sample-06 (line 7):
+  Latios: the validator changes gender "F" to "M"
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+FAIL smogon-sample-06 (line 7):
+  Latios: the validator changes teraType "Fire" to undefined
 19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
 == acceptance checks passed

@@ -24,10 +24,13 @@
 ## Progress
 
 ```text
+2026-11-25
 State: done
-Verified: all acceptance checks (evidence/acceptance.log, code at f95d4b1, Showdown 29f2d99).
+Verified: all acceptance checks from a clean clone of this branch at eae2f40, Showdown 29f2d99
+  (evidence/acceptance.log). A second setup run over that build gave identical acceptance output.
+  Rebuilding the pool left the clone unchanged, and validate-team accepted all 20 teams.
 Pending: none
-Next: a planning session reviews the PR.
+Next: a planning session reviews and merges the PR.
 ```
 
 ## Result
@@ -41,7 +44,7 @@ All 25 of Smogon's sample teams validate at Showdown 29f2d99, so the pool is ent
 
 Source: `https://pkmn.github.io/smogon/data/teams/gen9nationaldex.json`, fetched 2026-11-24, 36,674 bytes, SHA-256 `f35934eb5238b3069139fa6a67de999e654873e5da4f8f5142b84446c60a1fe1`, saved as `evidence/sample-teams.json`.
 
-Acceptance checks (`acceptance.sh`, Node 24.22.3; log in `evidence/acceptance.log`):
+Acceptance checks (`acceptance.sh` from a clean clone, Node 24.22.3; log in `evidence/acceptance.log`):
 
 - The pool validates: 20/20, 20 distinct.
 - With Mewtwo swapped into the team on line 7, the validator exits 1 with `FAIL smogon-sample-06 (line 7)` and `Mewtwo is tagged ND Uber, which is banned.`
