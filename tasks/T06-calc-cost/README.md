@@ -97,7 +97,7 @@ Five runs of `node bench.ts 200 20`, back to back in one process each, under the
 - **Reruns** (acceptance check 1):
   - Clean checkout of 43ce14c (fresh clone, full setup per AGENTS.md including its own Showdown build), 3 runs at load 1.6–4.1 (`runs/2026-11-25-clean-rerun.jsonl`). Everything that isn't a timing matched exactly: `support.json` byte for byte, `hitrate.ts` (26.3%, 59.4%), calcs per decision and hit rates. The 48's cached share was 53.1% (51.4–53.2%) next to calcs and 59.2% (58.7–61.5%) against the sim alone, within about a point of the 5-run range. Absolute timings were 4–7% faster than that range: sim 0.215 next to calcs and 0.165 alone, µs per calc 14.5 and 15.2, the 48 cached at 0.244 ms per decision. One run of the three was slower (sim 0.250), which is where the wider ranges come from.
   - Earlier runs, before the sim-alone pass: 5 runs at load 14.7 falling to 4.1 (`runs/2026-11-24.jsonl`, summarized by `summarize.ts` at 89d7a24) gave sim 0.243 and the 48 cached at 0.261 ms, 51% of sim + calc. A clean checkout of 719b754, sharing this worktree's `vendor/`, at load 31.9 falling to 10.3 (`runs/2026-11-24-clean-rerun.jsonl`) gave sim 0.274, the 48 cached at 0.263 ms, 48.9%.
-  - So absolute timings move with machine load by up to ~10% across sessions, more than one session's 5-run range. The calc share that D7's rule uses stayed at 49–53% next to calcs in every set.
+  - So absolute timings move with machine load across sessions by more than one session's 5-run range: across the four sets, sim next to calcs took 0.215–0.274 ms per decision (medians) and the 48 cached 0.244–0.263 ms. The calc share that D7's rule uses stayed at 49–53% next to calcs in every set.
 
 ### What D7's rule gives
 
