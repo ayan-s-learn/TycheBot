@@ -26,6 +26,17 @@
 ## Progress
 
 ```text
+2026-11-24 (3)
+State: done
+Verified: all three acceptance checks ran (Result, Acceptance checks). check.ts: no differences on games
+  0-499 and 1070330-1070349. The sample reproduces byte for byte, here and in a clean clone of
+  31fb536. Timing: the 3-run sweep (results/sweep.log); the clean-checkout rerun lands within its spread
+  for 3 of 4 ms/decision figures, and stream at 1 process 0.4% above. Node 24.22.3, Showdown 29f2d99.
+Pending: none
+Next: a planning session reviews the PR and applies For integration.
+```
+
+```text
 2026-11-24 (2)
 State: active
 Verified: Recorder ready: 8e01572. record.ts and sample.jsonl (Outputs, Recorder): 12 games, 4.35 MB,
@@ -46,6 +57,57 @@ Next: set up the worktree, then build the recorder and its sample (Megas, Z-Move
 ```
 
 ## Result
+
+**Recommendation: drive `Battle` directly.** At 14 processes the drivers' medians differ by 1% (0.380 vs 0.384 ms per decision), well inside plan.md's 10% rule. Neither driver needed a Showdown patch, and the same seeds and choices gave the same games in every game checked, so no stop condition was hit. All runs: Showdown 29f2d99, Node 24.22.3, M4 Max, 2026-11-24.
+
+### Drivers
+
+Both drivers run the same `Battle` code (`sim.ts`). They differ only in how the env reaches it:
+
+- **Battle direct:** `new Battle({ formatid, seed, send })` and two `setPlayer` calls. Each choice is `battle.choose(side, choice)` followed by `battle.sendUpdates()`, as `BattleStream` does after each write. The `send` callback receives the same `update`, `sideupdate` and `end` messages that `BattleStream` pushes.
+- **BattleStream:** `>start`, `>player` and `>p1 <choice>` lines are written to a `BattleStream`, and an async loop per battle reads its chunks. After sending a step's choices, the env yields once (`setImmediate`) so every loop has drained.
+
+Both feed one collector, which splits the output per player as `getPlayerStreams` does. Each process runs 32 battles interleaved: each step answers every open request with Showdown's `RandomPlayerAI` (`Runner.AI_OPTIONS`), then sends every choice. `strictChoices` is off, as the training env needs.
+
+The driver check (Outputs) found no difference across games 0–499 (23,531 turns, 54,160 decisions, 401 Mega Evolutions, 446 Z-Moves), nor across games 1070330–1070349, which include an `[Invalid choice]` (Gotchas).
+
+### Timing
+
+From `results/sweep.log`: the median (min–max) over 3 runs of a 20 s window each, after a 5 s warm-up, with every process busy for the whole window. ms per decision and per turn are the cost to one process sharing the machine with the others: all processes' driver time (sending choices, collecting both players' output, starting and ending games) over all their decisions or turns. Decisions/s is for all processes together, including the players' time.
+
+| Processes | ms/decision, direct | ms/decision, stream | ms/turn, direct | ms/turn, stream | decisions/s, direct | decisions/s, stream |
+|---|---|---|---|---|---|---|
+| 1 | 0.213 (0.209–0.219) | 0.215 (0.213–0.223) | 0.487 (0.479–0.502) | 0.493 (0.487–0.511) | 4,468 (4,350–4,550) | 4,417 (4,252–4,467) |
+| 2 | 0.213 (0.210–0.216) | 0.214 (0.212–0.217) | 0.487 (0.482–0.494) | 0.490 (0.486–0.497) | 8,946 (8,801–9,035) | 8,885 (8,748–8,955) |
+| 4 | 0.219 (0.216–0.237) | 0.222 (0.221–0.226) | 0.502 (0.494–0.542) | 0.508 (0.506–0.518) | 17,334 (16,070–17,606) | 17,134 (16,786–17,187) |
+| 8 | 0.243 (0.238–0.244) | 0.246 (0.243–0.270) | 0.556 (0.545–0.559) | 0.564 (0.556–0.620) | 31,321 (31,167–31,980) | 30,788 (27,902–31,259) |
+| 10 | 0.277 (0.267–0.351) | 0.282 (0.276–0.451) | 0.635 (0.612–0.805) | 0.646 (0.633–1.033) | 34,409 (27,160–35,629) | 33,402 (20,553–34,060) |
+| 12 | 0.324 (0.312–0.444) | 0.335 (0.298–0.408) | 0.742 (0.715–1.017) | 0.769 (0.683–0.935) | 35,364 (25,835–36,665) | 33,479 (27,572–37,381) |
+| 14 | 0.380 (0.374–0.500) | 0.384 (0.372–0.469) | 0.871 (0.858–1.146) | 0.881 (0.854–1.075) | 35,187 (26,712–35,727) | 34,064 (27,886–35,066) |
+
+- **Drivers:** at every process count the ms/decision medians are within 4% of each other. At 14 processes stream was 2–7% faster in three of four runs (counting the clean-checkout rerun below) and direct 3% faster in the other, so the gap is noise next to the 10% rule. Counting the players' time as well, stream was 3% slower at 14 processes (decisions/s).
+- **Scaling:** throughput flattens past 8 processes: 10 processes (the performance-core count) add 10% over 8, and 14 add 2% over 10 (direct). Meanwhile each process's cost per decision rises from 0.21 ms alone to 0.38 ms.
+- **Choice time** (`RandomPlayerAI`, reported apart): 0.011 ms per decision in one process, and 0.018 (direct) or 0.027 (stream) at 14. The players are the same in both, so some of stream's cost lands in the choice phase (GC is a likely cause, not measured). That is why the decisions/s comparison above counts both.
+- **Games:** across the sweep's 168k random games, a game averaged 48.9 turns and a turn 2.29 decisions. So ~35k decisions/s is ~15k turns/s, or ~310 random games/s (~27M a day) for the sim alone. Games per day for real games follow from T04's turns per game; random players switch 30% of the time (`Runner.AI_OPTIONS` move 0.7), so their decisions per turn may not carry over.
+- **Load:** run 1 was 22–63% slower than runs 2 and 3 at 10–14 processes, for both drivers, so the spread there is wide. The cause is unknown. Run 1's 1-minute load averages (5–26) were lower than runs 2 and 3's (10–36), and they mostly reflect the sweep's own previous configuration, so they can't separate other sessions' load.
+
+### Gotchas
+
+- **A request can allow a choice the sim rejects as `[Invalid choice]`, with no updated request.** In game 1070337 both players switched on turn 3, and p1's Landorus-T came in first, so its Intimidate set off Great Tusk's Eject Pack. p2's forced-switch request still listed Diancie, already queued to switch in, and choosing it gave `[Invalid choice] Can't switch: The Pokémon in slot 3 can only switch in once` (`Side.clearChoice` seeds `switchIns` from queued switches). `RandomPlayerAI`, and so `Runner`, throws here. The env now answers the same request again (`Collector` in `sim.ts`), which happened 10 times in the sweep. Phase 1's action mask has to exclude that Pokémon from the player's own queued choice (For integration).
+- `Teams.import` on the JSON sample teams cuts species names to 18 characters (`Urshifu-Rapid-Stri`), so `teams.ts` packs the sets directly (For integration, item 3).
+- In this worktree the sandbox refused `source ~/.nvm/nvm.sh` and the inline timing-lock command (For integration, item 4).
+
+### Acceptance checks
+
+- **Same games:** passed (the driver check, above).
+- **Timing rerun from a clean checkout:** a fresh clone of 31fb536, set up as in AGENTS.md, ran `node sweep.ts <out> 1,14 1` under this worktree's `timed.sh`. A clone's own `timed.sh` would lock that clone's `.git` instead of the shared lock. Three of the four ms/decision figures land within the sweep's min–max: direct 0.218 at 1 process and 0.427 at 14, and stream 0.400 at 14. **Stream at 1 process came out at 0.224, 0.4% above its range (0.213–0.223).** Its ms/turn and decisions/s at 1 process are just outside their ranges too, by under 1%, as is direct's decisions/s (4,347 against a minimum of 4,350). See `results/rerun-clean.log`. A min–max over three runs is narrow: a fourth run of the same distribution lands outside it half the time.
+- **Recorder:** `node record.ts sample.jsonl 12` reproduces the committed sample byte for byte, here and in the clean clone.
+
+### Not checked
+
+- `[Unavailable choice]`: no pool team has a hidden trapping ability, and none occurred.
+- Battles per process other than 32, and Node versions other than 24.
+- Sending output to Python (S5), damage calcs (S3) and observation building. Choice time is `RandomPlayerAI`'s, not a network's.
 
 ## Outputs
 
@@ -94,16 +156,30 @@ For games 0–499 of the pool (`makeGame` in `sim.ts`), it compares each game's 
 ./timed.sh node sweep.ts results/sweep.json > results/sweep.log    # about 18 minutes
 ```
 
-`timed.sh` takes the timing lock (AGENTS.md, Conventions) and prints the load averages before and after. `node sweep.ts <out.json> [procs=1,2,4,8,10,12,14] [runs=3] [seconds=20] [warmup=5] [concurrency=32]` runs, for each run, process count and driver, that many `bench.ts` processes on one shared window: they warm up until it opens, count until it closes, and stop at the next step. Each process plays the pool's games with 32 battles interleaved, from game id `run × 10⁶ + process × 10⁴`, the same ids for both drivers. The drivers swap order each run. `sweep.json` keeps every process's counts, and `sweep.log` ends with the median table. `node bench.ts <direct|stream> [first] [startMs] [endMs] [concurrency]` is one process on its own.
+`timed.sh` takes the timing lock (AGENTS.md, Conventions) and prints the load averages before and after. `node sweep.ts <out.json> [procs=1,2,4,8,10,12,14] [runs=3] [seconds=20] [warmup=5] [concurrency=32]` runs, for each run, process count and driver, that many `bench.ts` processes on one shared window: they warm up until it opens, count until it closes, and stop at the next step. Each process plays the pool's games with 32 battles interleaved, and both drivers play the same game ids. `node bench.ts <direct|stream> [first] [startMs] [endMs] [concurrency]` is one process on its own.
 
 | File | What it is |
 |---|---|
-| `sim.ts` | Showdown at the pin, the pool, seeds, the output collector, both drivers and the step loop (`play`) |
-| `record.ts`, `sample.jsonl` | The recorder and its committed sample |
-| `check.ts` | The driver check |
-| `bench.ts`, `sweep.ts`, `timed.sh` | Timing: one process, the sweep, the lock wrapper |
-| `results/` | The sweeps' raw counts and logs |
-| `teams.ts`, `teams/` | The pool builder, the pool and the Illusion team |
+| `sim.ts` | Showdown at the pin, the pool, seeds, the output collector, both drivers and the step loop (`play`), shared by every script |
+| `results/` | `sweep.json`, every process's counts; `sweep.log`, each configuration and the median table. `rerun-clean.*` is the clean-checkout rerun |
 | `tsconfig.json` | `node ../../vendor/pokemon-showdown/node_modules/typescript/bin/tsc -p tsconfig.json` type-checks every script |
 
 ## For integration
+
+1. **plan.md, Compute:** replace the Env bullet's first sub-bullet (`~2.0 ms per median turn per Node process (PokaiTrainer, VGC doubles). No singles figure found.`) with:
+
+   ```markdown
+     - Measured by S1 (T02, 2026-11-24, Showdown 29f2d99, Node 24, M4 Max), driving `Battle` directly between random players, with 32 battles per process: 0.21 ms per decision (0.49 ms per turn) in one process. With 10–14 processes the machine does ~35k decisions/s, and 14 processes add 2% over 10. This covers the sim and the per-player split only: no transfer to Python (S5), calcs (S3) or observation building. Random games averaged 2.3 decisions per turn; games per day follow from T04's turns per game. PokaiTrainer's VGC doubles figure was ~2.0 ms per median turn.
+   ```
+
+2. **plan.md, Network v0, Action head:** after the `[Unavailable choice]` bullet, add:
+
+   ```markdown
+     - A request can also allow a choice the sim rejects as `[Invalid choice]`, with no updated request. When a forced switch comes mid-turn (for example Eject Pack, set off by Intimidate) while the side's own switch is still queued, the request still lists the Pokémon being switched in, but choosing it is rejected (`Side.clearChoice` seeds `switchIns` from the queue). The mask excludes it, using the player's own queued choice (T02).
+   ```
+
+   And in Phase 1's Action masks exit criterion, after "`[Unavailable choice]` rejections (hidden trapping or disabling) count as expected.", add: "The mid-turn switch case above is masked from the player's own queued choice, since the request doesn't show it."
+
+3. **docs/areas/team-pool.md** (T05's notes), if they don't already say it, under gotchas: "`Teams.import` on pkmn.github.io's JSON teams passes species through `Dex.getName`, which cuts names to 18 characters, so Urshifu-Rapid-Strike fails validation (sample teams 14, 17 and 18). Pack the sets directly, as T02's `teams.ts` does."
+
+4. **AGENTS.md, Conventions, Timed runs:** add: "In an agent session isolated in a worktree, the sandbox can refuse the inline lock command and `source ~/.nvm/nvm.sh`. T02's `timed.sh` holds the same lock command, and prefixing `PATH` with `~/.nvm/versions/node/v24.<x>/bin` stands in for `nvm use`."
