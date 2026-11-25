@@ -27,7 +27,7 @@
 
 ```text
 State: done
-Verified: Acceptance checks (Result), torch 2.15.0, at c514be3
+Verified: Acceptance checks (Result), torch 2.15.0, code at 17c2742
 Pending: review (workflow.md, Task session, step 7)
 Next: review; the net size and D9's threshold need the user's OK
 ```
