@@ -26,16 +26,18 @@
 ## Progress
 
 ```text
-2026-11-24 (3)
-State: blocked (stop condition met on the brief's measure, calc / (sim + calc): the 48 calcs, cached,
-  are 52-60% of it. Whether they exceed 30% of the whole env waits on S5 and S4)
-Verified: bench.ts with a sim-alone pass, 5 runs of 200 games at load 3-5 (Result). An independent
-  review (PR #5) found the sim figure inflated by the calc passes around it; the sim-alone pass
-  measures that. Its HP-key hit rate is reproduced (hitrate.ts). NatDex support and range check,
-  100 games, every mismatch with a confirmed cause. Node 24.22.3, Showdown 29f2d99, @smogon/calc 0.12.0.
-Pending: acceptance check 1 strictly (Result, Reruns); For integration's D7 text, which waits on the
-  user.
-Next: planning session: put D7's calc cost to the user (Result, What D7's rule gives).
+2026-11-25
+State: done (stop condition met on the brief's measure: the 48 calcs, cached, are 52-60% of sim + calc,
+  so D7 reopens. Whether they exceed 30% of the whole env waits on S5 and S4)
+Verified: bench.ts with its sim-alone pass, 5 runs of 200 games (Result). Clean checkout of 43ce14c
+  with full setup: support.json identical, hitrate.ts identical, calc counts and hit rates identical,
+  calc shares within ~1 point of the 5-run range. NatDex support and range check, 100 games, every
+  mismatch with a confirmed cause. Independent review (PR #5) applied, and its numbers reproduced.
+  Node 24.22.3, Showdown 29f2d99, @smogon/calc 0.12.0.
+Pending: acceptance check 1 holds for the shares but not strictly for absolute timings: the clean
+  checkout ran 4-7% faster than the 5-run range, at lower load (Result, Reruns). For integration's D7
+  text waits on the user.
+Next: planning session: review and merge PR #5, and put D7's calc cost to the user.
 ```
 
 ```text
@@ -93,9 +95,9 @@ Five runs of `node bench.ts 200 20`, back to back in one process each, under the
 - **Where calc time goes:** in one CPU profile of a 10-game run (`node --cpu-prof bench.ts 10 3`, output not kept), `calculate` was 71% of the process's time, and `Pokemon.clone`, which `calculate` runs on both mons for every call, 36%. So roughly half of the time inside `calculate` went to @smogon/calc copying its inputs. Building our own calc objects was 4% of the process.
 - **Hit rate under D7's prior sets:** these runs use true sets for both sides, so it may differ there. A player's own mons keep their true sets. An opposing mon's prior set changes whenever a reveal changes which library set is consistent, which invalidates that mon's entries, so the per-game hit rate may be somewhat lower early in a game and about the same once sets are revealed. Prior sets are shared across games, so a worker-wide cache could hit across games, unlike this one. Not measured: the set library doesn't exist yet.
 - **Reruns** (acceptance check 1):
-  - Before the sim-alone pass existed, the same benchmark ran 5 times at load 14.7 falling to 4.1 (`runs/2026-11-24.jsonl`, summarized by `summarize.ts` at 89d7a24): sim 0.243 (0.236–0.256), µs per calc 15.5 and 16.2, the 48 cached at 0.261 ms per decision, 51% of sim + calc. The calc rows above are ~3% below those runs, at lower load.
-  - Clean checkout: a fresh clone of 719b754, sharing this worktree's `vendor/` and `node_modules/` (same pin and lockfile), 3 runs (`runs/2026-11-24-clean-rerun.jsonl`) at load 31.9 falling to 10.3: sim 0.274 (0.273–0.283), µs per calc 15.6 and 16.3, the 48 cached at 0.263 ms, 48.9% of sim + calc. `support.json` was identical.
-  - So the timings move with load by up to ~7% (sim) and ~4% (calcs), more than any one set of runs' spread. The clean checkout's run used the bench before its sim-alone pass; the sim-alone runs weren't repeated on a clean checkout.
+  - Clean checkout of 43ce14c (fresh clone, full setup per AGENTS.md including its own Showdown build), 3 runs at load 1.6–4.1 (`runs/2026-11-25-clean-rerun.jsonl`). Everything that isn't a timing matched exactly: `support.json` byte for byte, `hitrate.ts` (26.3%, 59.4%), calcs per decision and hit rates. The 48's cached share was 53.1% (51.4–53.2%) next to calcs and 59.2% (58.7–61.5%) against the sim alone, within about a point of the 5-run range. Absolute timings were 4–7% faster than that range: sim 0.215 next to calcs and 0.165 alone, µs per calc 14.5 and 15.2, the 48 cached at 0.244 ms per decision. One run of the three was slower (sim 0.250), which is where the wider ranges come from.
+  - Earlier runs, before the sim-alone pass: 5 runs at load 14.7 falling to 4.1 (`runs/2026-11-24.jsonl`, summarized by `summarize.ts` at 89d7a24) gave sim 0.243 and the 48 cached at 0.261 ms, 51% of sim + calc. A clean checkout of 719b754, sharing this worktree's `vendor/`, at load 31.9 falling to 10.3 (`runs/2026-11-24-clean-rerun.jsonl`) gave sim 0.274, the 48 cached at 0.263 ms, 48.9%.
+  - So absolute timings move with machine load by up to ~10% across sessions, more than one session's 5-run range. The calc share that D7's rule uses stayed at 49–53% next to calcs in every set.
 
 ### What D7's rule gives
 
