@@ -1,5 +1,6 @@
 // Validates every team in a pool file with Showdown's validator at the commit in showdown.pin.
-// A team also fails unless it is 6 Pokemon in canonical packed form that the validator leaves as written.
+// A team also fails unless it is 6 Pokemon in canonical packed form, and validation leaves its species,
+// items, abilities, moves, and any gender, nature, Hidden Power type or nickname as written.
 // Usage: node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl
 // Exits 1 if any team fails, naming each one.
 import { execFileSync } from 'node:child_process';
@@ -34,10 +35,19 @@ function check(team: unknown): string[] | null {
 	const problems = validator.validateTeam(sets);
 	if (problems) return problems;
 	// validateTeam repairs some illegal sets in place and passes them, but the sim plays the string as written.
-	const changes = Teams.unpack(team)!.flatMap((written, i) => (['species', 'item', 'ability', 'moves', 'gender'] as const)
-		// An unset gender is legal, and the validator fills it in for species with a fixed one.
-		.filter(key => (key !== 'gender' || written.gender) && String([written[key]].flat().map(toID)) !== String([sets[i][key]].flat().map(toID)))
-		.map(key => `${written.species}: the validator changes ${key} "${written[key]}" to "${sets[i][key]}"`));
+	const changes = Teams.unpack(team)!.flatMap((written, i) => {
+		const kept = sets[i];
+		const ids = (value: string | string[]) => String([value].flat().map(toID));
+		const changed = [
+			// Compared by id, because unpacking respells some names ("Kings Rock" for "King's Rock").
+			...(['species', 'item', 'ability', 'moves'] as const).filter(key => ids(written[key]) !== ids(kept[key])),
+			// Compared exactly when set (unset ones are legally filled in): an hpType of "ice" crashes the sim.
+			...(['gender', 'nature', 'hpType'] as const).filter(key => written[key] && written[key] !== kept[key]),
+		] as (keyof typeof written)[];
+		// A name equal to the species means no nickname, and the sim shortens it as the server would.
+		if (written.name !== written.species && written.name !== kept.name) changed.push('name');
+		return changed.map(key => `${written.species}: the validator changes ${key} "${written[key]}" to "${kept[key]}"`);
+	});
 	return changes.length ? changes : null;
 }
 

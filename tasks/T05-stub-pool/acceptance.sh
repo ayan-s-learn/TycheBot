@@ -58,4 +58,11 @@ rejects 'sets.pop()' 'a pool team has 6 Pokemon, this one has 5'
 echo "== a malformed field is rejected"
 rejects 'sets[0] = sets[0].replace(/\|[^|]*$/, "|x")' '"team" is not a canonical packed team'
 
+echo "== a miscased Hidden Power type, which crashes the sim, is rejected"
+rejects 'sets[0] = "Latios||ChoiceSpecs|Levitate|HiddenPowerIce,DracoMeteor|Timid|4,,,252,,252|M||||,ice,,,,"' \
+	'Latios: the validator changes hpType "ice" to "Ice"'
+
+echo "== a nickname the validator would clean is rejected"
+rejects 'sets[0] = sets[0].replace("Zamazenta||", "x\nwin|Zamazenta|")' 'Zamazenta: the validator changes name'
+
 echo "== acceptance checks passed"

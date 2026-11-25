@@ -47,7 +47,7 @@ Acceptance checks (`acceptance.sh`, Node 24.22.3; log in `evidence/acceptance.lo
 - With Mewtwo swapped into the team on line 7, the validator exits 1 with `FAIL smogon-sample-06 (line 7)` and `Mewtwo is tagged ND Uber, which is banned.`
 - Mega Stones, Z-Crystals and hidden formes are all present (below).
 - Rebuilding from the snapshot gives the committed file byte for byte.
-- The validator also rejects a set it would otherwise silently repair, a 5-mon team and a malformed field.
+- The validator also rejects a set it would otherwise silently repair, a 5-mon team, a malformed field, a miscased `hpType` and a nickname containing a newline.
 
 The validator is stricter than D4's `validate-team`, which passes sets it repairs, such as Terapagos with Wonder Guard (notes, Gotchas). It also requires 6 Pokemon and canonical packed form.
 
@@ -110,7 +110,7 @@ AGENTS.md, Conventions, "Re-pin Showdown monthly": replace "validate every pool 
 
 > validate every pool team (`node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl`, once per pool version in use) and rerun the tests that exist
 
-`scripts/setup-showdown.sh`: it checks out the pin before `npm ci`, so a failure there leaves the old `dist/` under the new HEAD, which `validate-pool.ts` accepts. Delete the line `rm -rf dist  # the build only adds files, so a re-pin would keep stale modules`, and add this before the `if` that compares HEAD with `$sha` (untested):
+`scripts/setup-showdown.sh`: it checks out the pin before `npm ci`, so a failure there can leave the old `dist/` under the new HEAD, which `validate-pool.ts` accepts. Delete the line `rm -rf dist  # the build only adds files, so a re-pin would keep stale modules`, and add this before the `if` that compares HEAD with `$sha`. A review subagent tried it on a copy: after a lockfile mismatch, an offline `npm ci` or a failed fetch, no `dist/` remains (so a failed fetch also removes a good build). A partial `node build` failure wasn't tried.
 
 ```bash
 rm -rf "$dir/dist"  # first, so a failed setup can't leave an old build; the build only adds files

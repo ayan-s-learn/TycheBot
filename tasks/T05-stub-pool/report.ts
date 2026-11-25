@@ -45,7 +45,8 @@ for (const [i, team] of teams.entries()) {
 	}
 }
 
-// Ignores set order, move order and cosmetic fields, so a reshuffled copy of a team is not a second team.
+// Ignores set and move order, nicknames, gender, shininess, level and happiness, so a reshuffled copy
+// of a team is not a second team.
 const distinct = new Set(teams.map(t => t.map(s => JSON.stringify(
 	[s.species, s.item, s.ability, [...s.moves].sort(), s.nature, s.evs, s.ivs])).sort().join())).size;
 const rosters = teams.map(t => new Set(t.map(s => s.species)));
