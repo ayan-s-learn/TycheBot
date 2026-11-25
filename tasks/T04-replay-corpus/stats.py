@@ -42,6 +42,13 @@ def check(ok, what):
         failures.append(what)
 
 
+def kind_of(lines):
+    """From the |rated| line: ladder games have an empty one, tournament games a label."""
+    if "|rated|" in lines:
+        return "ladder"
+    return "tournament" if any(line.startswith("|rated|") for line in lines) else "not rated"
+
+
 def parse(record):
     lines = record["log"].split("\n")
     results = result_lines(lines)
@@ -75,6 +82,8 @@ def parse(record):
         "ending": ending,
         "tie": result.startswith("|tie"),
         "custom_rules": any(map(CUSTOM_RULES.match, lines)),
+        "kind": kind_of(lines),
+        "last_timestamp": max((int(line.split("|")[2]) for line in lines if line.startswith("|t:|")), default=0),
         "results": len(results),
         "chat": any(line.startswith(("|c|", "|c:|")) for line in lines),
         "rating_lines_ok": bool(results) and bool(rating_at) and min(rating_at) > results[0],
@@ -90,7 +99,7 @@ def load(name):
 
 def band(game):
     if game["rating"] is None:
-        return "unrated"
+        return "no rating"
     return [label for label, low in BANDS if game["rating"] >= low][-1]
 
 
@@ -99,9 +108,13 @@ def check_games(name, games):
     check(len({g["id"] for g in games}) == len(games), f"{len(games)} replays, all ids distinct")
     check(all(g["formatid"] == FORMAT for g in games), f"every formatid is {FORMAT}")
     check(all(g["results"] == 1 for g in games), "every log has exactly one |win| or |tie line")
-    rated = [g for g in games if g["rating"] is not None]
+    rated = [g for g in games if g["rating"] is not None or g["kind"] == "ladder"]
     bad = [g["id"] for g in rated if not g["rating_lines_ok"]]
-    check(not bad, f"{len(rated)} rated games: |raw| rating lines follow the result {bad[:10]}")
+    check(not bad, f"{len(rated)} ladder games: |raw| rating lines follow the result "
+                   f"({len(bad)} without them {bad[:5]})")
+    if bad:
+        early = sum(g["uploadtime"] < g["last_timestamp"] for g in games if g["id"] in bad)
+        print(f"info  of those, uploaded before the log's last |t:| timestamp: {early}")
     check(not any(g["chat"] for g in games), "no |c| or |c:| lines")
     differ = [g["id"] for g in rated if g["new_ratings"] and g["rating"] != min(g["new_ratings"])]
     print(f"info  rating differs from the lower new rating in the log: {len(differ)} games {differ[:10]}")
@@ -146,15 +159,18 @@ def report(name, games):
 
     custom = [g for g in games if g["custom_rules"]]
     print(f"Custom-rule games: {len(custom)} ({percent(len(custom), len(games))}), "
-          f"{sum(g['rating'] is not None for g in custom)} of them rated.")
+          f"{sum(g['rating'] is not None for g in custom)} with a rating, "
+          f"{sum(g['kind'] == 'tournament' for g in custom)} tournament games.")
 
     played = [g for g in games if g["ending"] == "played out"]
-    rated = [g for g in games if g["rating"] is not None]
     print("\n### Turns per game\n")
-    table([("all", games), ("not ended by forfeit or inactivity", played), ("rated", rated),
-           ("rated, not ended by forfeit or inactivity", [g for g in played if g["rating"] is not None])]
+    table([("all", games), ("not ended by forfeit or inactivity", played),
+           ("ladder", [g for g in games if g["kind"] == "ladder"]),
+           ("ladder, not ended by forfeit or inactivity", [g for g in played if g["kind"] == "ladder"])]
           + [(f"rating {label}", [g for g in games if band(g) == label]) for label, _ in BANDS]
-          + [("unrated", [g for g in games if band(g) == "unrated"]), ("custom rules", custom)])
+          + [(f"no rating: {kind}", [g for g in games if g["rating"] is None and g["kind"] == kind])
+             for kind in ("ladder", "tournament", "not rated")]
+          + [("custom rules", custom)])
 
     t = np.array([g["turns"] for g in games])
     print(f"\nTotal turns {t.sum()}. p99 {np.percentile(t, 99):g}, p99.9 {np.percentile(t, 99.9):g}.")
@@ -170,10 +186,10 @@ def report(name, games):
     print("\n### Rating distribution (the lower player's rating after the game)\n")
     print("| band | n | share |\n|---|---|---|")
     counts = collections.Counter(map(band, games))
-    for label in [label for label, _ in BANDS] + ["unrated"]:
+    for label in [label for label, _ in BANDS] + ["no rating"]:
         print(f"| {label} | {counts[label]} | {percent(counts[label], len(games))} |")
     q = np.percentile(ratings, [0, 25, 50, 75, 90, 99, 100])
-    print("\nRated games, min / p25 / median / p75 / p90 / p99 / max: " + " / ".join(f"{v:.0f}" for v in q))
+    print("\nGames with a rating, min / p25 / median / p75 / p90 / p99 / max: " + " / ".join(f"{v:.0f}" for v in q))
 
 
 def main():
