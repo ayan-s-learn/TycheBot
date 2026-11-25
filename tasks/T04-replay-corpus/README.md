@@ -105,23 +105,26 @@ forfeit or inactivity. The longest, 263, ended in a tournament disqualification 
 with no Pokémon fainted. The longest played out ran 137. In the corpus, p99 is 88 and 6 games (0.6%)
 passed turn 100.
 
-**Corrected for cut-short games** (Kaplan-Meier, corpus). A game ended by forfeit or inactivity is
-taken to have gone on as long as other games that reached the same turn.
+**Corrected for cut-short games** (Kaplan-Meier, corpus, 95% intervals). A game ended by forfeit or
+inactivity is known to have reached its last turn, and from that turn on is taken to behave like the
+games still running.
 
-| measure | observed | corrected (95% interval) |
-|---|---|---|
-| median turns | 22 | 27 |
-| p90 turns | 38 | 58 |
-| mean turns, counting each game up to turn 137 | 24.4 | 35.7 |
-| share past turn 50 | 4.1% | 12.5% (9.6 to 15.8) |
-| share past turn 100 | 0.6% | 5.1% (2.7 to 8.6) |
-| share past turn 137 | 0.3% | 3.2% (1.2 to 6.9) |
+| measure | observed | corrected | nearly decided games counted as ended |
+|---|---|---|---|
+| median turns | 22 | 27 (26 to 28) | 26 |
+| p90 turns | 38 | 56 (49 to 78) | 47 |
+| mean turns, counting each game up to turn 137 | 24.4 | 35.0 | 30.8 |
+| share past turn 50 | 4.1% | 11.8% (8.9 to 15.0) | 8.1% |
+| share past turn 100 | 0.6% | 4.7% (2.5 to 8.0) | 2.2% |
+| share past turn 137 | 0.3% | 3.0% (1.1 to 6.5) | 1.4% |
 
 - The observed figures are too low for games played to the end, since a cut game would have run at
   least as long as it did.
-- The corrected ones rest on an assumption that is doubtful: 114 of the 416 cut games that started
-  ended with a side down to one Pokémon or none. Those likely had little left, which pushes the
-  correction too high.
+- The corrected column is likely too high. It assumes a cut says nothing about the time left, but 114
+  of the 416 cut games that started ended with a side down to one Pokémon or none. The last column
+  takes the other extreme for those: they end where they were cut. Bias from other cuts wasn't
+  measured.
+- Only 6 corpus games were observed past turn 100, 2 of them played out, so the tail is thin.
 - Past turn 137 no game was played out, and nothing is estimated past turn 263. The share of games
   that would pass 300 is unknown.
 
@@ -134,7 +137,7 @@ inactivity 2%.
 | all | 100 | 23 | 27.6 | 48.2 | 129 |
 | not ended by forfeit or inactivity | 33 | 29 | 30.8 | 43 | 90 |
 
-The same correction gives this sample a median of 36 turns, from only 33 games played out.
+The same correction gives this sample a median of 36 turns (33 to 55), from only 33 games played out.
 
 Limits:
 
@@ -160,7 +163,7 @@ Limits:
 - Replay search, probed 2026-11-24: `search.json?format=gen9nationaldex` returns up to 51 entries,
   newest upload first (a 51st means another page), each with `id`, `format`, `players`, `uploadtime`,
   `rating`, `private` and `password`. `before=<uploadtime>` is exclusive, so `fetch.py` passes the
-  last time plus one and drops repeats. `&sort=rating` returns the highest-rated, back to 2024. Every
+  last time plus one and drops repeats. `&sort=rating` returns the highest-rated, back to 2023. Every
   replay fetched had `formatid` `gen9nationaldex`.
 - Fetch: `uv run tasks/T04-replay-corpus/fetch.py <cache dir outside the repo>`, about 22 minutes at
   one request per second or slower. A rerun takes the newest uploads at that time and overwrites both
@@ -173,11 +176,11 @@ Limits:
 
 1. plan.md, Compute: add this bullet before **M4 Max:**.
 
-   > - **Turns per game** (T04: 1,000 public replays of human games, uploaded 2026-11-22 to 11-25 UTC): mean 24.6, median 22, p90 38, including 35 custom-rule games (without them: mean 24.9, p90 39). 42% ended by forfeit or inactivity, so these are too low for games played to the end. A Kaplan-Meier correction gives median 27, p90 58 and mean 35.7 counted up to turn 137, likely too high because some games were forfeited when nearly decided. Without the 42%: mean 26.2, median 24, p90 39; ladder games only (403): mean 25.7, median 23, p90 38. Self-play lengths are unmeasured.
+   > - **Turns per game** (T04: 1,000 public replays of human games, uploaded 2026-11-22 to 11-25 UTC): mean 24.6, median 22, p90 38, including 35 custom-rule games (without them: mean 24.9, p90 39). 42% ended by forfeit or inactivity, so these are too low for games played to the end. A Kaplan-Meier correction gives median 27, p90 56 and mean 35.0 counted up to turn 137, likely too high: counting the nearly decided cut games as ended gives 26, 47 and 30.8. Games not ended by forfeit or inactivity: mean 26.2, median 24, p90 39; the ladder ones among them (403 of 794 ladder games): mean 25.7, median 23, p90 38. Self-play lengths are unmeasured.
 
 2. plan.md, Training v0: T04's lengths give no reason to change the starting cap of 300, and can't confirm it. Replace the "Turn cap" line, keeping its indent under **Reward:**, with:
 
-   > - Turn cap: start at 300 and tune from game-length data. None of T04's 1,100 public replays passed 300 turns, but that is a weak check: the longest (263) was cut off by a tournament disqualification with no Pokémon fainted, 5 of the 7 games over 100 turns ended early, and no game past turn 137 was played out. A Kaplan-Meier correction on the 1,000-game corpus puts 5.1% of games past turn 100 (0.6% observed) and can't estimate the share past 300. These are human games, and self-play lengths are unmeasured. Capped games are truncated and bootstrap from V(s) (D10). Log the cap-hit rate.
+   > - Turn cap: start at 300 and tune from game-length data. None of T04's 1,100 public replays passed 300 turns, but that is a weak check: the longest (263) was cut off by a tournament disqualification with no Pokémon fainted, 5 of the 7 games over 100 turns ended early, and no game past turn 137 was played out. A Kaplan-Meier correction on the 1,000-game corpus puts 4.7% of games past turn 100 (95% interval 2.5 to 8.0; 0.6% observed), likely too high (2.2% if the nearly decided cut games count as ended), and can't estimate the share past 300. These are human games, and self-play lengths are unmeasured. Capped games are truncated and bootstrap from V(s) (D10). Log the cap-hit rate.
 
 3. AGENTS.md, Current state: replace the line (dated at merge, and combined with other tasks' changes to it) with:
 

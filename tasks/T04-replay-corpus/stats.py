@@ -161,41 +161,59 @@ def table(rows):
               f"| {t.max()} | {percent(quit_early(games), len(games))} |")
 
 
-def still_going(games):
+def played_out(game):
+    return game["ending"] == "played out"
+
+
+def played_out_or_nearly(game):
+    """Also counts a cut game with a side down to one Pokemon as ending where it was cut."""
+    return played_out(game) or (game["fewest_left"] is not None and game["fewest_left"] <= 1)
+
+
+def still_going(games, is_finished=played_out):
     """Kaplan-Meier share of games lasting past turn 0, 1, 2, ..., with its 95% interval.
 
-    A game ended by forfeit or inactivity counts as cut off: it would have gone on, for as
-    long as other games that reached the same turn.
+    A game cut off during turn t is known to have reached turn t, not whether it would have
+    ended there. From that turn on it is taken to behave like the games still being watched.
     """
     turns = np.array([g["turns"] for g in games])
-    finished = np.array([g["ending"] == "played out" for g in games])
-    at_risk = np.array([(turns >= t).sum() for t in range(turns.max() + 1)])
-    ended = np.array([(finished & (turns == t)).sum() for t in range(turns.max() + 1)])
-    share = np.cumprod(1 - ended / at_risk)
+    finished = np.array([is_finished(g) for g in games])
+    span = range(turns.max() + 1)
+    at_risk = np.array([((turns > t) | (finished & (turns == t))).sum() for t in span])
+    ended = np.array([(finished & (turns == t)).sum() for t in span])
+    share = np.cumprod(1 - ended / np.maximum(at_risk, 1))
     with np.errstate(divide="ignore", invalid="ignore"):
         # Greenwood's variance on the log(-log) scale, which keeps the interval inside 0 to 1.
-        spread = 1.96 * np.sqrt(np.cumsum(ended / (at_risk * (at_risk - ended)))) / np.abs(np.log(share))
+        terms = np.where(ended > 0, ended / (at_risk * (at_risk - ended)), 0)
+        spread = 1.96 * np.sqrt(np.cumsum(terms)) / np.abs(np.log(share))
         return share, share ** np.exp(spread), share ** np.exp(-spread)
 
 
 def corrected_lengths(games):
     turns = np.array([g["turns"] for g in games])
-    horizon = max(g["turns"] for g in games if g["ending"] == "played out")
+    horizon = max(g["turns"] for g in games if played_out(g))
     share, low, high = still_going(games)
+    nearly = still_going(games, played_out_or_nearly)[0]
 
-    def reached(level):
-        return str(int(np.argmax(share <= level))) if (share <= level).any() else "-"
+    def reached(curve, level):
+        return str(int(np.argmax(curve <= level))) if (curve <= level).any() else "-"
 
-    print("\n### Lengths corrected for games cut short (Kaplan-Meier)\n")
-    print("| measure | observed | corrected (95% interval) |\n|---|---|---|")
-    print(f"| median turns | {np.median(turns):g} | {reached(0.5)} |")
-    print(f"| p90 turns | {np.percentile(turns, 90):g} | {reached(0.1)} |")
+    def quantile(level):
+        return f"{reached(share, level)} ({reached(low, level)} to {reached(high, level)})"
+
+    print("\n### Lengths corrected for games cut short (Kaplan-Meier, 95% intervals)\n")
+    print("| measure | observed | corrected | corrected, nearly decided games counted as ended |")
+    print("|---|---|---|---|")
+    print(f"| median turns | {np.median(turns):g} | {quantile(0.5)} | {reached(nearly, 0.5)} |")
+    print(f"| p90 turns | {np.percentile(turns, 90):g} | {quantile(0.1)} | {reached(nearly, 0.1)} |")
     print(f"| mean turns, counting each game up to turn {horizon} | {np.minimum(turns, horizon).mean():.1f} "
-          f"| {share[:horizon].sum():.1f} |")
+          f"| {share[:horizon].sum():.1f} | {nearly[:horizon].sum():.1f} |")
     for t in sorted({50, 100, horizon}):
         if t <= horizon:
             print(f"| share past turn {t} | {percent((turns > t).sum(), len(turns))} "
-                  f"| {100 * share[t]:.1f}% ({100 * low[t]:.1f} to {100 * high[t]:.1f}) |")
+                  f"| {100 * share[t]:.1f}% ({100 * low[t]:.1f} to {100 * high[t]:.1f}) | {100 * nearly[t]:.1f}% |")
+    beyond = [g for g in games if g["turns"] > 100]
+    print(f"\nGames observed past turn 100: {len(beyond)}, of them played out: {sum(map(played_out, beyond))}.")
     print(f"\nLongest game played out: {horizon} turns. Games cut off later than that: {(turns > horizon).sum()}, "
           f"the last at turn {turns.max()}. Nothing is estimated past it.")
     cut = [g for g in games if g["ending"] != "played out" and g["fewest_left"] is not None]
