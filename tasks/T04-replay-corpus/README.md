@@ -21,6 +21,14 @@
 
 ## Progress
 
+```text
+2026-11-24
+State: active
+Verified: nothing yet
+Pending: all acceptance checks
+Next: probe search.json paging, filters and fields, then write the fetch script
+```
+
 ## Result
 
 ## Outputs
