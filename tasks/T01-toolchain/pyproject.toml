@@ -1,0 +1,8 @@
+[project]
+name = "t01-smoke"
+version = "0"
+requires-python = "==3.14.*"
+dependencies = ["numpy==2.5.5", "torch==2.15.0"]
+
+[tool.uv]
+package = false

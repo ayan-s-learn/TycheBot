@@ -1,0 +1,38 @@
+== commit 8ab01cf, Darwin arm64, Node v24.22.3, uv 0.13.9 (Homebrew 2026-11-17 aarch64-apple-darwin)
+
+added 219 packages in 2s
+config.js does not exist. Creating one with default settings...
+Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e built with Node v24.22.3
+== validate-team gen9nationaldex
+teams/sample-1.txt: accepted
+teams/sample-2.txt: accepted
+Mewtwo is tagged ND Uber, which is banned.
+teams/banned.txt: rejected
+== type check
+battle.ts: ok
+== battles
+runner.ts (BattleStream): 20/20 games finished; 577 turns, 34 mega evolutions, 25 z-moves
+Battle direct + extractChannelMessages + State round-trip: 20/20 games finished; 559 turns, 38 mega evolutions, 20 z-moves
+exhaustive-runner.ts: 5 games, 0 failures
+== local server
+server answered on port 8123: {"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":3817208737}
+== python
+Using CPython 3.14.7 interpreter at: /opt/homebrew/opt/python@3.14/bin/python3.14
+Creating virtual environment at: .venv
+Resolved 31 packages in 3ms
+Installed 11 packages in 183ms
+ + filelock==4.3.1
+ + fsspec==2026.9.0
+ + jinja2==3.1.6
+ + markupsafe==3.0.4
+ + mpmath==1.3.0
+ + networkx==3.7
+ + numpy==2.5.5
+ + setuptools==84.2.1
+ + sympy==1.14.0
+ + torch==2.15.0
+ + typing-extensions==4.16.0
+Python 3.14.7, torch 2.15.0
+torch.backends.mps.is_available(): True
+1024x1024 matmul on mps: ok (sum -44470.8)
+== smoke test passed in 16s

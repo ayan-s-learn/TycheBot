@@ -1,0 +1,24 @@
+== commit 8ab01cf, Darwin arm64, Node v22.23.2, uv 0.13.9 (Homebrew 2026-11-17 aarch64-apple-darwin)
+
+added 328 packages in 2s
+Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e built with Node v22.23.2
+== validate-team gen9nationaldex
+teams/sample-1.txt: accepted
+teams/sample-2.txt: accepted
+Mewtwo is tagged ND Uber, which is banned.
+teams/banned.txt: rejected
+== type check
+battle.ts: ok
+== battles
+runner.ts (BattleStream): 20/20 games finished; 577 turns, 34 mega evolutions, 25 z-moves
+Battle direct + extractChannelMessages + State round-trip: 20/20 games finished; 559 turns, 38 mega evolutions, 20 z-moves
+exhaustive-runner.ts: 5 games, 0 failures
+== local server
+server answered on port 8123: {"websocket":true,"origins":["*:*"],"cookie_needed":false,"entropy":3134999010}
+== python
+Resolved 31 packages in 3ms
+Checked 11 packages in 0.33ms
+Python 3.14.7, torch 2.15.0
+torch.backends.mps.is_available(): True
+1024x1024 matmul on mps: ok (sum 9873.0)
+== smoke test passed in 9s
