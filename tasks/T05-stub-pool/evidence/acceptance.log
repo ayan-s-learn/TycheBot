@@ -1,4 +1,4 @@
-== commit 767e8f4, Node v24.22.3
+== commit f95d4b1, Node v24.22.3
 == type check
 ok
 == pool validates
@@ -27,5 +27,14 @@ FAIL smogon-sample-06 (line 7):
 == a malformed field is rejected
 FAIL smogon-sample-06 (line 7):
   "team" is not a canonical packed team
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== a miscased Hidden Power type, which crashes the sim, is rejected
+FAIL smogon-sample-06 (line 7):
+  Latios: the validator changes hpType "ice" to "Ice"
+19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
+== a nickname the validator would clean is rejected
+FAIL smogon-sample-06 (line 7):
+  Zamazenta: the validator changes name "x
+win" to "x win"
 19/20 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
 == acceptance checks passed
