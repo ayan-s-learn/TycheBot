@@ -1,27 +1,55 @@
-// Compares a rerun sweep with the reported one: for each driver and process count, whether the rerun's
-// median ms/decision lies within the reported runs' min–max. Prints ms/turn and decisions/s alongside.
-// Usage: node compare.ts <reported sweep.json> <rerun sweep.json>   (exit code 1 if any median is outside)
+// Pools sweeps and checks a rerun against them. The reported figures are the median (min–max) over every
+// run of the reported sweeps, per driver and process count. Given a rerun, it checks, for each driver
+// and process count, whether the rerun's median ms/decision lies within the reported min–max.
+// Usage: node compare.ts <reported sweep.json>[,<another>...] [<rerun sweep.json>]
+//   (with a rerun: exit code 1 if any of its medians is outside)
 import { readFileSync } from 'node:fs';
 
-type Rec = { procs: number, driver: string, msPerDecision: number, msPerTurn: number, decisionsPerSecond: number };
+interface Rec {
+	procs: number, driver: string, msPerDecision: number, msPerTurn: number, choiceMsPerDecision: number,
+	decisionsPerSecond: number,
+}
 const load = (f: string): Rec[] => JSON.parse(readFileSync(f, 'utf8')).records;
-const [reported, rerun] = process.argv.slice(2).map(load);
-const median = (xs: number[]) => xs.toSorted((a, b) => a - b)[xs.length >> 1];
+const [reportedArg, rerunArg] = process.argv.slice(2);
+const reported = reportedArg.split(',').flatMap(load);
+const median = (xs: number[]) => {
+	const s = xs.toSorted((a, b) => a - b), m = s.length >> 1;
+	return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+};
 const pick = (rs: Rec[], p: number, d: string, k: keyof Rec) =>
 	rs.filter(r => r.procs === p && r.driver === d).map(r => r[k] as number);
+const fmt = (xs: number[], digits: number) =>
+	`${median(xs).toFixed(digits)} (${Math.min(...xs).toFixed(digits)}–${Math.max(...xs).toFixed(digits)})`;
+const procs = [...new Set(reported.map(r => r.procs))].sort((a, b) => a - b);
+const drivers = ['direct', 'stream'];
 
+if (!rerunArg) {
+	const runs = pick(reported, procs[0], 'direct', 'msPerDecision').length;
+	console.log(`Median (min–max) over ${runs} runs\n`);
+	console.log('| Driver | Processes | ms/decision | ms/turn | choice ms/decision | decisions/s |');
+	console.log('|---|---|---|---|---|---|');
+	for (const p of procs) {
+		for (const d of drivers) {
+			console.log(`| ${d} | ${p} | ${fmt(pick(reported, p, d, 'msPerDecision'), 3)} | ` +
+				`${fmt(pick(reported, p, d, 'msPerTurn'), 3)} | ${fmt(pick(reported, p, d, 'choiceMsPerDecision'), 3)} | ` +
+				`${fmt(pick(reported, p, d, 'decisionsPerSecond'), 0)} |`);
+		}
+	}
+	process.exit(0);
+}
+
+const rerun = load(rerunArg);
 let outside = 0;
 console.log('| Driver | Processes | ms/decision: reported median (min–max) | rerun median | Within | ms/turn, rerun | decisions/s, rerun |');
 console.log('|---|---|---|---|---|---|---|');
-for (const p of [...new Set(rerun.map(r => r.procs))]) {
-	for (const d of ['direct', 'stream']) {
+for (const p of [...new Set(rerun.map(r => r.procs))].sort((a, b) => a - b)) {
+	for (const d of drivers) {
 		const rep = pick(reported, p, d, 'msPerDecision');
 		const got = median(pick(rerun, p, d, 'msPerDecision'));
 		const within = got >= Math.min(...rep) && got <= Math.max(...rep);
 		if (!within) outside++;
-		console.log(`| ${d} | ${p} | ${median(rep).toFixed(3)} (${Math.min(...rep).toFixed(3)}–${Math.max(...rep).toFixed(3)}) ` +
-			`| ${got.toFixed(3)} | ${within ? 'yes' : 'no'} | ${median(pick(rerun, p, d, 'msPerTurn')).toFixed(3)} ` +
-			`| ${median(pick(rerun, p, d, 'decisionsPerSecond')).toFixed(0)} |`);
+		console.log(`| ${d} | ${p} | ${fmt(rep, 3)} | ${got.toFixed(3)} | ${within ? 'yes' : 'no'} | ` +
+			`${median(pick(rerun, p, d, 'msPerTurn')).toFixed(3)} | ${median(pick(rerun, p, d, 'decisionsPerSecond')).toFixed(0)} |`);
 	}
 }
 console.log(`\n${outside} of the rerun's medians outside the reported range`);

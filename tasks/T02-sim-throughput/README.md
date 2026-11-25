@@ -26,6 +26,18 @@
 ## Progress
 
 ```text
+2026-11-25 (2)
+State: active
+Verified: sweep 1 (worktree, d0ab75e) and sweep 2 (fresh clone of be58e92), 3 runs each, other load
+  0.2-1.9 cores. Sweep 2 failed the pre-set clean-checkout rule against sweep 1 (9 of 14 medians
+  outside, all slower, by up to 6%), so Result now pools both sweeps (compare.ts). The sample reproduces
+  in the fresh clone.
+Pending: sweep 3 from another fresh clone, checked against the pooled figures by the same rule.
+Next: run sweep 3 under the shared lock; then `node compare.ts results/sweep-1.json,results/sweep-2.json
+  results/sweep-3.json` decides the acceptance check.
+```
+
+```text
 2026-11-25
 State: active
 Verified: an adversarial review of PR #4 found the 2026-11-24 timings inflated by other load: a 1-process
@@ -71,7 +83,7 @@ Next: set up the worktree, then build the recorder and its sample (Megas, Z-Move
 
 ## Result
 
-**Recommendation: drive `Battle` directly.** At 14 processes the drivers' medians differ by 1% (0.380 vs 0.384 ms per decision), well inside plan.md's 10% rule. Neither driver needed a Showdown patch, and the same seeds and choices gave the same games in every game checked, so no stop condition was hit. All runs: Showdown 29f2d99, Node 24.22.3, M4 Max, 2026-11-24.
+**Recommendation: drive `Battle` directly.** At 14 processes it cost 0.280 ms per decision against BattleStream's 0.289 (medians of 6 runs), within plan.md's 10% rule, and it was faster in 5 of the 6 runs. Neither driver needed a Showdown patch, and the same seeds and choices gave the same games in every game checked, so no stop condition was hit. All timings: 2026-11-25, Showdown 29f2d99, Node 24.22.3, M4 Max.
 
 ### Drivers
 
@@ -82,44 +94,45 @@ Both drivers run the same `Battle` code (`sim.ts`). They differ only in how the 
 
 Both feed one collector, which splits the output per player as `getPlayerStreams` does. Each process runs 32 battles interleaved: each step answers every open request with Showdown's `RandomPlayerAI` (`Runner.AI_OPTIONS`), then sends every choice. `strictChoices` is off, as the training env needs.
 
-The driver check (Outputs) found no difference across games 0–499 (23,531 turns, 54,160 decisions, 401 Mega Evolutions, 446 Z-Moves), nor across games 1070330–1070349, which include an `[Invalid choice]` (Gotchas).
+The driver check (Outputs) found no difference across the pool's games 0–499 (23,531 turns, 54,160 decisions, 401 Mega Evolutions, 446 Z-Moves), the recorder's games 0–51, which include the Illusion team, or games 1070330–1070349, which include an `[Invalid choice]` (Gotchas).
 
 ### Timing
 
-From `results/sweep.log`: the median (min–max) over 3 runs of a 20 s window each, after a 5 s warm-up, with every process busy for the whole window. ms per decision and per turn are the cost to one process sharing the machine with the others: all processes' driver time (sending choices, collecting both players' output, starting and ending games) over all their decisions or turns. Decisions/s is for all processes together, including the players' time.
+Two sweeps of 3 runs each, the second from a fresh clone (Acceptance checks): `results/sweep-1.log` and `results/sweep-2.log`. The table gives the median (min–max) over all 6 runs (`node compare.ts results/sweep-1.json,results/sweep-2.json`). Each run is a 20 s window, after a 5 s warm-up, with every process busy for the whole window. ms per decision and per turn are the cost to one process sharing the machine with the others: all processes' driver time (sending choices, collecting both players' output, starting and ending games) over all their decisions or turns. Decisions/s is for all processes together, including the players' time.
 
 | Processes | ms/decision, direct | ms/decision, stream | ms/turn, direct | ms/turn, stream | decisions/s, direct | decisions/s, stream |
 |---|---|---|---|---|---|---|
-| 1 | 0.213 (0.209–0.219) | 0.215 (0.213–0.223) | 0.487 (0.479–0.502) | 0.493 (0.487–0.511) | 4,468 (4,350–4,550) | 4,417 (4,252–4,467) |
-| 2 | 0.213 (0.210–0.216) | 0.214 (0.212–0.217) | 0.487 (0.482–0.494) | 0.490 (0.486–0.497) | 8,946 (8,801–9,035) | 8,885 (8,748–8,955) |
-| 4 | 0.219 (0.216–0.237) | 0.222 (0.221–0.226) | 0.502 (0.494–0.542) | 0.508 (0.506–0.518) | 17,334 (16,070–17,606) | 17,134 (16,786–17,187) |
-| 8 | 0.243 (0.238–0.244) | 0.246 (0.243–0.270) | 0.556 (0.545–0.559) | 0.564 (0.556–0.620) | 31,321 (31,167–31,980) | 30,788 (27,902–31,259) |
-| 10 | 0.277 (0.267–0.351) | 0.282 (0.276–0.451) | 0.635 (0.612–0.805) | 0.646 (0.633–1.033) | 34,409 (27,160–35,629) | 33,402 (20,553–34,060) |
-| 12 | 0.324 (0.312–0.444) | 0.335 (0.298–0.408) | 0.742 (0.715–1.017) | 0.769 (0.683–0.935) | 35,364 (25,835–36,665) | 33,479 (27,572–37,381) |
-| 14 | 0.380 (0.374–0.500) | 0.384 (0.372–0.469) | 0.871 (0.858–1.146) | 0.881 (0.854–1.075) | 35,187 (26,712–35,727) | 34,064 (27,886–35,066) |
+| 1 | 0.184 (0.180–0.201) | 0.186 (0.181–0.209) | 0.421 (0.412–0.462) | 0.426 (0.415–0.480) | 5,181 (4,712–5,293) | 5,128 (4,542–5,257) |
+| 2 | 0.189 (0.186–0.205) | 0.194 (0.191–0.197) | 0.434 (0.426–0.470) | 0.445 (0.438–0.451) | 10,039 (9,254–10,221) | 9,796 (9,664–9,955) |
+| 4 | 0.197 (0.194–0.205) | 0.199 (0.197–0.201) | 0.450 (0.444–0.469) | 0.457 (0.452–0.461) | 19,317 (18,544–19,612) | 19,074 (18,914–19,276) |
+| 8 | 0.205 (0.202–0.208) | 0.209 (0.207–0.214) | 0.470 (0.463–0.477) | 0.479 (0.474–0.490) | 37,024 (36,460–37,607) | 36,232 (35,458–36,636) |
+| 10 | 0.211 (0.207–0.215) | 0.219 (0.214–0.222) | 0.484 (0.473–0.494) | 0.501 (0.491–0.509) | 44,955 (44,039–45,908) | 42,988 (42,346–43,834) |
+| 12 | 0.237 (0.235–0.247) | 0.250 (0.242–0.258) | 0.543 (0.539–0.566) | 0.573 (0.555–0.591) | 48,068 (46,166–48,429) | 44,165 (42,979–45,802) |
+| 14 | 0.280 (0.271–0.293) | 0.289 (0.278–0.326) | 0.642 (0.621–0.673) | 0.662 (0.637–0.747) | 47,531 (45,366–49,153) | 44,744 (40,170–46,719) |
 
-- **Drivers:** at every process count the ms/decision medians are within 4% of each other. At 14 processes stream was 2–7% faster in three of four runs (counting the clean-checkout rerun below) and direct 3% faster in the other, so the gap is noise next to the 10% rule. Counting the players' time as well, stream was 3% slower at 14 processes (decisions/s).
-- **Scaling:** throughput flattens past 8 processes: 10 processes (the performance-core count) add 10% over 8, and 14 add 2% over 10 (direct). Meanwhile each process's cost per decision rises from 0.21 ms alone to 0.38 ms.
-- **Choice time** (`RandomPlayerAI`, reported apart): 0.011 ms per decision in one process, and 0.018 (direct) or 0.027 (stream) at 14. The players are the same in both, so some of stream's cost lands in the choice phase (GC is a likely cause, not measured). That is why the decisions/s comparison above counts both.
-- **Games:** across the sweep's 168k random games, a game averaged 48.9 turns and a turn 2.29 decisions. So ~35k decisions/s is ~15k turns/s, or ~310 random games/s (~27M a day) for the sim alone. Games per day for real games follow from T04's turns per game; random players switch 30% of the time (`Runner.AI_OPTIONS` move 0.7), so their decisions per turn may not carry over.
-- **Load:** run 1 was 22–63% slower than runs 2 and 3 at 10–14 processes, for both drivers, so the spread there is wide. The cause is unknown. Run 1's 1-minute load averages (5–26) were lower than runs 2 and 3's (10–36), and they mostly reflect the sweep's own previous configuration, so they can't separate other sessions' load.
+- **Drivers:** direct's ms/decision median is the lower at every process count, by 1–6%. At 14 processes direct was faster in 5 of 6 runs, by up to 11% (sweep 2, run 3), and stream by 2% in the other. Counting the players' time as well, direct did 6% more decisions/s at 14 processes.
+- **Scaling:** throughput grows 21% from 8 to 10 processes, the performance-core count, then levels off: 12 and 14 processes give 48k and 47.5k decisions/s, and their ranges overlap (direct). Each process's cost per decision rises from 0.18 ms alone to 0.21 ms at 10 and 0.28 ms at 14.
+- **Choice time** (`RandomPlayerAI`, reported apart): 0.009 ms per decision in one process, and 0.015 (direct) or 0.023 (stream) at 14. The players are the same in both, so some of stream's cost lands in the choice phase (GC is a likely cause, not measured). That is why the decisions/s comparison counts both.
+- **Battles per process:** a quick check (single 20 s runs, not in `results/`) gave 0.163 ms per decision with one battle per process against 0.180 with 32, both direct in one process. The PR's review measured a similar gap.
+- **Games:** across the sweeps' 443k random games, a game averaged 48.9 turns and a turn 2.29 decisions. So ~47.5k decisions/s is ~21k turns/s, or ~420 random games/s (~37M a day) for the sim alone. Games per day for real games follow from T04's turns per game; random players switch 30% of the time (`Runner.AI_OPTIONS` move 0.7), so their decisions per turn may not carry over.
+- **Load:** each configuration started once the rest of the machine used under 2.5 cores (two waited 35 s), and during the windows it used 0.2–1.9 cores (the desktop alone kept ~1.6 busy). Sweep 2, run straight after sweep 1, was ~2% slower (0–6% per configuration), and at 14 processes its processes got 0.89–0.97 of a core each, against 0.91–1.00 in sweep 1. The first sweep, on 2026-11-24 without these checks, read 18–40% higher per decision because of other sessions' load, as the PR's review found. Its results are in this branch's history (304aa5b).
 
 ### Gotchas
 
-- **A request can allow a choice the sim rejects as `[Invalid choice]`, with no updated request.** In game 1070337 both players switched on turn 3, and p1's Landorus-T came in first, so its Intimidate set off Great Tusk's Eject Pack. p2's forced-switch request still listed Diancie, already queued to switch in, and choosing it gave `[Invalid choice] Can't switch: The Pokémon in slot 3 can only switch in once` (`Side.clearChoice` seeds `switchIns` from queued switches). `RandomPlayerAI`, and so `Runner`, throws here. The env now answers the same request again (`Collector` in `sim.ts`), which happened 10 times in the sweep. Phase 1's action mask has to exclude that Pokémon from the player's own queued choice (For integration).
+- **A request can allow a choice the sim rejects as `[Invalid choice]`, with no updated request.** In game 1070337 both players switched on turn 3, and p1's Landorus-T came in first, so its Intimidate set off Great Tusk's Eject Pack. p2's forced-switch request still listed Diancie, already queued to switch in, and choosing it gave `[Invalid choice] Can't switch: The Pokémon in slot 3 can only switch in once` (`Side.clearChoice` seeds `switchIns` from queued switches). `RandomPlayerAI`, and so `Runner`, throws here. The env now answers the same request again (`Collector` in `sim.ts`), which happened 32 times across the two sweeps. Phase 1's action mask has to exclude that Pokémon from the player's own queued choice (For integration).
 - `Teams.import` on the JSON sample teams cuts species names to 18 characters (`Urshifu-Rapid-Stri`), so `teams.ts` packs the sets directly (For integration, item 3).
-- In this worktree the sandbox refused `source ~/.nvm/nvm.sh` and the inline timing-lock command (For integration, item 4).
+- In this worktree the sandbox refused `source ~/.nvm/nvm.sh` and the inline timing-lock command, and `timed.sh` takes the lock of whichever repository the current directory is in (For integration, item 4).
 
 ### Acceptance checks
 
 - **Same games:** passed (the driver check, above).
-- **Timing rerun from a clean checkout:** a fresh clone of 31fb536, set up as in AGENTS.md, ran `node sweep.ts <out> 1,14 1` under this worktree's `timed.sh`. A clone's own `timed.sh` would lock that clone's `.git` instead of the shared lock. Three of the four ms/decision figures land within the sweep's min–max: direct 0.218 at 1 process and 0.427 at 14, and stream 0.400 at 14. **Stream at 1 process came out at 0.224, 0.4% above its range (0.213–0.223).** Its ms/turn and decisions/s at 1 process are just outside their ranges too, by under 1%, as is direct's decisions/s (4,347 against a minimum of 4,350). See `results/rerun-clean.log`. A min–max over three runs is narrow: a fourth run of the same distribution lands outside it half the time.
-- **Recorder:** `node record.ts sample.jsonl 12` reproduces the committed sample byte for byte, here and in the clean clone.
+- **Timing rerun from a clean checkout:** sweep 2 reran sweep 1's Outputs command from a fresh clone of be58e92. By the rule fixed beforehand (`compare.ts`: each rerun median within the reported min–max), **it failed: 9 of 14 medians fell outside sweep 1's ranges**, all on the slow side, by up to 6% (median 2%). Within one sweep the runs agreed to 1–2%, so three runs from one session understated the spread between sessions. The figures above therefore pool both sessions, and sweep 3, from another fresh clone, checks them by the same rule: CLEAN_RESULT
+- **Recorder:** `node record.ts sample.jsonl 0-10,15` reproduces the committed sample byte for byte, here and in a fresh clone of be58e92.
 
 ### Not checked
 
 - `[Unavailable choice]`: no pool team has a hidden trapping ability, and none occurred.
-- Battles per process other than 32, and Node versions other than 24.
+- Battles per process other than 32, beyond the quick check above, and Node versions other than 24.
 - Sending output to Python (S5), damage calcs (S3) and observation building. Choice time is `RandomPlayerAI`'s, not a network's.
 
 ## Outputs
@@ -129,10 +142,10 @@ Setup as in AGENTS.md (Conventions), then run from this folder on Node 24.
 ### Recorder
 
 ```bash
-node record.ts sample.jsonl 12    # reproduces the committed sample byte for byte
+node record.ts sample.jsonl 0-10,15    # reproduces the committed sample byte for byte
 ```
 
-`node record.ts <out.jsonl> [games=10] [first=0]` plays games `first`… between Showdown's `RandomPlayerAI`s with `Runner.AI_OPTIONS` (move 0.7, mega 0.6), driving `Battle` directly. Game g's p1 plays team g mod 26 of [`teams/illusion.txt`, then `teams/pool.jsonl` in order], and p2 a draw from the same list seeded by g. Game 0 is the Illusion team's. Every seed derives from g (`makeGame` in `sim.ts`), and the recorder freezes `Date.now()` at 0, since the sim stamps `|t:|` lines with it.
+`node record.ts <out.jsonl> [ids=0-9]` plays the given games (comma-separated ids and ranges) between Showdown's `RandomPlayerAI`s with `Runner.AI_OPTIONS` (move 0.7, mega 0.6), driving `Battle` directly. Game g's p1 plays team g mod 26 of [`teams/illusion.txt`, then `teams/pool.jsonl` in order], and p2 a draw from the same list seeded by g. Game 0 is the Illusion team's. Every seed derives from g (`recorderGame` in `sim.ts`), and the recorder freezes `Date.now()` at 0, since the sim stamps `|t:|` lines with it.
 
 One JSON line per game:
 
@@ -144,7 +157,7 @@ One JSON line per game:
 | `p1`, `p2` | That player's chunks, in the order it receives them. A chunk is the player's view of one sim update (protocol lines joined by `\n`, `\|split\|` resolved for that player), or a `\|request\|<JSON>` or `\|error\|…` line. These are the chunks Showdown's `getPlayerStreams` gives that player (`check.ts`) |
 | `inputLog` | Showdown's input log (`>start`, `>player` with the packed team, then each choice), which replays the game exactly |
 
-`sample.jsonl` (4.35 MB, sha256 `0241e7a3…403c4b`) holds games 0–11: 499 turns, 14 Mega Evolutions, 10 Z-Moves, 6 Illusions broken (Zoroark-Hisui leads as Zamazenta in game 0), and 16 `|poke|` lines with a `-*` forme (Zamazenta), counted in p1's view.
+`sample.jsonl` (3.92 MB, sha256 `bd0ece9a…320be30e`) holds games 0–10 and 15: 445 turns, 13 Mega Evolutions, 9 Z-Moves, 6 Illusions broken (Zoroark-Hisui leads as Zamazenta in game 0), and 15 `|poke|` lines with a `-*` forme, counted in p1's view. Most are Zamazenta's. In game 15, p1's `Urshifu-*` switches in as Urshifu-Rapid-Strike. Before d0ab75e the sample was games 0–11, without the Urshifu game.
 
 ### Teams
 
@@ -158,23 +171,27 @@ node teams.ts /tmp/gen9nationaldex.json
 ### Driver check
 
 ```bash
-node check.ts 500    # exits non-zero if any game differs
+node check.ts 500              # the pool's games 0–499, as the timing runs play them
+node check.ts 52 0 recorder    # the recorder's games 0–51: each of its 26 teams twice as p1
+node check.ts 20 1070330       # includes an [Invalid choice]
 ```
 
-For games 0–499 of the pool (`makeGame` in `sim.ts`), it compares each game's per-player chunks, winner, turn count and input log across Battle direct and BattleStream, each with 16 battles interleaved and with one at a time, and against Showdown's `getPlayerStreams`. It freezes the clock as the recorder does.
+Each exits non-zero if any game differs. It compares each game's per-player chunks, winner, turn count and input log across Battle direct and BattleStream, each with 16 battles interleaved and with one at a time, and against Showdown's `getPlayerStreams`. It freezes the clock as the recorder does.
 
 ### Timing
 
 ```bash
-./timed.sh node sweep.ts results/sweep.json > results/sweep.log    # about 18 minutes
+./timed.sh node sweep.ts results/sweep-1.json > results/sweep-1.log    # about 22 minutes
+node compare.ts results/sweep-1.json,results/sweep-2.json                # the pooled table
+node compare.ts results/sweep-1.json,results/sweep-2.json <rerun.json>   # checks a rerun
 ```
 
-`timed.sh` takes the timing lock (AGENTS.md, Conventions) and prints the load averages before and after. `node sweep.ts <out.json> [procs=1,2,4,8,10,12,14] [runs=3] [seconds=20] [warmup=5] [concurrency=32]` runs, for each run, process count and driver, that many `bench.ts` processes on one shared window: they warm up until it opens, count until it closes, and stop at the next step. Each process plays the pool's games with 32 battles interleaved, and both drivers play the same game ids. `node bench.ts <direct|stream> [first] [startMs] [endMs] [concurrency]` is one process on its own.
+`timed.sh` takes the timing lock (AGENTS.md, Conventions) of the repository the current directory is in, and prints the load averages before and after. To time a separate clone under the shared lock, run this folder's `timed.sh` from here with the clone's paths: `./timed.sh node <clone>/tasks/T02-sim-throughput/sweep.ts <clone>/tasks/T02-sim-throughput/results/sweep.json`. `node sweep.ts <out.json> [procs=1,2,4,8,10,12,14] [runs=3] [seconds=20] [warmup=5] [concurrency=32]` runs, for each run, process count and driver, that many `bench.ts` processes on one shared window: they warm up until it opens, count until it closes, and stop at the next step. Each process plays the pool's games with 32 battles interleaved, and both drivers play the same game ids. Before each configuration the sweep waits, for up to 3 minutes, until the rest of the machine uses under 2.5 cores, and it records that load during the window and each process's CPU time (`sweep.ts`'s header). Given a rerun, `compare.ts` passes if, for every driver and process count, the rerun's median ms/decision lies within the reported runs' min–max. `node bench.ts <direct|stream> [first] [startMs] [endMs] [concurrency]` is one process on its own.
 
 | File | What it is |
 |---|---|
 | `sim.ts` | Showdown at the pin, the pool, seeds, the output collector, both drivers and the step loop (`play`), shared by every script |
-| `results/` | `sweep.json`, every process's counts; `sweep.log`, each configuration and the median table. `rerun-clean.*` is the clean-checkout rerun |
+| `results/` | For each sweep, `.json` has every process's counts and `.log` each configuration and that sweep's median table. Sweeps 1 and 2 are the reported ones; sweep 3 is the check |
 | `tsconfig.json` | `node ../../vendor/pokemon-showdown/node_modules/typescript/bin/tsc -p tsconfig.json` type-checks every script |
 
 ## For integration
@@ -182,7 +199,7 @@ For games 0–499 of the pool (`makeGame` in `sim.ts`), it compares each game's 
 1. **plan.md, Compute:** replace the Env bullet's first sub-bullet (`~2.0 ms per median turn per Node process (PokaiTrainer, VGC doubles). No singles figure found.`) with:
 
    ```markdown
-     - Measured by S1 (T02, 2026-11-24, Showdown 29f2d99, Node 24, M4 Max), driving `Battle` directly between random players, with 32 battles per process: 0.21 ms per decision (0.49 ms per turn) in one process. With 10–14 processes the machine does ~35k decisions/s, and 14 processes add 2% over 10. This covers the sim and the per-player split only: no transfer to Python (S5), calcs (S3) or observation building. Random games averaged 2.3 decisions per turn; games per day follow from T04's turns per game. PokaiTrainer's VGC doubles figure was ~2.0 ms per median turn.
+     - Measured by S1 (T02, 2026-11-25, Showdown 29f2d99, Node 24, M4 Max) between random players, driving `Battle` directly with 32 battles per process, while the rest of the machine used under 2 cores: 0.18 ms per decision (0.42 ms per turn) in one process. The machine does ~45k decisions/s with 10 processes and ~48k with 12 or 14, where each process pays 0.24–0.28 ms per decision. One battle per process was ~10% cheaper per decision than 32 (single runs). This covers the sim and the per-player split only: no transfer to Python (S5), calcs (S3) or observation building. Random games averaged 2.3 decisions per turn; games per day follow from T04's turns per game. PokaiTrainer's VGC doubles figure was ~2.0 ms per median turn.
    ```
 
 2. **plan.md, Network v0, Action head:** after the `[Unavailable choice]` bullet, add:
@@ -195,4 +212,4 @@ For games 0–499 of the pool (`makeGame` in `sim.ts`), it compares each game's 
 
 3. **docs/areas/team-pool.md** (T05's notes), if they don't already say it, under gotchas: "`Teams.import` on pkmn.github.io's JSON teams passes species through `Dex.getName`, which cuts names to 18 characters, so Urshifu-Rapid-Strike fails validation (sample teams 14, 17 and 18). Pack the sets directly, as T02's `teams.ts` does."
 
-4. **AGENTS.md, Conventions, Timed runs:** add: "In an agent session isolated in a worktree, the sandbox can refuse the inline lock command and `source ~/.nvm/nvm.sh`. T02's `timed.sh` holds the same lock command, and prefixing `PATH` with `~/.nvm/versions/node/v24.<x>/bin` stands in for `nvm use`."
+4. **AGENTS.md, Conventions, Timed runs:** add: "In an agent session isolated in a worktree, the sandbox can refuse the inline lock command and `source ~/.nvm/nvm.sh`. T02's `timed.sh` holds the same lock command, and prefixing `PATH` with `~/.nvm/versions/node/v24.<x>/bin` stands in for `nvm use`. The lock command finds the git common dir from the current directory, so a timed run of a separate clone must start from inside this repository to take the shared lock."
