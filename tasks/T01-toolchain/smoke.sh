@@ -3,7 +3,7 @@
 # and PyTorch on MPS in the uv environment. Exits non-zero on the first failure.
 set -euo pipefail
 cd "$(dirname "$0")"
-echo "== $(uname -sm), Node $(node --version), $(uv --version)"
+echo "== commit $(git rev-parse --short HEAD), $(uname -sm), Node $(node --version), $(uv --version)"
 
 ./setup-showdown.sh
 
@@ -33,4 +33,4 @@ echo "== python"
 uv sync --locked
 uv run python mps_check.py
 
-echo "== smoke test passed"
+echo "== smoke test passed in ${SECONDS}s"
