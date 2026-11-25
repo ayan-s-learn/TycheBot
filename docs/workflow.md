@@ -39,6 +39,7 @@ Run `/replan` when any of these happens. The checklist names the one expected ne
 - A phase's exit criteria are met.
 - The user has answered something under Needs you.
 - The Ready list is empty.
+- A task pushes the checkpoint the checklist's Next replan names.
 
 ## Planning session
 

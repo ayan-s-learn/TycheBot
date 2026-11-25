@@ -10,7 +10,7 @@ Phase 0 exit ([plan.md](plan.md), Phases): the toolchain is recorded (done 2026-
 
 ## Next replan
 
-When T02 (S1) pushes a Progress entry starting `Recorder ready`: S6's brief can then be written on that commit, without waiting for T02's timing work. Earlier if any task opens a PR or stops on a stop condition.
+When T02 (S1) pushes a checkpoint whose `Verified:` line starts `Recorder ready`: S6's brief can then be written on that commit, without waiting for T02's timing work. Earlier if any task opens a PR or stops on a stop condition.
 
 ## Needs you
 
@@ -32,7 +32,7 @@ Start these four now, each in its own session (`/do-task T02` and so on). They s
 Then start these as sessions free up, keeping to your limit of four at once:
 
 - T07: S4 MPS throughput. [Brief](../tasks/T07-mps-throughput/README.md). Its proposals need your sign-off, and S5 needs its CPU inference numbers.
-- T03: S2 server game replayed in-process. [Brief](../tasks/T03-server-replay/README.md). Last, because no Phase 0 choice waits on it; it checks D7's one-builder premise for Phase 1's online client.
+- T03: S2 server game replayed in-process. [Brief](../tasks/T03-server-replay/README.md). Last, because no other task needs its output. It checks D7's one-builder premise, which the online client and S6's tracker choice rely on.
 
 T02, T06 and T07 take timed runs under a shared lock and record load averages (AGENTS.md, Conventions: Timed runs). That keeps their timed runs apart, though not clear of the other sessions' lighter work.
 

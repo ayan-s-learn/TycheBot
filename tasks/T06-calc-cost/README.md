@@ -8,7 +8,7 @@
   - @smogon/calc (root `package.json`). plan.md (Network v0: Damage calcs; Phase 0: S3), D7 (Damage calcs).
   - Game states: in-process seeded games, as in T01's `battle.ts`, with Smogon NatDex sample teams that validate at the pin.
   - Opponent sets: D7's calcs use a species-level prior set, but the set library doesn't exist until Phase 1. Use each opposing mon's true set. A calc costs the same whichever set it uses, but the cache hit rate may differ under D7's prior sets, so Result says how.
-  - T02 (S1) measures the sim at the same time. This task measures the sim time it needs itself, so it doesn't wait for T02; compare with T02's Result if it is out by the end.
+  - T02 (S1) measures the sim at the same time. This task measures the sim time it needs itself, so it doesn't wait for T02; D7's rule uses this task's own sim figure, measured in the same setup, and T02's Result, if it is out by the end, is a cross-check.
 - **Deliverables,** in this folder:
   - The benchmark: at each decision of seeded games, compute both calc sets as Network v0 defines them, uncached and with a cache keyed on every input the calc reads. In the same setup (process count, core type), time the sim's own work per decision with `Battle` driven directly.
   - Result: µs per calc; ms per decision for 288 and 48 calcs, cached and uncached; the cache hit rate; median and spread over ≥3 runs, with load averages. Then the calcs' share of env time, as calc / (sim + calc) per decision, and what D7's rule gives.

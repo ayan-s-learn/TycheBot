@@ -10,7 +10,7 @@
 - **Deliverables:**
   - `data/replays/v0/replays.jsonl.gz`: one replay per line with at least its id, upload time, rating and log. Drop the chat lines (`|c|`, `|c:|`) before committing: the repo is public, and the parser test doesn't need other players' chat. Keep the rest, usernames included, as the replay server shows them. Outputs documents the format.
   - The fetch and stats scripts, in this folder.
-  - Result: turns per game (median, mean, p90, max) over all games, over games not ended by forfeit or inactivity, and by rating band. Include at least 100 games rated ≥1500 as their own band, with their dates: the newest uploads rarely reach 1500, and `&sort=rating` returns the highest-rated, which on 2026-11-24 went back to 2023. Also the forfeit share, the date range and the rating distribution.
+  - Result: turns per game (median, mean, p90, max) over all games, over games not ended by forfeit or inactivity, and by rating band. Also collect a separate sample of up to 100 games rated ≥1500, kept out of the figures above and reported on its own with its dates: the newest uploads rarely reach 1500, and `&sort=rating` returns the highest-rated, which on 2026-11-24 went back to 2023. Fewer than 100 is a finding, not a stop. Also the forfeit share, the date range and the rating distribution.
   - Under For integration: the turns-per-game figures for plan.md (Compute), and whether game lengths support Training v0's starting cap of 300.
 - **Acceptance checks:**
   - At least 1,000 distinct replays, each with format id exactly `gen9nationaldex` (not another NatDex format), and each log containing exactly one `|win|` or `|tie` line. In rated games, `|raw|` rating lines follow `|win|`.
