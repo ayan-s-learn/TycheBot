@@ -16,11 +16,10 @@ export type Seed = `sodium,${string}`;
 // Showdown's dist/ is CommonJS without ESM export annotations, so load it with require.
 const require = createRequire(import.meta.url);
 const dist = '../../vendor/pokemon-showdown/dist/';
-export const { Teams, TeamValidator, Dex, BattleStream, getPlayerStreams }: PS = require(dist + 'sim/index.js');
+export const { Teams, TeamValidator, Dex, BattleStream, getPlayerStreams, PRNG }: PS = require(dist + 'sim/index.js');
 const { Battle, extractChannelMessages }: BattleModule = require(dist + 'sim/battle.js');
 const { RandomPlayerAI }: AIModule = require(dist + 'sim/tools/random-player-ai.js');
 const { Runner }: RunnerModule = require(dist + 'sim/tools/runner.js');
-const { PRNG }: PS = require(dist + 'sim/index.js');
 
 export const FORMAT = 'gen9nationaldex' as ID;
 export const PIN = readFileSync(new URL('../../showdown.pin', import.meta.url), 'utf8').trim();
@@ -55,6 +54,8 @@ export class Collector {
 	chunks: [string[], string[]] = [[], []];
 	/** Each side's newest request JSON, until the env takes it. */
 	requests: [string | null, string | null] = [null, null];
+	last: [string | null, string | null] = [null, null];
+	invalid = 0;
 	ended = false;
 
 	receive(type: string, data: string) {
@@ -66,9 +67,15 @@ export class Collector {
 			const i = data.startsWith('p1\n') ? 0 : 1;
 			const message = data.slice(3);
 			this.chunks[i].push(message);
-			if (message.startsWith('|request|')) this.requests[i] = message.slice(9);
-			// [Unavailable choice] is expected (hidden trapping): an updated request follows it.
-			if (message.startsWith('|error|[Invalid choice]')) throw new Error(`${SIDES[i]}: ${message}`);
+			if (message.startsWith('|request|')) {
+				this.requests[i] = this.last[i] = message.slice(9);
+			} else if (message.startsWith('|error|[Invalid choice]')) {
+				// [Unavailable choice] (hidden trapping) comes with an updated request; [Invalid choice]
+				// doesn't. The request can allow a choice the sim rejects: when Eject Pack forces a switch
+				// mid-turn, switching to the Pokémon already queued to switch in. So offer it again.
+				if (++this.invalid > 100) throw new Error(`${SIDES[i]}: 100 invalid choices, the last ${message}`);
+				this.requests[i] = this.last[i];
+			}
 		} else if (type === 'end') {
 			this.ended = true;
 		}
@@ -160,6 +167,10 @@ export class Player {
 export interface Ended { game: Game, battle: Battle, chunks: [string[], string[]] }
 export interface Stats {
 	games: number, turns: number, decisions: number, steps: number, driverMs: number, choiceMs: number,
+	/** Choices rejected as [Invalid choice] and answered again (Collector). */
+	invalid: number,
+	/** Wall time from the first counted step to the end. */
+	windowMs: number,
 }
 export interface PlayOptions {
 	concurrency: number;
@@ -177,8 +188,8 @@ export interface PlayOptions {
  * time). A decision is a request a player must answer, so wait requests don't count.
  */
 export async function play<H>(driver: Driver<H>, games: Iterator<Game>, opts: PlayOptions): Promise<Stats> {
-	interface Slot { game: Game, out: Collector, h: H, players: [Player, Player], turn0: number }
-	const stats: Stats = { games: 0, turns: 0, decisions: 0, steps: 0, driverMs: 0, choiceMs: 0 };
+	interface Slot { game: Game, out: Collector, h: H, players: [Player, Player], turn0: number, invalid0: number }
+	const stats: Stats = { games: 0, turns: 0, decisions: 0, steps: 0, driverMs: 0, choiceMs: 0, invalid: 0, windowMs: 0 };
 	const clock = Date.now; // freezeClock() may replace Date.now later
 	let counting = opts.countFrom === undefined;
 	const open = (): Slot | null => {
@@ -187,12 +198,13 @@ export async function play<H>(driver: Driver<H>, games: Iterator<Game>, opts: Pl
 		const out = new Collector();
 		return {
 			game: next.value, out, h: driver.start(next.value, out),
-			players: [new Player(next.value.aiSeeds[0]), new Player(next.value.aiSeeds[1])], turn0: 0,
+			players: [new Player(next.value.aiSeeds[0]), new Player(next.value.aiSeeds[1])], turn0: 0, invalid0: 0,
 		};
 	};
 	let slots: Slot[] = [];
 	const choices: [Slot, 0 | 1, string][] = [];
 	let t0 = performance.now();
+	let countStart = t0;
 	for (let i = 0; i < opts.concurrency; i++) {
 		const slot = open();
 		if (slot) slots.push(slot);
@@ -205,6 +217,7 @@ export async function play<H>(driver: Driver<H>, games: Iterator<Game>, opts: Pl
 			if (counting) {
 				stats.games++;
 				stats.turns += battle.turn - slot.turn0;
+				stats.invalid += slot.out.invalid - slot.invalid0;
 			}
 			opts.onEnd?.({ game: slot.game, battle, chunks: slot.out.chunks });
 			driver.end(slot.h);
@@ -218,13 +231,20 @@ export async function play<H>(driver: Driver<H>, games: Iterator<Game>, opts: Pl
 		if (!slots.length) break;
 
 		const now = clock();
-		if (opts.stopAt !== undefined && now >= opts.stopAt) {
-			for (const slot of slots) stats.turns += driver.battle(slot.h).turn - slot.turn0;
+		if (counting && opts.stopAt !== undefined && now >= opts.stopAt) {
+			for (const slot of slots) {
+				stats.turns += driver.battle(slot.h).turn - slot.turn0;
+				stats.invalid += slot.out.invalid - slot.invalid0;
+			}
 			break;
 		}
 		if (!counting && now >= opts.countFrom!) {
 			counting = true;
-			for (const slot of slots) slot.turn0 = driver.battle(slot.h).turn;
+			countStart = t1;
+			for (const slot of slots) {
+				slot.turn0 = driver.battle(slot.h).turn;
+				slot.invalid0 = slot.out.invalid;
+			}
 		}
 
 		choices.length = 0;
@@ -246,6 +266,7 @@ export async function play<H>(driver: Driver<H>, games: Iterator<Game>, opts: Pl
 		}
 		for (const [slot, i, choice] of choices) driver.choose(slot.h, i, choice);
 	}
+	stats.windowMs = performance.now() - countStart;
 	return stats;
 }
 

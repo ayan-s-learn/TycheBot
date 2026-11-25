@@ -80,4 +80,30 @@ curl -sS -o /tmp/gen9nationaldex.json https://pkmn.github.io/smogon/data/teams/g
 node teams.ts /tmp/gen9nationaldex.json
 ```
 
+### Driver check
+
+```bash
+node check.ts 500    # exits non-zero if any game differs
+```
+
+For games 0–499 of the pool (`makeGame` in `sim.ts`), it compares each game's per-player chunks, winner, turn count and input log across Battle direct and BattleStream, each with 16 battles interleaved and with one at a time, and against Showdown's `getPlayerStreams`. It freezes the clock as the recorder does.
+
+### Timing
+
+```bash
+./timed.sh node sweep.ts results/sweep.json > results/sweep.log    # about 18 minutes
+```
+
+`timed.sh` takes the timing lock (AGENTS.md, Conventions) and prints the load averages before and after. `node sweep.ts <out.json> [procs=1,2,4,8,10,12,14] [runs=3] [seconds=20] [warmup=5] [concurrency=32]` runs, for each run, process count and driver, that many `bench.ts` processes on one shared window: they warm up until it opens, count until it closes, and stop at the next step. Each process plays the pool's games with 32 battles interleaved, from game id `run × 10⁶ + process × 10⁴`, the same ids for both drivers. The drivers swap order each run. `sweep.json` keeps every process's counts, and `sweep.log` ends with the median table. `node bench.ts <direct|stream> [first] [startMs] [endMs] [concurrency]` is one process on its own.
+
+| File | What it is |
+|---|---|
+| `sim.ts` | Showdown at the pin, the pool, seeds, the output collector, both drivers and the step loop (`play`) |
+| `record.ts`, `sample.jsonl` | The recorder and its committed sample |
+| `check.ts` | The driver check |
+| `bench.ts`, `sweep.ts`, `timed.sh` | Timing: one process, the sweep, the lock wrapper |
+| `results/` | The sweeps' raw counts and logs |
+| `teams.ts`, `teams/` | The pool builder, the pool and the Illusion team |
+| `tsconfig.json` | `node ../../vendor/pokemon-showdown/node_modules/typescript/bin/tsc -p tsconfig.json` type-checks every script |
+
 ## For integration

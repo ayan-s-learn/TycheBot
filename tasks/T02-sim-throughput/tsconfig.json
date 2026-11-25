@@ -13,7 +13,7 @@
     "skipLibCheck": true
   },
   "files": [
-    "teams.ts", "sim.ts", "record.ts", "check.ts",
+    "teams.ts", "sim.ts", "record.ts", "check.ts", "bench.ts", "sweep.ts",
     "../../vendor/pokemon-showdown/dist/sim/global-types.d.ts"
   ]
 }

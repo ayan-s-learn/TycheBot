@@ -15,7 +15,7 @@ const pool = loadPool();
 const digest = (chunks: string[][], winner: string | undefined, turns: number, inputLog: string[]) =>
 	createHash('sha256').update(JSON.stringify([chunks, winner, turns, inputLog])).digest('hex');
 
-const counts = { turns: 0, decisions: 0, unavailable: 0, mega: 0, zmove: 0 };
+const counts = { turns: 0, decisions: 0, invalid: 0, unavailable: 0, mega: 0, zmove: 0 };
 async function run(driver: Driver<any>, concurrency: number, tally = false) {
 	const out = new Map<number, string>();
 	const onEnd = ({ game, battle, chunks }: Ended) => {
@@ -27,21 +27,24 @@ async function run(driver: Driver<any>, concurrency: number, tally = false) {
 		counts.zmove += lines.filter(l => l.startsWith('|-zpower|')).length / 2;
 	};
 	const stats = await play(driver, gameIds(first, pool, games), { concurrency, onEnd });
-	if (tally) Object.assign(counts, { turns: stats.turns, decisions: stats.decisions });
+	if (tally) Object.assign(counts, { turns: stats.turns, decisions: stats.decisions, invalid: stats.invalid });
 	return out;
 }
 
-/** One game through getPlayerStreams, each player answering its own stream's requests. */
+/** One game through getPlayerStreams, each player answering its own stream's requests, and answering
+ * again after an [Invalid choice] as the Collector does. */
 async function reference(game: Game) {
 	const s = new BattleStream();
 	const streams = getPlayerStreams(s);
 	const chunks: [string[], string[]] = [[], []];
 	const answer = async (i: 0 | 1) => {
 		const player = new Player(game.aiSeeds[i]);
+		let request = '';
 		for await (const chunk of streams[SIDES[i]]) {
 			chunks[i].push(chunk);
-			if (!chunk.startsWith('|request|')) continue;
-			const choice = player.answer(chunk.slice(9));
+			if (chunk.startsWith('|request|')) request = chunk.slice(9);
+			else if (!chunk.startsWith('|error|[Invalid choice]')) continue;
+			const choice = player.answer(request);
 			if (choice !== null) void streams[SIDES[i]].write(choice);
 		}
 	};
@@ -71,5 +74,6 @@ for (const [label, result] of variants) {
 		'all match direct, 16 interleaved'}`);
 }
 console.log(`games ${first}..${first + games - 1}: ${counts.turns} turns, ${counts.decisions} decisions, ` +
-	`${counts.unavailable} [Unavailable choice] errors, ${counts.mega} mega evolutions, ${counts.zmove} z-moves`);
+	`${counts.invalid} [Invalid choice] and ${counts.unavailable} [Unavailable choice] errors, ` +
+	`${counts.mega} mega evolutions, ${counts.zmove} z-moves`);
 process.exit(failures ? 1 : 0);
