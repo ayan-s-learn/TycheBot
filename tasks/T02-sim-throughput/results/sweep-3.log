@@ -1,0 +1,61 @@
+lock taken 2026-11-25T13:18:36, load { 2.72 7.36 8.08 }
+run 1, 1 procs, direct: 0.177 ms/decision (per process 0.177-0.177), 0.406 ms/turn, choice 0.009 ms/decision, 5383 decisions/s, 964 games; other load 0.4 before (waited 5 s), 0.3 during; cpu/wall 1.05-1.05; load { 2.50 7.24 8.03 }
+run 1, 1 procs, stream: 0.180 ms/decision (per process 0.180-0.180), 0.412 ms/turn, choice 0.009 ms/decision, 5301 decisions/s, 950 games; other load 0.4 before (waited 5 s), 0.4 during; cpu/wall 1.06-1.06; load { 2.04 6.75 7.83 }
+run 1, 2 procs, direct: 0.185 ms/decision (per process 0.185-0.186), 0.424 ms/turn, choice 0.010 ms/decision, 10263 decisions/s, 1836 games; other load 0.5 before (waited 5 s), 0.1 during; cpu/wall 1.05-1.05; load { 1.88 6.27 7.62 }
+run 1, 2 procs, stream: 0.202 ms/decision (per process 0.201-0.202), 0.462 ms/turn, choice 0.011 ms/decision, 9428 decisions/s, 1685 games; other load 1.1 before (waited 5 s), 1.6 during; cpu/wall 1.06-1.07; load { 2.03 5.89 7.43 }
+run 1, 4 procs, direct: 0.198 ms/decision (per process 0.197-0.200), 0.454 ms/turn, choice 0.011 ms/decision, 19157 decisions/s, 3419 games; other load 1.5 before (waited 5 s), 0.4 during; cpu/wall 1.05-1.05; load { 2.72 5.70 7.31 }
+run 1, 4 procs, stream: 0.198 ms/decision (per process 0.195-0.200), 0.453 ms/turn, choice 0.010 ms/decision, 19242 decisions/s, 3439 games; other load 0.4 before (waited 5 s), 0.5 during; cpu/wall 1.07-1.08; load { 3.56 5.64 7.23 }
+run 1, 8 procs, direct: 0.201 ms/decision (per process 0.199-0.206), 0.462 ms/turn, choice 0.011 ms/decision, 37666 decisions/s, 6722 games; other load 0.9 before (waited 5 s), 0.5 during; cpu/wall 1.06-1.06; load { 3.73 5.50 7.13 }
+run 1, 8 procs, stream: 0.209 ms/decision (per process 0.207-0.211), 0.480 ms/turn, choice 0.012 ms/decision, 36215 decisions/s, 6475 games; other load 0.5 before (waited 5 s), 0.4 during; cpu/wall 1.07-1.09; load { 5.55 5.81 7.18 }
+run 1, 10 procs, direct: 0.215 ms/decision (per process 0.214-0.219), 0.494 ms/turn, choice 0.012 ms/decision, 44039 decisions/s, 7861 games; other load 0.6 before (waited 5 s), 0.8 during; cpu/wall 1.07-1.09; load { 6.56 6.06 7.23 }
+run 1, 10 procs, stream: 0.224 ms/decision (per process 0.221-0.226), 0.514 ms/turn, choice 0.014 ms/decision, 42021 decisions/s, 7479 games; other load 1.5 before (waited 5 s), 1.0 during; cpu/wall 1.06-1.09; load { 9.35 6.87 7.49 }
+run 1, 12 procs, direct: 0.280 ms/decision (per process 0.272-0.287), 0.642 ms/turn, choice 0.014 ms/decision, 40779 decisions/s, 7272 games; other load 1.8 before (waited 5 s), 2.6 during; cpu/wall 0.93-0.97; load { 10.72 7.55 7.72 }
+run 1, 12 procs, stream: 0.249 ms/decision (per process 0.246-0.254), 0.572 ms/turn, choice 0.022 ms/decision, 44160 decisions/s, 7865 games; other load 1.2 before (waited 35 s), 0.8 during; cpu/wall 1.03-1.05; load { 14.51 9.95 8.65 }
+run 1, 14 procs, direct: 0.295 ms/decision (per process 0.286-0.302), 0.676 ms/turn, choice 0.015 ms/decision, 45177 decisions/s, 8075 games; other load 1.4 before (waited 5 s), 1.0 during; cpu/wall 0.92-0.94; load { 15.40 10.74 8.99 }
+run 1, 14 procs, stream: 0.290 ms/decision (per process 0.285-0.293), 0.664 ms/turn, choice 0.025 ms/decision, 44492 decisions/s, 7944 games; other load 1.0 before (waited 5 s), 0.7 during; cpu/wall 0.94-0.96; load { 19.16 12.22 9.59 }
+run 2, 1 procs, stream: 0.189 ms/decision (per process 0.189-0.189), 0.432 ms/turn, choice 0.010 ms/decision, 5039 decisions/s, 892 games; other load 0.6 before (waited 5 s), 0.5 during; cpu/wall 1.07-1.07; load { 19.51 13.04 9.98 }
+run 2, 1 procs, direct: 0.183 ms/decision (per process 0.183-0.183), 0.420 ms/turn, choice 0.010 ms/decision, 5190 decisions/s, 918 games; other load 0.2 before (waited 5 s), 0.9 during; cpu/wall 1.05-1.05; load { 12.44 11.95 9.69 }
+run 2, 2 procs, stream: 0.198 ms/decision (per process 0.198-0.199), 0.455 ms/turn, choice 0.010 ms/decision, 9590 decisions/s, 1714 games; other load 1.6 before (waited 5 s), 1.0 during; cpu/wall 1.06-1.07; load { 8.09 10.93 9.40 }
+run 2, 2 procs, direct: 0.194 ms/decision (per process 0.194-0.195), 0.446 ms/turn, choice 0.010 ms/decision, 9774 decisions/s, 1754 games; other load 1.3 before (waited 5 s), 0.9 during; cpu/wall 1.05-1.05; load { 6.05 10.17 9.18 }
+run 2, 4 procs, stream: 0.204 ms/decision (per process 0.202-0.207), 0.467 ms/turn, choice 0.011 ms/decision, 18645 decisions/s, 3297 games; other load 1.0 before (waited 5 s), 1.0 during; cpu/wall 1.07-1.08; load { 5.82 9.74 9.05 }
+run 2, 4 procs, direct: 0.201 ms/decision (per process 0.199-0.203), 0.461 ms/turn, choice 0.011 ms/decision, 18861 decisions/s, 3345 games; other load 0.6 before (waited 5 s), 0.9 during; cpu/wall 1.05-1.05; load { 6.36 9.52 9.00 }
+run 2, 8 procs, stream: 0.220 ms/decision (per process 0.217-0.222), 0.504 ms/turn, choice 0.012 ms/decision, 34481 decisions/s, 6160 games; other load 1.2 before (waited 5 s), 1.4 during; cpu/wall 1.06-1.08; load { 5.95 9.13 8.87 }
+run 2, 8 procs, direct: 0.211 ms/decision (per process 0.208-0.213), 0.483 ms/turn, choice 0.011 ms/decision, 36020 decisions/s, 6424 games; other load 1.0 before (waited 5 s), 0.8 during; cpu/wall 1.06-1.07; load { 6.70 9.04 8.85 }
+run 2, 10 procs, stream: 0.226 ms/decision (per process 0.224-0.227), 0.518 ms/turn, choice 0.014 ms/decision, 41560 decisions/s, 7413 games; other load 0.9 before (waited 5 s), 0.8 during; cpu/wall 1.06-1.09; load { 7.97 9.19 8.92 }
+run 2, 10 procs, direct: 0.211 ms/decision (per process 0.209-0.213), 0.483 ms/turn, choice 0.011 ms/decision, 45001 decisions/s, 8036 games; other load 0.9 before (waited 5 s), 0.7 during; cpu/wall 1.07-1.08; load { 9.61 9.54 9.06 }
+run 2, 12 procs, stream: 0.249 ms/decision (per process 0.246-0.252), 0.572 ms/turn, choice 0.022 ms/decision, 44247 decisions/s, 7881 games; other load 0.7 before (waited 5 s), 0.7 during; cpu/wall 1.03-1.06; load { 10.12 9.74 9.15 }
+run 2, 12 procs, direct: 0.242 ms/decision (per process 0.237-0.247), 0.553 ms/turn, choice 0.013 ms/decision, 47173 decisions/s, 8412 games; other load 1.1 before (waited 5 s), 0.6 during; cpu/wall 1.05-1.06; load { 12.29 10.42 9.42 }
+run 2, 14 procs, stream: 0.283 ms/decision (per process 0.281-0.287), 0.649 ms/turn, choice 0.025 ms/decision, 45438 decisions/s, 8111 games; other load 0.8 before (waited 5 s), 0.6 during; cpu/wall 0.95-0.97; load { 12.09 10.60 9.52 }
+run 2, 14 procs, direct: 0.294 ms/decision (per process 0.289-0.299), 0.674 ms/turn, choice 0.015 ms/decision, 45326 decisions/s, 8061 games; other load 0.8 before (waited 5 s), 0.9 during; cpu/wall 0.92-0.95; load { 14.77 11.48 9.88 }
+run 3, 1 procs, direct: 0.186 ms/decision (per process 0.186-0.186), 0.427 ms/turn, choice 0.010 ms/decision, 5107 decisions/s, 921 games; other load 1.1 before (waited 5 s), 0.8 during; cpu/wall 1.05-1.05; load { 16.49 12.32 10.25 }
+run 3, 1 procs, stream: 0.191 ms/decision (per process 0.191-0.191), 0.437 ms/turn, choice 0.010 ms/decision, 4996 decisions/s, 900 games; other load 1.1 before (waited 5 s), 0.8 during; cpu/wall 1.07-1.07; load { 10.49 11.27 9.94 }
+run 3, 2 procs, direct: 0.194 ms/decision (per process 0.193-0.195), 0.445 ms/turn, choice 0.010 ms/decision, 9798 decisions/s, 1762 games; other load 1.0 before (waited 5 s), 0.8 during; cpu/wall 1.05-1.06; load { 6.80 10.30 9.64 }
+run 3, 2 procs, stream: 0.192 ms/decision (per process 0.190-0.194), 0.440 ms/turn, choice 0.010 ms/decision, 9912 decisions/s, 1783 games; other load 0.8 before (waited 5 s), 0.7 during; cpu/wall 1.07-1.07; load { 4.98 9.54 9.38 }
+run 3, 4 procs, direct: 0.198 ms/decision (per process 0.197-0.198), 0.453 ms/turn, choice 0.011 ms/decision, 19202 decisions/s, 3421 games; other load 0.8 before (waited 5 s), 0.7 during; cpu/wall 1.05-1.06; load { 3.75 8.81 9.12 }
+run 3, 4 procs, stream: 0.214 ms/decision (per process 0.212-0.217), 0.491 ms/turn, choice 0.011 ms/decision, 17713 decisions/s, 3152 games; other load 0.9 before (waited 5 s), 2.8 during; cpu/wall 1.06-1.07; load { 3.91 8.38 8.95 }
+run 3, 8 procs, direct: 0.208 ms/decision (per process 0.206-0.210), 0.477 ms/turn, choice 0.011 ms/decision, 36485 decisions/s, 6470 games; other load 1.2 before (waited 35 s), 0.8 during; cpu/wall 1.06-1.06; load { 7.00 8.74 9.06 }
+run 3, 8 procs, stream: 0.212 ms/decision (per process 0.210-0.214), 0.486 ms/turn, choice 0.012 ms/decision, 35763 decisions/s, 6332 games; other load 0.7 before (waited 5 s), 0.4 during; cpu/wall 1.08-1.08; load { 8.63 9.07 9.18 }
+run 3, 10 procs, direct: 0.211 ms/decision (per process 0.209-0.213), 0.484 ms/turn, choice 0.011 ms/decision, 44951 decisions/s, 8003 games; other load 0.1 before (waited 5 s), 0.2 during; cpu/wall 1.08-1.09; load { 9.04 9.19 9.22 }
+run 3, 10 procs, stream: 0.217 ms/decision (per process 0.215-0.219), 0.498 ms/turn, choice 0.014 ms/decision, 43228 decisions/s, 7695 games; other load 0.2 before (waited 5 s), 0.6 during; cpu/wall 1.07-1.10; load { 9.64 9.36 9.29 }
+run 3, 12 procs, direct: 0.242 ms/decision (per process 0.236-0.249), 0.555 ms/turn, choice 0.013 ms/decision, 47053 decisions/s, 8385 games; other load 0.8 before (waited 5 s), 0.6 during; cpu/wall 1.04-1.07; load { 10.80 9.71 9.42 }
+run 3, 12 procs, stream: 0.244 ms/decision (per process 0.241-0.247), 0.559 ms/turn, choice 0.021 ms/decision, 45365 decisions/s, 8091 games; other load 0.8 before (waited 5 s), 0.2 during; cpu/wall 1.05-1.08; load { 12.99 10.45 9.70 }
+run 3, 14 procs, direct: 0.287 ms/decision (per process 0.280-0.300), 0.659 ms/turn, choice 0.015 ms/decision, 46341 decisions/s, 8310 games; other load 0.8 before (waited 5 s), 0.9 during; cpu/wall 0.91-0.95; load { 12.78 10.69 9.81 }
+run 3, 14 procs, stream: 0.288 ms/decision (per process 0.285-0.290), 0.659 ms/turn, choice 0.025 ms/decision, 44755 decisions/s, 8021 games; other load 0.9 before (waited 5 s), 0.7 during; cpu/wall 0.94-0.96; load { 19.37 12.63 10.55 }
+
+| Driver | Processes | ms/decision | ms/turn | choice ms/decision | decisions/s (all processes) | other cores |
+|---|---|---|---|---|---|---|
+| direct | 1 | 0.183 (0.177–0.186) | 0.420 (0.406–0.427) | 0.010 (0.009–0.010) | 5190 (5107–5383) | 0.8 (0.3–0.9) |
+| stream | 1 | 0.189 (0.180–0.191) | 0.432 (0.412–0.437) | 0.010 (0.009–0.010) | 5039 (4996–5301) | 0.5 (0.4–0.8) |
+| direct | 2 | 0.194 (0.185–0.194) | 0.445 (0.424–0.446) | 0.010 (0.010–0.010) | 9798 (9774–10263) | 0.8 (0.1–0.9) |
+| stream | 2 | 0.198 (0.192–0.202) | 0.455 (0.440–0.462) | 0.010 (0.010–0.011) | 9590 (9428–9912) | 1.0 (0.7–1.6) |
+| direct | 4 | 0.198 (0.198–0.201) | 0.454 (0.453–0.461) | 0.011 (0.011–0.011) | 19157 (18861–19202) | 0.7 (0.4–0.9) |
+| stream | 4 | 0.204 (0.198–0.214) | 0.467 (0.453–0.491) | 0.011 (0.010–0.011) | 18645 (17713–19242) | 1.0 (0.5–2.8) |
+| direct | 8 | 0.208 (0.201–0.211) | 0.477 (0.462–0.483) | 0.011 (0.011–0.011) | 36485 (36020–37666) | 0.8 (0.5–0.8) |
+| stream | 8 | 0.212 (0.209–0.220) | 0.486 (0.480–0.504) | 0.012 (0.012–0.012) | 35763 (34481–36215) | 0.4 (0.4–1.4) |
+| direct | 10 | 0.211 (0.211–0.215) | 0.484 (0.483–0.494) | 0.011 (0.011–0.012) | 44951 (44039–45001) | 0.7 (0.2–0.8) |
+| stream | 10 | 0.224 (0.217–0.226) | 0.514 (0.498–0.518) | 0.014 (0.014–0.014) | 42021 (41560–43228) | 0.8 (0.6–1.0) |
+| direct | 12 | 0.242 (0.242–0.280) | 0.555 (0.553–0.642) | 0.013 (0.013–0.014) | 47053 (40779–47173) | 0.6 (0.6–2.6) |
+| stream | 12 | 0.249 (0.244–0.249) | 0.572 (0.559–0.572) | 0.022 (0.021–0.022) | 44247 (44160–45365) | 0.7 (0.2–0.8) |
+| direct | 14 | 0.294 (0.287–0.295) | 0.674 (0.659–0.676) | 0.015 (0.015–0.015) | 45326 (45177–46341) | 0.9 (0.9–1.0) |
+| stream | 14 | 0.288 (0.283–0.290) | 0.659 (0.649–0.664) | 0.025 (0.025–0.025) | 44755 (44492–45438) | 0.7 (0.6–0.7) |
+done 2026-11-25T13:40:38, load { 24.24 14.45 11.28 }
