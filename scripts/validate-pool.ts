@@ -1,4 +1,5 @@
 // Validates every team in a pool file with Showdown's validator at the commit in showdown.pin.
+// A team also fails unless it is 6 Pokemon in canonical packed form that the validator leaves as written.
 // Usage: node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl
 // Exits 1 if any team fails, naming each one.
 import { execFileSync } from 'node:child_process';
@@ -22,8 +23,23 @@ if (head !== pin) {
 }
 
 const require = createRequire(import.meta.url);
-const { Teams, TeamValidator }: PS = require(path('vendor/pokemon-showdown/dist/sim/index.js'));
+const { Teams, TeamValidator, toID }: PS = require(path('vendor/pokemon-showdown/dist/sim/index.js'));
 const validator = TeamValidator.get(FORMAT);
+
+function check(team: unknown): string[] | null {
+	// unpack also takes JSON and silently drops or coerces malformed fields, so require a clean round trip.
+	const sets = typeof team === 'string' ? Teams.unpack(team) : null;
+	if (!sets || Teams.pack(sets) !== team) return ['"team" is not a canonical packed team'];
+	if (sets.length !== 6) return [`a pool team has 6 Pokemon, this one has ${sets.length}`];
+	const problems = validator.validateTeam(sets);
+	if (problems) return problems;
+	// validateTeam repairs some illegal sets in place and passes them, but the sim plays the string as written.
+	const changes = Teams.unpack(team)!.flatMap((written, i) => (['species', 'item', 'ability', 'moves', 'gender'] as const)
+		// An unset gender is legal, and the validator fills it in for species with a fixed one.
+		.filter(key => (key !== 'gender' || written.gender) && String([written[key]].flat().map(toID)) !== String([sets[i][key]].flat().map(toID)))
+		.map(key => `${written.species}: the validator changes ${key} "${written[key]}" to "${sets[i][key]}"`));
+	return changes.length ? changes : null;
+}
 
 let teams = 0;
 let failed = 0;
@@ -35,8 +51,7 @@ for (const [i, line] of readFileSync(file, 'utf8').split('\n').entries()) {
 	try {
 		const { id, team, source } = JSON.parse(line);
 		label = `${id} (line ${i + 1}${source?.name ? `, "${source.name}"` : ''})`;
-		const sets = typeof team === 'string' ? Teams.unpack(team) : null;
-		problems = sets ? validator.validateTeam(sets) : ['"team" is not a packed team'];
+		problems = check(team);
 	} catch (e) {
 		problems = [String(e)];
 	}

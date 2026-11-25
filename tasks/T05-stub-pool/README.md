@@ -46,6 +46,10 @@ Acceptance checks (`acceptance.sh`, Node 24.22.3; log in `evidence/acceptance.lo
 - The pool validates: 20/20, 20 distinct.
 - With Mewtwo swapped into the team on line 7, the validator exits 1 with `FAIL smogon-sample-06 (line 7)` and `Mewtwo is tagged ND Uber, which is banned.`
 - Mega Stones, Z-Crystals and hidden formes are all present (below).
+- Rebuilding from the snapshot gives the committed file byte for byte.
+- The validator also rejects a set it would otherwise silently repair, a 5-mon team and a malformed field.
+
+The validator is stricter than D4's `validate-team`, which passes sets it repairs, such as Terapagos with Wonder Guard (notes, Gotchas). It also requires 6 Pokemon and canonical packed form.
 
 Separately, the `validate-team gen9nationaldex` CLI accepts each of the 20 packed teams (command in Outputs).
 
@@ -88,7 +92,7 @@ ok=0; while IFS= read -r l; do node -p 'JSON.parse(process.argv[1]).team' "$l" |
 | File | What it is |
 |---|---|
 | `acceptance.sh`, `tsconfig.json` | Type check and the brief's acceptance checks |
-| `build-pool.ts` | Packs the snapshot's sets, checks that unpacking returns every field, validates, writes the pool |
+| `build-pool.ts` | Packs the snapshot's sets, checks that unpacking returns every field, validates, writes the pool (or the file given as an argument) |
 | `report.ts` | Counts, and the contents criteria |
 | `evidence/` | Source snapshot and the acceptance log |
 
@@ -105,3 +109,9 @@ AGENTS.md, Areas: replace "No areas yet. Add a row" with "Add a row", and add th
 AGENTS.md, Conventions, "Re-pin Showdown monthly": replace "validate every pool team and rerun the tests that exist" with:
 
 > validate every pool team (`node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl`, once per pool version in use) and rerun the tests that exist
+
+`scripts/setup-showdown.sh`: it checks out the pin before `npm ci`, so a failure there leaves the old `dist/` under the new HEAD, which `validate-pool.ts` accepts. Delete the line `rm -rf dist  # the build only adds files, so a re-pin would keep stale modules`, and add this before the `if` that compares HEAD with `$sha` (untested):
+
+```bash
+rm -rf "$dir/dist"  # first, so a failed setup can't leave an old build; the build only adds files
+```

@@ -4,7 +4,7 @@ Component 5 of plan.md. D4 owns the design. Set priors (`data/priors/`) don't ex
 
 ## Status (2026-11-24)
 
-`data/pool/v0/teams.jsonl` holds a 20-team stub pool that validates at Showdown `29f2d99`. Every team starts a battle (Team Preview), but none has been played through.
+`data/pool/v0/teams.jsonl` holds a 20-team stub pool that validates at Showdown `29f2d99`. T05's checks take each team to Team Preview and play no full battles.
 
 ## teams.jsonl
 
@@ -26,7 +26,14 @@ From the root, after setup (AGENTS.md, Conventions):
 node scripts/validate-pool.ts data/pool/v0/teams.jsonl
 ```
 
-It runs Showdown's `TeamValidator` for `gen9nationaldex` on every line. If any team fails, it names each one with the validator's problems and exits 1. It refuses to run if `vendor/pokemon-showdown` isn't at the commit in `showdown.pin`. It reads `id` and `source.name` only to label failures, and doesn't check them, the other `source` fields or duplicate teams.
+A line passes only if its `team`:
+
+- survives `Teams.pack(Teams.unpack(team))` unchanged;
+- has 6 Pokemon;
+- passes Showdown's `TeamValidator` for `gen9nationaldex`;
+- keeps its species, items, abilities, moves and set genders through validation (see Gotchas).
+
+It names each failing team with the problems and exits 1. It refuses to run if the `vendor/pokemon-showdown` checkout isn't at the commit in `showdown.pin`. It doesn't check the built `dist/`: if `setup-showdown.sh` fails, rerun it until it succeeds before trusting a pass. It reads `id` and `source.name` only to label failures, and doesn't check them, the other `source` fields or duplicate teams.
 
 It is type-checked by `tasks/T05-stub-pool/tsconfig.json` (command in AGENTS.md, Conventions).
 
@@ -39,7 +46,7 @@ The first 20 of Smogon's 25 NatDex sample teams (entries 0–19; 20–24 are unu
 - No Illusion user.
 - Skewed: 19 of 20 teams carry a Z-Crystal, and Zamazenta is on 12 (15.2% usage at the 1760 cutoff, plan.md). Two teams share at most 4 species.
 
-Full counts (it exits 1 unless the file has exactly 20 distinct teams):
+Full counts, from a T05 script that exits 1 unless the file has exactly 20 distinct teams with a Mega Stone, a Z-Crystal and a hidden forme:
 
 ```bash
 node tasks/T05-stub-pool/report.ts data/pool/v0/teams.jsonl
@@ -47,5 +54,5 @@ node tasks/T05-stub-pool/report.ts data/pool/v0/teams.jsonl
 
 ## Gotchas
 
-- `validateTeam` edits the sets passed to it (e.g. `sim/team-validator.ts` assigns `set.hpType` and `set.ivs`). `build-pool.ts` therefore validates a separately unpacked copy and writes the source sets, with defaults filled in.
-- 17 v0 sets carry an `hpType` but no Hidden Power move. The validator still checks it: at `29f2d99`, changing a Zamazenta set's to `Fighting` fails validation.
+- `validateTeam` repairs some illegal sets in place and passes them: at `29f2d99`, Terapagos with Wonder Guard becomes Tera Shift and Mawile with Huge Power becomes Hyper Cutter. A `Battle` started on the unrepaired string plays it as written. So Showdown's `validate-team` passing isn't enough for a pool team; use the script above.
+- 17 v0 sets carry an `hpType` but no Hidden Power move. At `29f2d99` the validator accepts only the listed type on 13 of them (Ogerpon-Wellspring 8, Terapagos 4, Raging Bolt 1) and 16 of 18 types on the 4 Great Tusk sets.

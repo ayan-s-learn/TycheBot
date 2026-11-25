@@ -1,6 +1,6 @@
 // Writes data/pool/v0/teams.jsonl: the first 20 teams in the Smogon sample-team snapshot
 // (evidence/sample-teams.json) that validate at the pin. Reports every team that fails.
-// Usage, from the repo root: node tasks/T05-stub-pool/build-pool.ts
+// Usage, from the repo root: node tasks/T05-stub-pool/build-pool.ts [output file]
 import { deepStrictEqual } from 'node:assert';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -61,4 +61,5 @@ for (const [entry, { name, author, data }] of snapshot.entries()) {
 }
 console.log(`${snapshot.length} sample teams, ${failed} failed validation, ${lines.length} taken`);
 if (lines.length < SIZE) throw new Error(`only ${lines.length} teams validate, need ${SIZE}`);
-writeFileSync(new URL('../../data/pool/v0/teams.jsonl', import.meta.url), lines.map(l => l + '\n').join(''));
+const out = process.argv[2] ?? new URL('../../data/pool/v0/teams.jsonl', import.meta.url);
+writeFileSync(out, lines.map(l => l + '\n').join(''));

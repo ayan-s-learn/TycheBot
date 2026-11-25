@@ -45,8 +45,9 @@ for (const [i, team] of teams.entries()) {
 	}
 }
 
-// Order-insensitive, so a reshuffled copy of a team is not a second team.
-const distinct = new Set(teams.map(t => t.map(s => Teams.pack([s])).sort().join(']'))).size;
+// Ignores set order, move order and cosmetic fields, so a reshuffled copy of a team is not a second team.
+const distinct = new Set(teams.map(t => t.map(s => JSON.stringify(
+	[s.species, s.item, s.ability, [...s.moves].sort(), s.nature, s.evs, s.ivs])).sort().join())).size;
 const rosters = teams.map(t => new Set(t.map(s => s.species)));
 let maxShared = 0;
 for (const [i, a] of rosters.entries()) {
