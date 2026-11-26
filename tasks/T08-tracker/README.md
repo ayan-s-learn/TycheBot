@@ -32,6 +32,17 @@
 ## Progress
 
 ```text
+2026-11-25 (2)
+State: active
+Verified: harness stages 1-3 run on 500 recorded games (games 0-499, 55,563 decisions) and T04's 1,100
+  replays, Showdown 29f2d99, Node 24.22.3, @pkmn/client 0.7.4, poke-env 0.17.0. truth.ts replays every game
+  byte for byte. Neither tracker throws with @pkmn/data's NatDex filter; with the default filter @pkmn/client
+  throws in 248 of 1,000 player-games. Each mismatch class traced to a cause (not yet written up).
+Pending: data-lag counts, timing, cause summary script, Result, clean-checkout rerun.
+Next: write datalag and summarize scripts, then time both trackers under the lock.
+```
+
+```text
 2026-11-25
 State: active
 Verified: nothing yet. Setup done in this worktree (Showdown 29f2d99, Node 24.22.3).

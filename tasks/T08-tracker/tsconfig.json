@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "nodenext",
+    "lib": ["es2024"],
+    "types": ["node"],
+    "typeRoots": ["../../vendor/pokemon-showdown/node_modules/@types"],
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true
+  },
+  "files": [
+    "teams.ts", "sim.ts", "record.ts", "check.ts", "bench.ts", "sweep.ts", "compare.ts",
+    "../../vendor/pokemon-showdown/dist/sim/global-types.d.ts"
+  ]
+}
