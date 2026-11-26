@@ -39,8 +39,9 @@ Verified: adversarial pass 1 (Opus, high) and its fixes. New recall.py: @pkmn/cl
   1,830 single-ability inferences @pkmn/client lacks. compare.py now tags only opposing Illusions as not shown,
   splits Zoroarks fainted in disguise and the player's own Illusion, and splits Regenerator into last-shown and
   poke-env's estimate. summarize.py still assigns every class (exit 0). Result, D7 and plan.md text revised.
-Pending: the clean-checkout rerun on the new commit; adversarial pass 2.
-Next: rerun ./run.sh from a fresh clone and compare results/; then pass 2 (workflow.md, Task session, step 7).
+  ./run.sh in a fresh clone of b889dc5 reproduces every file in results/ byte for byte.
+Pending: adversarial pass 2.
+Next: pass 2 (workflow.md, Task session, step 7), briefed on the pass-1 fixes.
 ```
 
 ```text
@@ -183,7 +184,7 @@ My estimates of size, not measured.
 
 ### Acceptance checks
 
-- **Rerun on a clean checkout:** passed. `./run.sh` in a fresh clone of 5974c17 reproduces every file in `results/` (all but `timing.log`) byte for byte.
+- **Rerun on a clean checkout:** passed. `./run.sh` in a fresh clone of b889dc5 reproduces every file in `results/` (all but `timing.log`, which it doesn't write) byte for byte.
 - **Every mismatch class has a cause:** passed. `summarize.py` assigns all of them (`results/summary.json`; exit 0).
 - **Timing:** passed. Both trackers are under ~2 ms per decision (above).
 
