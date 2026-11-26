@@ -34,6 +34,18 @@
 ## Progress
 
 ```text
+2026-11-26 (2)
+State: active
+Verified: worker/sim, worker/calc, worker/skeleton and tyche/transport built; tsc passes. Node tests (10):
+  mask probe against the sim on every decision of 6 random games, the Eject Pack queued-switch case, calcs on
+  tracked state equal to calcs on sim state (0 of 141,321 differ, 8 games), records against the sim. Python
+  transport tests (6): round trip, stack, echo, both ends refusing another version. Showdown 29f2d99, Node 24.22.3.
+Pending: env decisions/s at 12 processes (timed); transport-alone timing; PPO and the 1,000-game eval;
+  env-workers.md; Result.
+Next: tyche/skeleton/bench.py, then 3 timed runs under the lock.
+```
+
+```text
 2026-11-26
 State: active
 Verified: nothing yet (claimed 2026-11-26)
