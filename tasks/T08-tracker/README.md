@@ -39,7 +39,8 @@ Verified: all three acceptance checks (Result, Acceptance checks). ./run.sh from
   Timing: 3 runs per tracker (one required), far under 2 ms. Showdown 29f2d99, Node 24.22.3, Python 3.14.7,
   @pkmn/client 0.7.4, @pkmn/data and @pkmn/dex 0.10.15, poke-env 0.17.0.
 Pending: none
-Next: the user reviews the PR and the recommendation; two adversarial passes (workflow.md, Task session, step 7).
+Next: the user reviews the PR; two adversarial passes (workflow.md, Task session, step 7). The user agreed to the
+  recommendation on 2026-11-25 (For integration).
 ```
 
 ```text
@@ -200,7 +201,7 @@ Gotchas for whoever builds on this:
 
 ## For integration
 
-These need the user's OK (D7 is partly decided). D7's header stays "partly decided": S2 stays deferred and the revisit triggers open. In the same sweep, prior-work.md's poke-env and @pkmn/client rows ("D7, spike S6"; "Speed and NatDex Mega/Z handling not checked") and plan.md's Phase 0 S6 line can point to T08.
+The user agreed to the recommendation and this text on 2026-11-25 (in the T08 session). D7's header stays "partly decided": S2 stays deferred and the revisit triggers open. In the same sweep, prior-work.md's poke-env and @pkmn/client rows ("D7, spike S6"; "Speed and NatDex Mega/Z handling not checked") and plan.md's Phase 0 S6 line can point to T08.
 
 **decisions.md, D7:** replace the bullet "**The builder is Python.**" and its sub-bullets with:
 
