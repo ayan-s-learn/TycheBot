@@ -33,6 +33,14 @@
 
 ## Progress
 
+```text
+2026-11-26
+State: active
+Verified: nothing yet (claimed 2026-11-26)
+Pending: all acceptance checks
+Next: setup in this worktree, then worker/sim/ (Battle direct, many battles per process) and the transport
+```
+
 ## Result
 
 ## Outputs
