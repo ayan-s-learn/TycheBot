@@ -64,7 +64,7 @@ def main():
             for b in batches:
                 ws.send(b.worker, actions[at : at + len(b.records)])
                 at += len(b.records)
-        ws.stop()
+        stats = ws.stop()
 
     seats = {}
     for side in (0, 1):
@@ -78,6 +78,8 @@ def main():
         "checkpoint": args.checkpoint, "games": len(results), "wins": wins, "winRate": wins / len(results),
         "ci95": wilson(wins, len(results)), "seats": seats, "greedy": args.greedy, "seed": args.seed,
         "meanTurns": float(np.mean([r[3] for r in results.values()])),
+        # Over every game the workers played, counted or not.
+        "invalid": sum(s["counts"]["invalid"] for s in stats), "unavailable": sum(s["counts"]["unavailable"] for s in stats),
     }
     print(json.dumps(out, indent=1))
     if args.out:

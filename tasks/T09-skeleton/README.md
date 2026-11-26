@@ -34,6 +34,19 @@
 ## Progress
 
 ```text
+2026-11-26 (4)
+State: done
+Verified: adversarial review pass 1 (Opus) found no correctness bugs. It reran the tests and the eval (982 of
+  1,000 again) and probed the mask on 31,735 decisions in its own scratch script. Its low-severity findings are
+  fixed: train.py logs cut-off games and writes the workers' counts, eval.py reports [Invalid choice]; bench.py
+  records its priority and flags background-priority or low-CPU runs; the calcs' leaks, the version rule and
+  the tracking figure against T08 are stated exactly; Outputs lists the 1-worker echo run. tsc, node --test (10)
+  and uv run pytest (8) pass. The committed timings and training run are unchanged.
+Pending: review pass 2.
+Next: pass 2, briefed on the pass-1 fixes.
+```
+
+```text
 2026-11-26 (3)
 State: done
 Verified: all acceptance checks (Result, Acceptance checks), with the code at dce3f22, Showdown 29f2d99,
@@ -86,13 +99,14 @@ One process's ms per decision by phase (median over workers; at 1 process, 3 run
 | Phase | 12 processes (run 0) | 1 process (median run) |
 |---|---|---|
 | Sim (`choose`, output, game start and end) | 0.263 | 0.193 |
-| Tracking (both players' @pkmn/client) | 0.048 | 0.037 |
+| Tracking (both players' @pkmn/client, and parsing the request) | 0.047 | 0.037 |
 | Calcs (288 set, cached) | 0.737 | 0.586 |
 | Record building (request, mask, fields) | 0.019 | 0.010 |
 | Transfer (write the batch, wait for the actions) | 0.017 | 0.003 |
 | Total (window / decisions) | 1.085 | 0.829 |
 
 - The phases add up to the window within 0.01 ms. Calcs are 68% of a decision at 12 processes.
+- Tracking costs about twice T08's 0.018 ms. About a fifth of it is the env parsing the request JSON (timed apart in one process, 2026-11-26), and T08 timed the tracker alone over recorded chunks, with no sim or calcs between.
 - Transfer at 12 processes includes waiting while Python answers the other 11. Python took ~0.06 ms per 58-record batch and ~2.5% of a core.
 - The games: 978k decisions and 7,717 games across the three windows, with no `[Invalid choice]`, no `[Unavailable choice]` and no game at the 300-turn cap. 111–112 calcs per decision with 72% cache hits. T06 counted 96.4 calcs and 69% hits with Showdown's `RandomPlayerAI` players, which pick moves 70% of the time; these players pick uniformly among legal actions.
 - plan.md's estimate was 0.91 ms per decision (sim 0.38 under calcs, calcs 0.53 at one process) and ~13k decisions/s. The calcs cost more here, 0.59 ms alone and 0.74 at 12 processes. At one process that is the 16% more calcs per decision: per calc, cached, they cost 5.2 µs against T06's 5.5. At 12 processes contention adds another 26%.
@@ -121,9 +135,10 @@ At 12 workers Python, one thread answering all of them, is the bound (0.81 of a 
 
 ### Training
 
-`python -m tyche.skeleton.train --out runs/train-0 --minutes 10 --workers 12 --seed 0`, under the timing lock (`runs/train-0.log`, `runs/train-0/log.jsonl`): 12 workers with 32 battles each, a 390k-parameter MLP on CPU (2 threads). Half of the games are self-play and half the policy against random legal actions, in a random seat. PPO with `train.py`'s defaults at dce3f22: GAE (γ 0.99, λ 0.95), clip 0.2, entropy 0.01, value 0.5, Adam 3e-4, 4 epochs of minibatch 2,048 per update of ≥32,768 decisions. Rewards are +1, −1 and 0 at the last decision. No game reached the 300-turn cap, so truncation went unused.
+`python -m tyche.skeleton.train --out runs/train-0 --minutes 10 --workers 12 --seed 0`, under the timing lock (`runs/train-0.log`, `runs/train-0/log.jsonl`): 12 workers with 32 battles each, a 390k-parameter MLP on CPU (2 threads). Half of the games are self-play and half the policy against random legal actions, in a random seat. PPO with `train.py`'s defaults at dce3f22: GAE (γ 0.99, λ 0.95), clip 0.2, entropy 0.01, value 0.5, Adam 3e-4, 4 epochs of minibatch 2,048 per update of ≥32,768 decisions. Rewards are +1, −1 and 0 at the last decision. This run didn't count games cut off at the 300-turn cap; `train.py` has logged them since review pass 1, and the eval's 1,000 games had none. No `[Invalid choice]` came up: the workers log each to stderr, and `runs/train-0.log` has none.
 
 - **Training time: 9.9 minutes,** 4.62M decisions, 67.5k games and 103 updates of ~0.5 s each. That is ~7.8k decisions/s through the loop, against the env's 11.1k alone. The gap is Python's inference, the updates, and gathering one batch from every worker per step.
+- Only finished games are trained on, so decisions from a game that spans an update are trained after it, with the log-probs of the policy that chose them. The clip fraction (~0.2 from update 11 on) and KL in `log.jsonl` aren't purely on-policy.
 - The win-rate curve: at each update, the share of the last 500 games against random that the policy won. Those games span several updates, so the curve lags the current policy.
 
 | Minutes | Decisions | Win rate against random |
@@ -134,8 +149,8 @@ At 12 workers Python, one thread answering all of them, is the bound (0.81 of a 
 | 4.0 | 1.81M | 0.97 |
 | 9.9 | 4.62M | 0.99 |
 
-- **Evaluation:** `python -m tyche.skeleton.eval runs/train-0/net.pt --games 1000` (`results/eval-1000.json`): **982 of 1,000 wins (98.2%, 95% interval 97.2–98.9%)**, 491 of 500 as p1 and 491 of 500 as p2, with no ties or cut-off games and 24.1 turns on average. Its seeds (`eval-0`) weren't used in training; the teams are the same 20. Worker w plays games 0–99, the policy as p1 in even games, so the 1,000 games are fixed before they start. The policy samples its actions.
-- Random is a low bar, and the calcs carry the opponents' true sets, so this policy may lean on information the player isn't shown. The skeleton allows that; v0-lite doesn't (plan.md, Phase 1).
+- **Evaluation:** `python -m tyche.skeleton.eval runs/train-0/net.pt --games 1000` (`results/eval-1000.json`): **982 of 1,000 wins (98.2%, 95% interval 97.2–98.9%)**, 491 of 500 as p1 and 491 of 500 as p2, with no ties or cut-off games and 24.1 turns on average. The eval's stderr is in `results/env-1.log`, which has no `[Invalid choice]` line. Its seeds (`eval-0`) weren't used in training; the teams are the same 20. Worker w plays games 0–99, the policy as p1 in even games, so the 1,000 games are fixed before they start. The policy samples its actions.
+- Random is a low bar, and the calcs carry the opponents' true sets (their moves, spreads, items and abilities until revealed, and a forme Team Preview hides; env-workers, Record), so this policy may lean on information the player isn't shown. The skeleton allows that; v0-lite doesn't (plan.md, Phase 1).
 
 ### Acceptance checks
 
@@ -155,7 +170,7 @@ At 12 workers Python, one thread answering all of them, is the bound (0.81 of a 
 
 Setup as in AGENTS.md (Conventions), then from the root, with `nvm use` in the same command. Code paths and the record format are in [env-workers](../../docs/areas/env-workers.md).
 
-Timings, under the timing lock via this folder's `timed.sh` (a copy of T02's, owner T09):
+Timings, under the timing lock via this folder's `timed.sh` (a copy of T02's, owner T09). `bench.py` appends to `--out`, so give a rerun a new file. Check `bench.py` doesn't flag the runs (env-workers, Gotchas: background priority):
 
 ```bash
 tasks/T09-skeleton/timed.sh uv run python -m tyche.skeleton.bench --out tasks/T09-skeleton/results/env-12.jsonl --workers 12 --runs 3
@@ -163,6 +178,10 @@ tasks/T09-skeleton/timed.sh uv run python -m tyche.skeleton.bench --out tasks/T0
 
 ```bash
 tasks/T09-skeleton/timed.sh uv run python -m tyche.skeleton.bench --out tasks/T09-skeleton/results/env-1.jsonl --workers 1 --seconds 20 --warmup 5 --runs 3
+```
+
+```bash
+tasks/T09-skeleton/timed.sh uv run python -m tyche.skeleton.bench --out tasks/T09-skeleton/results/echo.jsonl --workers 1 --echo 58 --seconds 20 --warmup 5 --runs 3
 ```
 
 ```bash
@@ -202,17 +221,23 @@ uv run python -m tyche.skeleton.eval tasks/T09-skeleton/runs/train-0/net.pt --ga
    - **Python entry points** under `tyche/` run as modules from the root: `uv run python -m tyche.skeleton.train`. Run by path, the root isn't on `sys.path`. Those that start env workers need Node 24 on `PATH` (`nvm use` in the same command), and refuse another major.
    ```
 
-3. **decisions.md, D7, "v0 carries all 288 calcs":** replace "the env runs ~7× faster than the learner at 33 tokens and ~16× at 77, before record building and transfer (S4: plan.md, Compute)" with "the env runs ~7× faster than the learner at 33 tokens and ~16× at 77, before record building and transfer (S4: plan.md, Compute; T09's skeleton measured ~5.8× and ~13× with them)".
+3. **AGENTS.md, Conventions, Timed runs:** after "Record `sysctl -n vm.loadavg` with each run.", add:
 
-4. **plan.md, Compute, M4 Max:** replace the bullet "The learner bounds the M4 Max. The env's cost is the sim, …" and the next one ("Tracking adds 0.018 ms …") with:
+   ```markdown
+   Check the agent shell isn't at background priority first: `ps -o pri= -p $$` prints 4 there, against 31 normally. At 4 the same in-process run took ~5× as long (T09, 2026-11-26), with one process still at more than a full core, so CPU share doesn't show it. If it prints 4, tell the user rather than timing.
+   ```
+
+4. **decisions.md, D7, "v0 carries all 288 calcs":** replace "the env runs ~7× faster than the learner at 33 tokens and ~16× at 77, before record building and transfer (S4: plan.md, Compute)" with "the env runs ~7× faster than the learner at 33 tokens and ~16× at 77, before record building and transfer (S4: plan.md, Compute; T09's skeleton measured ~5.8× and ~13× with them)".
+
+5. **plan.md, Compute, M4 Max:** replace the bullet "The learner bounds the M4 Max. The env's cost is the sim, …" and the next one ("Tracking adds 0.018 ms …") with:
 
    ```markdown
    - The learner bounds the M4 Max. T09's walking skeleton measured ~11.1k env decisions/s on 12 worker processes (median of 3 runs, 10.1–11.2k; 2026-11-26), with tracking, the cached 288 calcs on true sets, a minimal record and transfer to Python, which answered at random. That is ~5.8× T07's 33-token learner estimate and ~13× the 77-token one. Per decision per process: sim 0.26 ms, tracking 0.05, calcs 0.74, record 0.02, transfer 0.02, 1.09 ms in all. The transport alone costs ~0.001–0.005 ms per decision. Those games had uniformly random players.
    - The full observation builder adds to the record's cost. Derived from those rates, the env becomes the bound at ~6.3 ms per decision per process at 33 tokens (12 processes against ~1,900 learner decisions/s; ~14.6 ms at 77), and comes within D10's ~3× at ~2.1 ms (~4.9 ms at 77).
    ```
 
-5. **decisions.md, D7, the Revisit bullet:** after "measured by Phase 1's walking skeleton and again with the full observation builder", add "(the skeleton: not env-bound, ~5.8× T07's 33-token learner estimate; T09, 2026-11-26)".
+6. **decisions.md, D7, the Revisit bullet:** after "measured by Phase 1's walking skeleton and again with the full observation builder", add "(the skeleton: not env-bound, ~5.8× T07's 33-token learner estimate; T09, 2026-11-26)".
 
-6. **decisions.md, D10, "Why not yet":** replace "on the M4 Max the env is ~7× faster than the learner (plan.md, Compute), so overlapping them would save only ~13% of wall time at 33 tokens (~6% at 77)" with "on the M4 Max T09's skeleton measured the env at ~5.8× T07's learner estimate at 33 tokens (~13× at 77; plan.md, Compute), so overlapping them would save only ~15% of wall time at 33 tokens (~7% at 77)". After "On the M4 Max that is T09's skeleton, at first against T07's learner estimate" add "(not yet within 3×; the full observation builder is measured next)".
+7. **decisions.md, D10, "Why not yet":** replace "on the M4 Max the env is ~7× faster than the learner (plan.md, Compute), so overlapping them would save only ~13% of wall time at 33 tokens (~6% at 77)" with "on the M4 Max T09's skeleton measured the env at ~5.8× T07's learner estimate at 33 tokens (~13× at 77; plan.md, Compute), so overlapping them would save only ~15% of wall time at 33 tokens (~7% at 77)". After "On the M4 Max that is T09's skeleton, at first against T07's learner estimate" add "(not yet within 3×; the full observation builder is measured next)".
 
-7. **plan.md, Phase 1, Exit, Skeleton:** met (Result).
+8. **plan.md, Phase 1, Exit, Skeleton:** met (Result).

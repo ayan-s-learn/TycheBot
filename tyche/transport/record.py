@@ -1,5 +1,6 @@
 """The skeleton's record, Python's end. worker/skeleton/record.ts holds the same layout, and each end refuses a
-version it doesn't know. docs/areas/env-workers.md documents the fields. Change VERSION whenever FIELDS changes."""
+version it doesn't know. docs/areas/env-workers.md documents the fields. Change VERSION whenever a field or the meaning
+of its values changes (codes, action indices, axis order): the layout check catches only the first."""
 
 import numpy as np
 

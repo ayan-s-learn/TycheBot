@@ -6,8 +6,12 @@ actions (only the policy's side stored). Its win rate in those games is the curv
 decisions get GAE advantages (reward +1 win, -1 loss, 0 tie, at the last decision); a game cut off at the turn cap
 bootstraps from the last decision's value. Once --batch decisions are stored, PPO updates on them.
 
+Games still in progress span updates, so their earlier decisions are trained after an update with the log-probs
+of the policy that chose them: the clip fraction and KL in the log aren't purely on-policy.
+
 Usage: python -m tyche.skeleton.train --out <dir> [--minutes 20] [--workers 12] [--battles 32] [--seed 0]
-Writes <dir>/log.jsonl (one line per update) and <dir>/net.pt.
+Writes <dir>/log.jsonl (one line per update), <dir>/net.pt, and <dir>/workers.json (the workers' counts at the end,
+including `[Invalid choice]` rejections).
 """
 
 import argparse
@@ -114,7 +118,7 @@ def main():
         done = []  # finished sides: (records, actions, logp, adv, ret)
         buffered = 0
         results = deque(maxlen=500)  # the policy's results against random: 1 win, 0 otherwise
-        games = decisions = updates = 0
+        games = decisions = updates = truncated = 0
         start = time.perf_counter()
         log = open(out / "log.jsonl", "w")
         while time.perf_counter() - start < args.minutes * 60:
@@ -122,6 +126,7 @@ def main():
             for b in batches:
                 for e in b.ended:
                     games += 1
+                    truncated += int(e["truncated"])
                     mode = modes.pop((b.worker, int(e["game"])), -1)
                     for side in (0, 1):
                         s = steps.pop((b.worker, int(e["game"]), side), None)
@@ -169,7 +174,7 @@ def main():
                 updates += 1
                 line = {
                     "update": updates, "minutes": (time.perf_counter() - start) / 60, "decisions": decisions,
-                    "games": games, "trained": len(batch["actions"]), "updateSeconds": time.perf_counter() - t,
+                    "games": games, "truncated": truncated, "trained": len(batch["actions"]), "updateSeconds": time.perf_counter() - t,
                     "winRateVsRandom": float(np.mean(results)) if results else None, "vsRandomGames": len(results),
                     **stats,
                 }
@@ -179,7 +184,10 @@ def main():
                       f"win rate vs random {line['winRateVsRandom']:.3f} (last {len(results)}), "
                       f"entropy {stats['entropy']:.3f}, value loss {stats['value']:.3f}", flush=True)
                 torch.save({"net": net.state_dict(), "vocab": vocab, "args": vars(args)}, out / "net.pt")
-        ws.stop()
+        stats = ws.stop()
+    counts = {k: sum(s["counts"][k] for s in stats) for k in stats[0]["counts"]}
+    (out / "workers.json").write_text(json.dumps(counts, indent=1))
+    print(f"workers: {counts}")
 
 
 if __name__ == "__main__":

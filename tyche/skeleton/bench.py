@@ -8,7 +8,9 @@ frame, and the run stops after `seconds`. It writes one JSON line per run:
   (writing the batch and waiting for the actions, which includes this process's time), and wall (window over decisions);
 - cpuShare: each worker's CPU time over its window; otherCores: the rest of the machine's busy cores during the
   window, from iostat, less the workers' and this process's CPU;
-- the load averages before and after.
+- the load averages before and after, and this process's scheduling priority.
+A run is flagged if this process runs at background priority (PRI 4 in ps), where the same in-process run took ~5x
+as long on 2026-11-26, or if the median worker got under 0.9 of a core.
 With --echo N the workers play no battles and send N blank records per batch: the transport alone.
 
 Usage: python -m tyche.skeleton.bench --out <file.jsonl> [--workers 12] [--battles 32] [--seconds 30] [--warmup 10]
@@ -34,9 +36,14 @@ def loadavg():
     return subprocess.run(["sysctl", "-n", "vm.loadavg"], capture_output=True, text=True).stdout.strip()
 
 
+def priority():
+    return int(subprocess.run(["ps", "-o", "pri=", "-p", str(os.getpid())], capture_output=True, text=True).stdout)
+
+
 def run(args, index):
     rng = np.random.default_rng(index)
     load0 = loadavg()
+    pri = priority()
     with Workers(args.workers, battles=args.battles, seed=f"bench-{index}", echo=args.echo) as ws:
         start = time.perf_counter()
         opened = set()
@@ -87,6 +94,8 @@ def run(args, index):
         "python": {"msPerBatch": py / batches * 1000, "recordsPerBatch": records / batches, "cpuShare": py_cpu},
         "counts": counts,
         "loadavg": [load0, load1],
+        "priority": pri,
+        "flagged": pri == 4 or statistics.median(share) < 0.9,
         "node": ws.hello["node"], "pin": ws.hello["pin"],
     }
 
@@ -111,7 +120,8 @@ def main():
         print(f"run {i}: {r['decisionsPerSecond']:,.0f} decisions/s; per decision ms: "
               + ", ".join(f"{k} {v:.3f}" for k, v in pd.items())
               + f"; cpu share {r['cpuShare']['median']:.2f} (min {r['cpuShare']['min']:.2f});"
-              f" other cores {r['otherCores']:.1f}; load {r['loadavg'][0]} -> {r['loadavg'][1]}", flush=True)
+              f" other cores {r['otherCores']:.1f}; load {r['loadavg'][0]} -> {r['loadavg'][1]}"
+              + (f"; FLAGGED (priority {r['priority']})" if r["flagged"] else ""), flush=True)
     rates = [r["decisionsPerSecond"] for r in results]
     med = statistics.median(rates)
     print(f"median {med:,.0f} decisions/s; runs within {max(abs(x / med - 1) for x in rates):.1%} of it")

@@ -40,7 +40,7 @@ Frames are a 12-byte header, magic `0x54594348` (u32), record version (u16), typ
 
 After the hello the two alternate: a batch, then its actions (or a stop). A batch holds every open decision across the worker's games and the games that ended in its previous step. The worker checks each action against the mask it sent and throws on a masked one.
 
-**Versions:** every frame carries the record version. The worker refuses a frame with another version, and Python refuses a hello whose version or layout differs from `tyche/transport/record.py`, or a frame with another version. Bump `VERSION` on both ends with any layout change.
+**Versions:** every frame carries the record version. The worker refuses a frame with another version, and Python refuses a hello whose version or layout differs from `tyche/transport/record.py`, or a frame with another version. Bump `VERSION` on both ends whenever a field or the meaning of its values changes (codes, action indices, axis order). The layout check catches only the first.
 
 `Workers(n, battles=32, seed=..., turn_cap=300)` starts n workers. `recv()` returns the batches ready now, `gather()` one from every worker, `send(worker, actions)` answers one, and `stop()` returns every worker's stats. It refuses workers on a Node major other than `.nvmrc`'s.
 
@@ -65,7 +65,14 @@ One per decision: a request that isn't a wait. Every field is 4 bytes, so a reco
 
 **Ids** (`vocab.ts`): every species and move id in Showdown's Dex at the pin, sorted, from 2; 0 is an empty slot and 1 an id outside the vocab. The hello's `vocab.hash` names the list.
 
-**Calcs** (`worker/calc/calcs.ts`): own mons from the request and the tracker (boosts, volatiles), spreads from the true sets. Opposing mons from the tracker; their item is the tracked one, none if the tracker saw it go, else the set's; their ability the tracked one, the calc's default for a new forme (a Mega), else the set's; their moves the set's. The field from the tracker. Each player has a cache per game, keyed on every input. Fainted mons and status moves get no calcs, as in T06.
+**Calcs** (`worker/calc/calcs.ts`): own mons from the request and the tracker (boosts, volatiles), with nature, EVs and IVs from the true sets. Opposing mons from the tracker (species, HP, status, boosts, volatiles), and from their true sets:
+- nature, EVs, IVs and Hidden Power's type;
+- the item, unless the tracker saw it or saw it go;
+- the ability, unless the tracker saw it or the mon changed forme (a Mega takes the calc's default for the new forme);
+- all four moves;
+- a forme Team Preview hides, until the mon switches in: the pool's `Urshifu-*` is calced as Urshifu-Rapid-Strike from Team Preview on.
+
+These are what the skeleton's calcs leak. The record's other fields hold only what the player is shown. The field comes from the tracker. Each player has a cache per game, keyed on every input. Fainted mons and status moves get no calcs, as in T06.
 
 **Actions** (`mask.ts`): action 3i + v is move i (the request's current index) plain, Mega Evolving (v = 1) or as a Z-Move (v = 2); action 12 + j switches to own mon j. At Team Preview, 12 + j leads with mon j (`team j+1`). A Z-Move is legal when the request lists one for that slot, even if the base move is disabled. Switches are masked when the request says `trapped`, and offered when it says `maybeTrapped`. At a forced switch mid-turn, the mon the player chose to switch to this turn is masked (Gotchas). There is no Ultra Burst action; no pool team has one.
 
@@ -81,7 +88,7 @@ uv run python -m tyche.skeleton.train --out <dir> --minutes 10
 uv run python -m tyche.skeleton.eval <dir>/net.pt --games 1000
 ```
 
-The flags T09 ran are in its Outputs. Python scripts under `tyche/` run as modules from the root: run by path, the root isn't on `sys.path`.
+The flags T09 ran are in its Outputs. Take timings under the timing lock (AGENTS.md, Conventions); `bench.py` flags a run at background priority or with workers under 0.9 of a core (Gotchas). Python scripts under `tyche/` run as modules from the root: run by path, the root isn't on `sys.path`.
 
 What the tests cover:
 
@@ -99,4 +106,5 @@ What the tests cover:
 - **@pkmn/client holds 0/0 HP for an opposing mon it hasn't seen,** so `hp / maxhp` is NaN: `test_transport.py` found NaN opposing HP at Team Preview. The record and the calcs take such a mon as full HP (`hpOf` in `calcs.ts`).
 - **The request marks slot 1 active at Team Preview,** before any mon is in battle (`getSwitchRequestData`: `active` is `position < active.length`). `record.test.ts` caught it against the sim's `isActive`; the record shows no active mon there.
 - **`Teams.unpack` leaves unset EVs and IVs undefined,** and the calc then threw reading `evs.hp`. The sim fills in defaults on its own copy, so true sets come from `battle.sides[i].pokemon[j].set` right after `setPlayer`, when the order is still team order.
-- `[Invalid choice]` is counted, logged to stderr and answered by asking again, up to 100 per game. None occurred in T09's runs (2026-11-26).
+- `[Invalid choice]` is counted, logged to stderr and answered by asking again, up to 100 per game. With the queued-switch mask, each one is a mask bug. None occurred in T09's runs (2026-11-26). `train.py` writes the workers' counts to `workers.json`, and `eval.py` reports them.
+- **An agent shell can run at background priority** (`ps -o pri= -p $$` prints 4, against 31 normally). There the same in-process run took ~5× as long (3.58 ms per decision against 0.72, 2026-11-26), while one process still showed more than a full core of CPU. So CPU share doesn't reveal it at one process; `bench.py` records the priority and flags such runs. T09's committed timings ran at full speed (CPU share ~1.0 per worker at 12, and the 1-process figure matched in-process runs from before).

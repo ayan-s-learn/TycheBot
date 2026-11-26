@@ -1,6 +1,7 @@
 // The skeleton's record: one per decision, fixed size, every field 4-byte little-endian. Python's end
 // (tyche/transport/record.py) holds the same layout, and each end refuses a version it doesn't know.
-// docs/areas/env-workers.md documents it. Change VERSION whenever FIELDS changes.
+// docs/areas/env-workers.md documents it. Change VERSION whenever a field or the meaning of its values changes
+// (codes, action indices, axis order): the layout check catches only the first.
 
 export const VERSION = 1;
 
