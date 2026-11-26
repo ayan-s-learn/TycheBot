@@ -34,6 +34,21 @@
 ## Progress
 
 ```text
+2026-11-26 (5)
+State: done
+Verified: review pass 2 (Sonnet, medium), on edge cases, found nothing that breaks the skeleton's own path. Fixed:
+  train.py crashed at its first update when no game against random had ended (--vs-random 0); bench.py flagged
+  every --echo run; a worker refused at its hello was left running. Documented in env-workers.md: an opposing
+  Transform or Illusion stops the worker (none in the v0 pool), and a shrunken move list leaves the record's
+  move slot 0 describing the first base move. Not a bug: Mega X/Y are plain canMegaEvo in this format (the X/Y
+  flags exist only in the gen7letsgo and monkeyspaw mods). tsc, node --test (10) and uv run pytest (9) pass.
+  The committed timings, training run and eval are unchanged.
+Pending: none
+Next: a planning session merges the PR and applies For integration.
+Reviewed: user, passes 1 and 2 (2026-11-26), fixes in dcbc0cb, 86258e3
+```
+
+```text
 2026-11-26 (4)
 State: done
 Verified: adversarial review pass 1 (Opus) found no correctness bugs. It reran the tests and the eval (982 of
@@ -158,7 +173,7 @@ At 12 workers Python, one thread answering all of them, is the bound (0.81 of a 
 - **Env decisions/s at 12 processes, 3 runs within 10% of their median, with load averages and the breakdown:** passed (Env decisions/s).
 - **Compared with T07's learner estimate, with the D7 and D10 verdicts:** above (Against the learner).
 - **The record carries a version, documented, and each end refuses a version it doesn't know:** [env-workers](../../docs/areas/env-workers.md) (Record, Transport). `tyche/transport/test_transport.py` checks both ends refuse another version.
-- **Tests** (`node --test 'worker/**/*.test.ts'`, 10; `uv run pytest`, 8): the transport round trip (`test_transport.py`), the record layout on both ends (`record.test.ts`, and the hello's layout against `record.py`), and the mask against the request (`mask.test.ts`). [env-workers](../../docs/areas/env-workers.md) (Commands) lists what each covers.
+- **Tests** (`node --test 'worker/**/*.test.ts'`, 10; `uv run pytest`, 9): the transport round trip (`test_transport.py`), the record layout on both ends (`record.test.ts`, and the hello's layout against `record.py`), and the mask against the request (`mask.test.ts`). [env-workers](../../docs/areas/env-workers.md) (Commands) lists what each covers.
 - **`tsc -p tsconfig.json`:** passes.
 
 ### Not checked
