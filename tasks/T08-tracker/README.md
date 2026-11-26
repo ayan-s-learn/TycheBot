@@ -31,6 +31,14 @@
 
 ## Progress
 
+```text
+2026-11-25
+State: active
+Verified: nothing yet. Setup done in this worktree (Showdown 29f2d99, Node 24.22.3).
+Pending: all acceptance checks
+Next: record 500 games with a copy of T02's recorder, then build the stage-1 harness for both trackers
+```
+
 ## Result
 
 ## Outputs
