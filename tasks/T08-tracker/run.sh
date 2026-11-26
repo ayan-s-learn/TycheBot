@@ -1,7 +1,7 @@
 #!/bin/zsh
 # Reruns the whole harness from this folder on Node 24 (after setup, AGENTS.md Conventions): records games 0-499,
 # replays them for the sim's state, runs both trackers, compares, and summarizes. Recorded games, truth and views
-# go to out/ (gitignored, ~0.8 GB); counts go to results/. About 3 minutes. Timing is separate (README, Outputs).
+# go to out/ (gitignored, ~0.8 GB); counts go to results/. About 75 seconds. Timing is separate (README, Outputs).
 set -euo pipefail
 cd "${0:A:h}"
 mkdir -p out results
