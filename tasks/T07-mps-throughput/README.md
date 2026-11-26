@@ -23,6 +23,16 @@
 
 ## Progress
 
+2026-11-25, reviewed:
+
+```text
+State: done
+Verified: Acceptance checks (Result), torch 2.15.0; benchmark code unchanged since a1f9e30
+Pending: the user's OK on the net size, D9's threshold and the token-count question (For integration)
+Next: planning session (workflow.md, Stage 1)
+Reviewed: user, passes 1 and 2 (2026-11-25), fixes in 3f2c105, c5c940f, f47b622 and this commit; delta pass on f47b622 (Sonnet)
+```
+
 2026-11-25, done:
 
 ```text
@@ -208,7 +218,7 @@ Readings:
   - The 9M net gains least at 77 tokens: 3% under bf16.
 - **Batch size:**
   - MPS inference peaks at batch 256. One env process's batch (64) reaches 68–83% of that peak for the 3M and 5M nets at 77 tokens, and 53–68% at 33. So an inference server batching across env processes at 256 gains about 20–90% over each process sending its own.
-  - Training is flat from 512 to 1024 at 77 tokens. At 33 tokens, 1024 is 5–15% below 512 in fp32 and bf16. At 77 tokens, 256 is the fastest minibatch for most configurations.
+  - Training is flat from 512 to 1024 at 77 tokens. At 33 tokens, 1024 is 5–13% below 512 in fp32 and bf16. At 77 tokens, 256 is the fastest minibatch for most configurations.
 - **Size:** throughput falls with FLOPs, though not in proportion. Against the 5M net under bf16 at minibatch 1024:
 
   | Net | FLOPs (77 tokens) | Throughput, 77 tokens | Throughput, 33 tokens |
@@ -217,7 +227,7 @@ Readings:
   | 9M | 1.84× | 0.56× | 0.61× |
 
 - **Tokens:** going from 77 to 33 tokens cuts the 5M net's FLOPs 2.36×. It then trains 2.33× as fast (5,046 against 2,163) and infers 2.07× as fast. The token count moves throughput more than the size range does: the 9M net at 33 tokens trains faster than the 5M at 77.
-- **CPU inference** of the 5M net at batch 64 on one thread costs 0.96 ms per decision at 77 tokens and 0.39 at 33. Those are rates for one process alone. This torch build runs CPU matmuls through Apple's Accelerate, which uses the chip's shared matrix units, so processes compete for them. In `cpu_scale.py` (`runs/cpu-scale.log`), 12 processes running 1-thread inference at once totalled only ~8.9k decisions/s at 33 tokens and ~3.75k at 77. That is 3.3–3.5× slower per process than one process alone.
+- **CPU inference** of the 5M net at batch 64 on one thread costs 0.96 ms per decision at 77 tokens and 0.39 at 33. Those are rates for one process alone. This torch build runs CPU matmuls through Apple's Accelerate (`BLAS_INFO=accelerate`). Accelerate likely uses the chip's shared matrix units, so processes compete for them, and the scaling below is consistent with that. In `cpu_scale.py` (`runs/cpu-scale.log`), 12 processes running 1-thread inference at once totalled only ~8.9k decisions/s at 33 tokens and ~3.75k at 77. That is 3.3–3.5× slower per process than one process alone.
 
 ### Learner and env
 
@@ -408,7 +418,7 @@ The edits below record measurements. Their 5M figures are for the proposed size 
   - The learner model: inference on MPS for every decision, 75% of decisions trained (half of games are against frozen snapshots: Training v0, League), and 7% lost to a loaded CPU. On it, the 5M net at 3 PPO epochs gives an estimated ~1,900 learner decisions/s at 33 tokens and ~820 at 77. That is ~2.0–2.9M and ~0.9–1.2M games/day at T04's human lengths.
   - The learner bounds the M4 Max. The env's cost is the sim, slowed by interleaved calcs (0.38 ms per decision per process, T02 and T06), plus the cached 288 calcs (0.53 ms, T06, one process). That gives an estimated ~13k env decisions/s on 12 processes: ~7× the 33-token learner and ~16× the 77-token one.
   - Python parsing and transfer are unmeasured until Phase 1's walking skeleton. They would trip D7's 2× builder rule at ~2.2 ms per decision per process at 33 tokens (~6.4 ms at 77), and make the env the bound at ~5.4 ms (~13.6 ms).
-  - Inference on MPS leaves the env more margin than inference on CPU at either token count. On CPU, this torch build's matmuls share the chip's matrix units: 12 processes doing 5M-net inference reached only ~3.3–3.5× one process's rate.
+  - Inference on MPS leaves the env more margin than inference on CPU at either token count. On CPU, this torch build's matmuls (Accelerate) scale poorly across processes: 12 processes doing 5M-net inference reached only ~3.3–3.5× one process's rate.
 ```
 
 **decisions.md, D7** (v0 carries all 288 calcs): replace "On the M4 Max the learner likely bounds throughput (planning estimate, ~500–700 decisions/s: plan.md, Compute)" with:
