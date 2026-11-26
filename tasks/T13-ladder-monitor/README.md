@@ -30,6 +30,15 @@
 
 ## Progress
 
+```text
+2026-11-26
+State: active
+Verified: nothing yet
+Pending: all acceptance checks
+Next: probe the ladder and replay search endpoints, then write the fetcher and the summary script.
+  Installing the scheduled job needs the user's OK.
+```
+
 ## Result
 
 ## Outputs
