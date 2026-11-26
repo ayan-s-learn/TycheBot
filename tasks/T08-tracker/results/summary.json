@@ -1,0 +1,154 @@
+{
+ "pkmn": {
+  "decisions": 55563,
+  "decisionsWithMismatch": 51388,
+  "mismatches": 167244,
+  "byCause": {
+   "pkmn-duplicate-slots": {
+    "kind": "tracker bug",
+    "n": 108723
+   },
+   "pkmn-z": {
+    "kind": "unsupported",
+    "n": 25085
+   },
+   "pkmn-mega": {
+    "kind": "unsupported",
+    "n": 18021
+   },
+   "regenerator": {
+    "kind": "not shown",
+    "n": 10464
+   },
+   "regenerator-inferable": {
+    "kind": "unsupported",
+    "n": 1607
+   },
+   "illusion-after": {
+    "kind": "tracker bug",
+    "n": 1297
+   },
+   "future-sight-silent": {
+    "kind": "tracker bug",
+    "n": 696
+   },
+   "illusion-hidden": {
+    "kind": "not shown",
+    "n": 478
+   },
+   "healing-wish": {
+    "kind": "unsupported",
+    "n": 430
+   },
+   "pkmn-heal-reset": {
+    "kind": "tracker bug",
+    "n": 175
+   },
+   "pkmn-locked-moves": {
+    "kind": "tracker bug",
+    "n": 151
+   },
+   "toxic-cap": {
+    "kind": "tracker bug",
+    "n": 61
+   },
+   "illusion-faint": {
+    "kind": "not shown",
+    "n": 47
+   },
+   "pkmn-roost": {
+    "kind": "tracker bug (harmless)",
+    "n": 9
+   }
+  },
+  "unclassified": {}
+ },
+ "pokeenv": {
+  "decisions": 55563,
+  "decisionsWithMismatch": 15487,
+  "mismatches": 18525,
+  "byCause": {
+   "regenerator": {
+    "kind": "not shown",
+    "n": 10464
+   },
+   "illusion-after": {
+    "kind": "tracker bug",
+    "n": 1645
+   },
+   "pokeenv-forme": {
+    "kind": "tracker bug",
+    "n": 1581
+   },
+   "pokeenv-activations": {
+    "kind": "tracker bug",
+    "n": 1438
+   },
+   "pokeenv-toxic-turns": {
+    "kind": "tracker bug",
+    "n": 823
+   },
+   "future-sight-silent": {
+    "kind": "tracker bug",
+    "n": 687
+   },
+   "pokeenv-future-sight-user": {
+    "kind": "tracker bug",
+    "n": 588
+   },
+   "illusion-hidden": {
+    "kind": "not shown",
+    "n": 518
+   },
+   "healing-wish": {
+    "kind": "unsupported",
+    "n": 430
+   },
+   "regenerator-rounding": {
+    "kind": "not shown",
+    "n": 213
+   },
+   "toxic-cap": {
+    "kind": "tracker bug",
+    "n": 67
+   },
+   "illusion-faint": {
+    "kind": "not shown",
+    "n": 55
+   },
+   "pokeenv-rest": {
+    "kind": "tracker bug",
+    "n": 12
+   },
+   "illusion-own": {
+    "kind": "tracker bug",
+    "n": 4
+   }
+  },
+  "unclassified": {}
+ },
+ "causes": {
+  "regenerator": "Regenerator's heal on switch-out is never logged, so an opposing benched mon's HP is the last one shown",
+  "regenerator-inferable": "Regenerator's heal on switch-out isn't estimated although the species can have no other ability (Tornadus-Therian), so the HP is the last one shown",
+  "regenerator-rounding": "an estimate of Regenerator's heal is 1% off: the HP% it starts from is rounded",
+  "regenerator-estimate": "an estimate of Regenerator's heal is more than 1% off",
+  "healing-wish": "a pending Healing Wish or Lunar Dance (a slot condition) isn't tracked",
+  "future-sight-silent": "a pending Future Sight is kept after it fails because its target fainted, which Showdown shows only as a `-hint` line, which both trackers ignore",
+  "toxic-cap": "the toxic counter isn't capped at 15 as the sim's stage is",
+  "pkmn-duplicate-slots": "each request duplicates the own active's move slots (rememberMove compares `virtual` with the request slots' undefined)",
+  "pkmn-z": "Z-Moves: no Z-used state (`-zpower` is unhandled), and a Z-Move is recorded among the mon's moves under its Z name",
+  "pkmn-mega": "no Mega-used state; derived from the side's formes, it is lost when a fainted Mega reverts",
+  "pkmn-heal-reset": "any `-heal` without `[from]` (Roost, Recover, Leech Seed's silent heal) runs the Healing Wish branch and zeroes the sleep and toxic counters",
+  "pkmn-locked-moves": "the own active's move list is emptied when the request lists only a move without PP (a locked move, recharge or Struggle)",
+  "pkmn-roost": "Roost's volatile is kept only for Flying users, where it has an effect",
+  "pokeenv-activations": "one-off events (`-activate`, `-singleturn`: Tera Shell, Tera Shift, Psychic Terrain's block, Endure, ...) are stored as effects that last until the mon switches out",
+  "pokeenv-forme": "`species` keeps the pre-change name after Mega Evolution and other forme changes (types, base stats and ability do change)",
+  "pokeenv-toxic-turns": "the toxic counter moves at `|turn|`, not at the poison damage, so it is one off for a mon that came in after a faint and at decisions between the residual and the next turn",
+  "pokeenv-rest": "the counter carries over when Rest replaces toxic",
+  "pokeenv-future-sight-user": "a pending Future Sight is an effect on its user, lost when the user switches out or faints",
+  "illusion-hidden": "an opposing Illusion, while it holds: the disguise's entry gets the Zoroark's HP, status, boosts and moves",
+  "illusion-faint": "an opposing Zoroark that fainted in disguise: the protocol shows the disguise fainting, with no `|replace|`, so the Zoroark looks alive and the disguise fainted",
+  "illusion-after": "an opposing Illusion after `|replace|` broke it: what was attributed to the disguise stays on the wrong entry (any mismatch no other rule explains, at a later decision of that game)",
+  "illusion-own": "the player's own Illusion, which its request shows: events of the active Zoroark go on the disguise's entry (any mismatch no other rule explains, while or after the player's Illusion held)"
+ }
+}

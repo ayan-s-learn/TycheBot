@@ -1,0 +1,10 @@
+lock taken 2026-11-25T20:35:01, load { 1.75 2.59 2.34 }
+5M@33 1 procs: median per-proc 2597 total 2597
+5M@33 4 procs: median per-proc 1523 total 6085
+5M@33 8 procs: median per-proc 1036 total 8270
+5M@33 12 procs: median per-proc 744 total 8902
+5M 1 procs: median per-proc 1026 total 1026
+5M 4 procs: median per-proc 617 total 2457
+5M 8 procs: median per-proc 438 total 3482
+5M 12 procs: median per-proc 313 total 3751
+done 2026-11-25T20:36:56, load { 18.13 7.37 4.19 }

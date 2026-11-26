@@ -1,0 +1,21 @@
+{
+ "tracker": "poke-env",
+ "decisions": 55563,
+ "games": 1000,
+ "gamesWithThrow": 0,
+ "thrown": {},
+ "ignored": {
+  "upkeep": 47508,
+  "-resisted": 10118,
+  "-supereffective": 7408,
+  "-fail": 6492,
+  "-crit": 2134,
+  "-miss": 1412,
+  "gametype": 1000,
+  "teampreview": 1000,
+  "-hitcount": 284,
+  "-hint": 218,
+  "-zbroken": 2
+ },
+ "warnings": {}
+}

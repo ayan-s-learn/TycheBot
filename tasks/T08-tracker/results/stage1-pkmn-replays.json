@@ -1,0 +1,29 @@
+{
+ "tracker": "@pkmn/client",
+ "gens": "natdex",
+ "games": 1100,
+ "gamesWithThrow": 0,
+ "thrown": {},
+ "unhandled": {
+  "t:": 38938,
+  "-supereffective": 7068,
+  "-resisted": 5196,
+  "j": 2804,
+  "raw": 1783,
+  "-crit": 1467,
+  "l": 1142,
+  "win": 1100,
+  "-miss": 693,
+  "-hitcount": 687,
+  "-message": 494,
+  "-zpower": 359,
+  "-prepare": 357,
+  "n": 176,
+  "-anim": 150,
+  "-hint": 113,
+  "-fieldactivate": 35,
+  "badge": 8,
+  "uhtml": 8,
+  "-zbroken": 5
+ }
+}

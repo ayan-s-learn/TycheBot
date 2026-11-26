@@ -4,9 +4,20 @@ version = "0"
 requires-python = "==3.14.*"
 dependencies = [
     "numpy==2.5.5",
+    "open-spiel==2.0.2",
     "poke-env==0.17.0",
     "torch==2.15.0",
 ]
 
 [tool.uv]
 package = false
+
+[dependency-groups]
+dev = [
+    "pytest==9.2.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tyche"]
+addopts = "--import-mode=importlib"

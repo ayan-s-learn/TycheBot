@@ -1,0 +1,881 @@
+{
+ "tracker": "pkmn",
+ "decisions": 55563,
+ "noView": 0,
+ "decisionsWithMismatch": 51388,
+ "byField": {
+  "own.moveSlots": 108723,
+  "flags.own": 24659,
+  "opp.hp": 12277,
+  "flags.opp": 12155,
+  "opp.moves": 7273,
+  "conds.own": 596,
+  "conds.opp": 530,
+  "opp.item": 287,
+  "opp.active": 221,
+  "own.moves": 155,
+  "opp.statusTurns": 121,
+  "own.statusTurns": 115,
+  "opp.fainted": 87,
+  "opp.status": 20,
+  "opp.boosts": 11,
+  "opp.volatiles": 9,
+  "opp.ability": 3,
+  "opp.species": 2
+ },
+ "byFeature": {
+  "hidden forme (Urshifu)": {
+   "compared": 11282,
+   "own.moveSlots": 1700
+  },
+  "hidden forme (Zamazenta)": {
+   "compared": 51705,
+   "own.moveSlots": 7510,
+   "opp.moves": 2918,
+   "opp.item": 284,
+   "opp.active": 112,
+   "opp.hp": 28,
+   "opp.status": 7,
+   "opp.fainted": 6
+  },
+  "illusion user": {
+   "compared": 3100,
+   "own.moveSlots": 651,
+   "opp.active": 43,
+   "opp.fainted": 41,
+   "opp.hp": 25,
+   "opp.boosts": 11,
+   "opp.moves": 4,
+   "opp.statusTurns": 4,
+   "opp.item": 3,
+   "opp.ability": 3,
+   "opp.species": 1,
+   "own.statusTurns": 1
+  },
+  "mega": {
+   "compared": 14888,
+   "own.moveSlots": 5033,
+   "opp.moves": 21,
+   "opp.statusTurns": 19,
+   "own.statusTurns": 18,
+   "opp.hp": 13,
+   "opp.volatiles": 5,
+   "opp.active": 2,
+   "opp.species": 1
+  },
+  "past item": {
+   "compared": 126974,
+   "own.moveSlots": 19455,
+   "opp.moves": 6372,
+   "opp.hp": 437,
+   "own.moves": 140,
+   "opp.active": 35,
+   "opp.statusTurns": 27,
+   "own.statusTurns": 26,
+   "opp.fainted": 14,
+   "opp.status": 11,
+   "opp.volatiles": 8,
+   "opp.species": 1
+  },
+  "past moves": {
+   "compared": 35652,
+   "own.moveSlots": 4602,
+   "opp.moves": 132
+  },
+  "past species": {
+   "compared": 70355,
+   "own.moveSlots": 12550,
+   "opp.moves": 784,
+   "opp.hp": 46,
+   "opp.active": 24,
+   "opp.statusTurns": 19,
+   "own.statusTurns": 18,
+   "opp.status": 11,
+   "opp.volatiles": 5,
+   "opp.fainted": 2,
+   "opp.species": 1
+  },
+  "zcrystal": {
+   "compared": 78171,
+   "own.moveSlots": 12053,
+   "opp.moves": 6308,
+   "opp.hp": 391,
+   "own.moves": 140,
+   "opp.fainted": 12,
+   "opp.active": 11,
+   "opp.statusTurns": 8,
+   "own.statusTurns": 8,
+   "opp.volatiles": 3
+  }
+ },
+ "byIllusionTag": {
+  "opp-now": {
+   "own.moveSlots": 245,
+   "opp.active": 211,
+   "opp.moves": 148,
+   "opp.hp": 90,
+   "flags.own": 60,
+   "flags.opp": 21,
+   "opp.status": 20,
+   "opp.item": 14,
+   "opp.boosts": 11,
+   "opp.fainted": 4,
+   "opp.statusTurns": 4,
+   "opp.species": 1,
+   "opp.ability": 1
+  },
+  "opp-faint-hidden": {
+   "own.moveSlots": 115,
+   "flags.own": 49,
+   "opp.fainted": 46,
+   "flags.opp": 24,
+   "opp.moves": 3
+  },
+  "opp-after": {
+   "own.moveSlots": 3260,
+   "opp.moves": 1080,
+   "flags.own": 652,
+   "opp.item": 273,
+   "flags.opp": 252,
+   "opp.hp": 116,
+   "opp.fainted": 37,
+   "conds.opp": 12,
+   "opp.active": 10,
+   "own.moves": 3,
+   "opp.ability": 2,
+   "opp.species": 1
+  },
+  "own": {
+   "own.moveSlots": 3062,
+   "flags.own": 733,
+   "flags.opp": 327,
+   "opp.moves": 199,
+   "opp.hp": 193,
+   "conds.own": 14,
+   "own.statusTurns": 1
+  }
+ },
+ "byClass": {
+  "own.moveSlots | duplicate slots": {
+   "total": 108723,
+   "opp-now": 245,
+   "opp-faint-hidden": 115,
+   "opp-after": 3260,
+   "own": 3062
+  },
+  "flags.own | zUsed True->False": {
+   "total": 15556,
+   "opp-now": 40,
+   "opp-faint-hidden": 26,
+   "opp-after": 439,
+   "own": 411
+  },
+  "opp.hp | regenerator (last shown)": {
+   "total": 10464,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 182
+  },
+  "flags.own | megaUsed True->False": {
+   "total": 9103,
+   "opp-now": 20,
+   "opp-faint-hidden": 23,
+   "opp-after": 213,
+   "own": 322
+  },
+  "flags.opp | megaUsed True->False": {
+   "total": 8918,
+   "opp-now": 21,
+   "opp-faint-hidden": 24,
+   "opp-after": 252,
+   "own": 239
+  },
+  "flags.opp | zUsed True->False": {
+   "total": 3237,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 88
+  },
+  "opp.hp | regenerator (last shown, inferable)": {
+   "total": 1607,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 11
+  },
+  "opp.moves | not in set:supersonicskystrike": {
+   "total": 1109,
+   "opp-now": 22,
+   "opp-faint-hidden": 2,
+   "opp-after": 222,
+   "own": 8
+  },
+  "opp.moves | not in set:alloutpummeling": {
+   "total": 1060,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 1
+  },
+  "opp.moves | not in set:neverendingnightmare": {
+   "total": 1029,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 113
+  },
+  "opp.moves | not in set:blackholeeclipse": {
+   "total": 857,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 30
+  },
+  "opp.moves | not in set:devastatingdrake": {
+   "total": 817,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 18
+  },
+  "opp.moves | not in set:shatteredpsyche": {
+   "total": 720,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:tectonicrage": {
+   "total": 451,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 9
+  },
+  "conds.own | extra:futuremove": {
+   "total": 357,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 14
+  },
+  "conds.opp | extra:futuremove": {
+   "total": 339,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 12,
+   "own": 0
+  },
+  "opp.item | - for lightclay": {
+   "total": 284,
+   "opp-now": 13,
+   "opp-faint-hidden": 0,
+   "opp-after": 271,
+   "own": 0
+  },
+  "opp.moves | not in set:continentalcrush": {
+   "total": 245,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 20
+  },
+  "opp.moves | not in set:focusblast": {
+   "total": 234,
+   "opp-now": 24,
+   "opp-faint-hidden": 0,
+   "opp-after": 210,
+   "own": 0
+  },
+  "opp.hp | off": {
+   "total": 206,
+   "opp-now": 90,
+   "opp-faint-hidden": 0,
+   "opp-after": 116,
+   "own": 0
+  },
+  "opp.active | -->True": {
+   "total": 176,
+   "opp-now": 172,
+   "opp-faint-hidden": 0,
+   "opp-after": 4,
+   "own": 0
+  },
+  "opp.moves | not in set:nastyplot": {
+   "total": 165,
+   "opp-now": 15,
+   "opp-faint-hidden": 1,
+   "opp-after": 149,
+   "own": 0
+  },
+  "conds.own | missing:healingwish": {
+   "total": 157,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:bittermalice,hypervoice": {
+   "total": 156,
+   "opp-now": 12,
+   "opp-faint-hidden": 0,
+   "opp-after": 144,
+   "own": 0
+  },
+  "conds.opp | missing:healingwish": {
+   "total": 131,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:bittermalice": {
+   "total": 95,
+   "opp-now": 13,
+   "opp-faint-hidden": 0,
+   "opp-after": 82,
+   "own": 0
+  },
+  "opp.moves | not in set:hypervoice": {
+   "total": 87,
+   "opp-now": 8,
+   "opp-faint-hidden": 0,
+   "opp-after": 79,
+   "own": 0
+  },
+  "conds.own | missing:lunardance": {
+   "total": 82,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.moves | missing:dragondance,earthquake,firepunch,outrage extra:": {
+   "total": 78,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 3,
+   "own": 0
+  },
+  "conds.opp | missing:lunardance": {
+   "total": 60,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.moves | missing:earthquake,outrage,stealthrock,swordsdance extra:": {
+   "total": 58,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:focusblast,hypervoice,nastyplot": {
+   "total": 55,
+   "opp-now": 9,
+   "opp-faint-hidden": 0,
+   "opp-after": 46,
+   "own": 0
+  },
+  "opp.moves | not in set:bittermalice,focusblast,hypervoice,nastyplot": {
+   "total": 55,
+   "opp-now": 3,
+   "opp-faint-hidden": 0,
+   "opp-after": 52,
+   "own": 0
+  },
+  "opp.fainted | True->False": {
+   "total": 46,
+   "opp-now": 2,
+   "opp-faint-hidden": 23,
+   "opp-after": 21,
+   "own": 0
+  },
+  "opp.moves | not in set:bittermalice,focusblast": {
+   "total": 46,
+   "opp-now": 3,
+   "opp-faint-hidden": 0,
+   "opp-after": 43,
+   "own": 0
+  },
+  "opp.active | True->-": {
+   "total": 45,
+   "opp-now": 39,
+   "opp-faint-hidden": 0,
+   "opp-after": 6,
+   "own": 0
+  },
+  "opp.fainted | False->True": {
+   "total": 41,
+   "opp-now": 2,
+   "opp-faint-hidden": 23,
+   "opp-after": 16,
+   "own": 0
+  },
+  "opp.statusTurns | tox -1": {
+   "total": 38,
+   "opp-now": 2,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox -1": {
+   "total": 35,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 1
+  },
+  "opp.statusTurns | tox -2": {
+   "total": 25,
+   "opp-now": 2,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:hypervoice,nastyplot": {
+   "total": 24,
+   "opp-now": 5,
+   "opp-faint-hidden": 0,
+   "opp-after": 19,
+   "own": 0
+  },
+  "own.statusTurns | tox -2": {
+   "total": 23,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:bittermalice,nastyplot": {
+   "total": 22,
+   "opp-now": 8,
+   "opp-faint-hidden": 0,
+   "opp-after": 14,
+   "own": 0
+  },
+  "opp.moves | not in set:focusblast,nastyplot": {
+   "total": 21,
+   "opp-now": 6,
+   "opp-faint-hidden": 0,
+   "opp-after": 15,
+   "own": 0
+  },
+  "opp.statusTurns | tox -3": {
+   "total": 18,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox -3": {
+   "total": 18,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.boosts | differ:spa": {
+   "total": 11,
+   "opp-now": 11,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.status | -->psn": {
+   "total": 11,
+   "opp-now": 11,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.volatiles | missing:roost": {
+   "total": 9,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.status | -->tox": {
+   "total": 9,
+   "opp-now": 9,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:bittermalice,focusblast,nastyplot": {
+   "total": 9,
+   "opp-now": 9,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.moves | missing:hex,makeitrain,recover,thunderwave extra:": {
+   "total": 6,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:focusblast,supersonicskystrike": {
+   "total": 5,
+   "opp-now": 3,
+   "opp-faint-hidden": 0,
+   "opp-after": 2,
+   "own": 0
+  },
+  "own.statusTurns | tox -5": {
+   "total": 5,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox -5": {
+   "total": 5,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +1 past cap": {
+   "total": 5,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +2 past cap": {
+   "total": 5,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +1 past cap": {
+   "total": 5,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +2 past cap": {
+   "total": 5,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +3 past cap": {
+   "total": 4,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +3 past cap": {
+   "total": 4,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.moves | missing: extra:devastatingdrake": {
+   "total": 4,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.item | mawilite for -": {
+   "total": 3,
+   "opp-now": 1,
+   "opp-faint-hidden": 0,
+   "opp-after": 2,
+   "own": 0
+  },
+  "opp.ability | hugepower for illusion": {
+   "total": 3,
+   "opp-now": 1,
+   "opp-faint-hidden": 0,
+   "opp-after": 2,
+   "own": 0
+  },
+  "opp.moves | not in set:playrough": {
+   "total": 3,
+   "opp-now": 1,
+   "opp-faint-hidden": 0,
+   "opp-after": 2,
+   "own": 0
+  },
+  "own.moves | missing:defog,earthquake,stoneedge,uturn extra:": {
+   "total": 3,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.moves | missing:dracometeor,thunderbolt,thunderclap,voltswitch extra:": {
+   "total": 3,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +8 past cap": {
+   "total": 3,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:bittermalice,hypervoice,nastyplot": {
+   "total": 3,
+   "opp-now": 3,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:focusblast,hypervoice": {
+   "total": 2,
+   "opp-now": 2,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:bittermalice,focusblast,hypervoice": {
+   "total": 2,
+   "opp-now": 2,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +4 past cap": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +5 past cap": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +6 past cap": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +7 past cap": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +8 past cap": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +9 past cap": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +4 past cap": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +5 past cap": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +6 past cap": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +7 past cap": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +9 past cap": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.moves | missing:heatwave,hurricane,roost,voltswitch extra:": {
+   "total": 2,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.species | mawilemega->mawile": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 1,
+   "own": 0
+  },
+  "opp.species | zoroarkhisui->mawilemega": {
+   "total": 1,
+   "opp-now": 1,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox -4": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +10 past cap": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +11 past cap": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +12 past cap": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox +13 past cap": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox -4": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +10 past cap": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +11 past cap": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +12 past cap": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox +13 past cap": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | slp -2": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | slp -2": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.moves | missing:makeitrain,recover,shadowball,trick extra:": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.moves | not in set:roar": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 1,
+   "own": 0
+  },
+  "own.statusTurns | tox -7": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "own.statusTurns | tox -8": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox -7": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  },
+  "opp.statusTurns | tox -8": {
+   "total": 1,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 0
+  }
+ }
+}

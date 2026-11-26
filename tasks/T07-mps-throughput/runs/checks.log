@@ -1,0 +1,29 @@
+lock taken 2026-11-25T17:19:38, load { 2.19 1.48 1.63 }
+3M fp32/seed0 {"finite": true, "first": 2.344756603240967, "last50_mean": 0.8250489151477813, "max_rel_gap": 0.0, "last50_mean_rel_gap": 0.0}
+3M fp32/seed1 {"finite": true, "first": 2.2968943119049072, "last50_mean": 0.8744087898731232, "max_rel_gap": 0.09116745763383399, "last50_mean_rel_gap": 0.06059251329624015}
+3M fp16/seed0 {"finite": true, "first": 2.3447680473327637, "last50_mean": 0.834721200466156, "max_rel_gap": 0.03373987655427585, "last50_mean_rel_gap": 0.012066890918234657}
+3M bf16/seed0 {"finite": true, "first": 2.344700574874878, "last50_mean": 0.8232283759117126, "max_rel_gap": 0.03307340338953795, "last50_mean_rel_gap": 0.005647276324780514}
+5M fp32/seed0 {"finite": true, "first": 2.2830443382263184, "last50_mean": 0.496808363199234, "max_rel_gap": 0.0, "last50_mean_rel_gap": 0.0}
+5M fp32/seed1 {"finite": true, "first": 2.2944588661193848, "last50_mean": 0.5145138078927993, "max_rel_gap": 0.11504581656864064, "last50_mean_rel_gap": 0.03899109527554943}
+5M fp16/seed0 {"finite": true, "first": 2.2830405235290527, "last50_mean": 0.49278735876083374, "max_rel_gap": 0.04645907937500713, "last50_mean_rel_gap": 0.013814593464260283}
+5M bf16/seed0 {"finite": true, "first": 2.283114433288574, "last50_mean": 0.4873814058303833, "max_rel_gap": 0.054450905000961954, "last50_mean_rel_gap": 0.01979513155043995}
+9M fp32/seed0 {"finite": true, "first": 2.318589210510254, "last50_mean": 0.1447657600045204, "max_rel_gap": 0.0, "last50_mean_rel_gap": 0.0}
+9M fp32/seed1 {"finite": true, "first": 2.330933094024658, "last50_mean": 0.16452739343047143, "max_rel_gap": 3.3405755033287305, "last50_mean_rel_gap": 0.25358802486276544}
+9M fp16/seed0 {"finite": true, "first": 2.3185906410217285, "last50_mean": 0.13738688170909882, "max_rel_gap": 0.31806394882714506, "last50_mean_rel_gap": 0.07534608083580864}
+9M bf16/seed0 {"finite": true, "first": 2.3185055255889893, "last50_mean": 0.1541373237967491, "max_rel_gap": 2.8591269026102895, "last50_mean_rel_gap": 0.14617010279733425}
+{"run": 0, "scenario": "train", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 0.67 0.98 1.30 }", "train": 2123.8725830427215}
+{"run": 0, "scenario": "infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 0.53 0.91 1.27 }", "infer": 10971.331644778109}
+{"run": 0, "scenario": "train+infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 0.44 0.86 1.23 }", "train": 993.2302234228724, "infer": 6553.637025649495}
+{"run": 0, "scenario": "train+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 6.11 2.20 1.71 }", "train": 1968.9061973062844}
+{"run": 0, "scenario": "train+infer+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 10.27 3.69 2.27 }", "train": 968.6984632987354, "infer": 5476.10656042723}
+{"run": 1, "scenario": "train", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 6.80 3.48 2.24 }", "train": 2111.7334784237214}
+{"run": 1, "scenario": "infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 4.79 3.33 2.23 }", "infer": 10937.989198178897}
+{"run": 1, "scenario": "train+infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 3.22 3.09 2.18 }", "train": 975.5750949568252, "infer": 6525.821739898927}
+{"run": 1, "scenario": "train+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 8.34 4.40 2.70 }", "train": 1958.5874196389461}
+{"run": 1, "scenario": "train+infer+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 11.38 5.55 3.17 }", "train": 968.4243327767346, "infer": 5608.750015933637}
+{"run": 2, "scenario": "train", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 7.12 5.14 3.12 }", "train": 2156.218832329337}
+{"run": 2, "scenario": "infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 4.39 4.66 3.02 }", "infer": 11400.721572225742}
+{"run": 2, "scenario": "train+infer", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 2.97 4.28 2.94 }", "train": 961.4742066070459, "infer": 7011.693247827947}
+{"run": 2, "scenario": "train+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 7.88 5.33 3.37 }", "train": 2047.4728921105766}
+{"run": 2, "scenario": "train+infer+burn", "size": "5M", "dtype": "bf16", "seconds": 20.0, "load": "{ 11.64 6.54 3.89 }", "train": 1004.0668384718228, "infer": 5655.676139495313}
+done 2026-11-25T17:36:10, load { 11.64 6.54 3.89 }
