@@ -10,11 +10,11 @@ Phase 1 exit ([plan.md](plan.md), Phases).
 
 ## Next replan
 
-When any of T09–T12 has a `Reviewed:` line or stops on a stop condition (workflow.md, Task session), or when you decide the token layout (Needs you). T09's skeleton result decides whether D7's calc revisit trigger fires.
+When any of T09–T12 has a `Reviewed:` line or stops on a stop condition (workflow.md, Task session). T09's skeleton result decides whether D7's calc revisit trigger fires.
 
 ## Needs you
 
-- **v0 token layout** (plan.md, Network v0: Size). The token list comes to 33, and T07 also timed 77, where the learner is ~2.3× slower. A deliberation on 2026-11-26 ([T07, tokens/](../tasks/T07-mps-throughput/tokens/README.md)) recommends 33 tokens with a shared per-move encoder in each mon token, which cost 2% in its timing, and proposes an equal-wall-clock A/B against 53 tokens early in Phase 2. None of T09–T12 depends on the answer.
+Nothing to decide now.
 
 ## Active
 
@@ -33,7 +33,7 @@ All four can start now, each in its own session (`/do-task T09` and so on). Each
 
 Briefed once their inputs exist (plan.md, Phase 1):
 
-- Observation features and the full record, after T09's record format, T10's tracker and the token decision. Then the leak tests.
+- Observation features and the full record, after T09's record format and T10's tracker. Then the leak tests.
 - Calc features on the species-level prior (D7), after T12's library and T09's calcs.
 - Action masks and their fuzz over 1M requests.
 - Baselines (random, max-damage) and the eval runner. Then max-damage games join T10's ground-truth check.

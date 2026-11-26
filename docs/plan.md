@@ -50,18 +50,20 @@ Training runs on Showdown's simulator through the first scale-up. A Rust engine 
 
 ## Network v0
 
-- **Tokens:**
+- **Tokens:** 33 (decided 2026-11-26: T07, `tokens/`).
   - Field: weather, terrain, per-side hazards and screens, Trick Room, turn.
-  - 6 own mons: species, ability, item and move embeddings, plus stats, HP, status, boosts and volatiles.
-  - 6 opposing mons: species from preview (with `-*` formes unresolved), revealed attributes, an "unknown" embedding otherwise.
+  - 6 own mons: species, ability, item and moves, plus stats, HP, status, boosts and volatiles.
+  - 6 opposing mons: species from preview (with `-*` formes unresolved), revealed attributes, an "unknown" embedding otherwise. Their moves are D7's prior-set moves, each flagged revealed or assumed.
     - Evidence that outlasts the event window: the speed order seen against each of our mons, and the largest damage seen relative to the calc.
-  - Active moves.
-  - The last ~16 events.
+  - The active mon's 4 moves, which the action head reads.
+  - The last 16 events.
+- **Moves inside mon tokens:** each of a mon's 4 moves goes through one shared per-move MLP: its embedding, static move features, its 6 calcs and its per-turn state, such as PP and disabled. The outputs are pooled into the mon token, by sum and max, so slot order carries no meaning. The active mon's move tokens are built from the same per-move outputs. This cost 2% of learner throughput in T07's stand-in (`tokens/`). Bench and opposing moves get no tokens of their own: in T04's replays, 40% of the opposing active's moves are revealed on average.
+  - Tokens use type embeddings (own mon, opposing mon, move, event), not per-slot positions. Calcs keep the opposing active in a fixed column.
 - **Damage calcs** are features on the mon tokens, not tokens of their own. Each mon carries its four moves' damage against each of the six opposing mons, with opponents at their species-level prior set (D7). In v0 every mon carries them: up to 288 calcs per decision (6 × 4 × 6 × 2). If D7's revisit trigger fires, the fallback is the active mons' 48 (2 × 4 × 6) plus the own bench mons' moves against the opposing active: 68.
   - @smogon/calc's gen 9 data covers NatDex content; it lacks only cosmetic formes and names Aegislash differently (T06). Its gaps found against the sim: Ruination returns 0 (so does Super Fang, checked directly); Payback is doubled by Speed order; no input for Roost's type loss or for damage taken this turn (Counter, Mirror Coat). Field-wide effects (Ruin abilities, Auras) must be passed as field flags for pairs that don't hold the ability.
-- **Static dex features:** species tokens also carry base stats and types, and move tokens carry base power, type, category, priority and flags. The ladder will show species the pool never trained, whose ID embeddings alone would be untrained (mikumiku used static dex data). Items and abilities rely on embeddings in v0.
-- **Mega and Z flags:** whether a Mega or Z-Move is still available this battle, and whether this mon could use one.
-- **Size:** 5M params (d=256, 5 layers; ~1.1M of them in embeddings, input projections and heads), pre-RMSNorm, trained and run under bf16 autocast (S4: T07). The token count is open: the list above comes to 33 tokens, and S4 also timed 77, with every mon's moves as tokens (checklist, Needs you).
+- **Static dex features:** species tokens also carry base stats and types. Every move, through the per-move MLP, carries base power, type, category, priority, flags, and effect fields: hazards set or removed, self-switch, status inflicted, healing and boosts. Status moves have no calcs, so these fields carry their meaning. The ladder will show species and moves the pool never trained, whose ID embeddings alone would be untrained (mikumiku used static dex data). Items and abilities rely on embeddings in v0.
+- **Mega and Z flags:** whether a Mega or Z-Move is still available this battle, and whether this mon could use one. Z-Move eligibility is also a per-move input, since the request's `canZMove` has one entry per move slot (`sim/battle-actions.ts`).
+- **Size:** 5M params (d=256, 5 layers; ~1.1M of them in embeddings, input projections and heads), pre-RMSNorm, trained and run under bf16 autocast (S4: T07).
 - **Action head:**
   - 4 moves × {plain, Mega Evolve, as Z-Move}, plus a switch logit per team slot. Masked by the request.
   - Map moves by the request's current index: the move list shrinks for locked moves, Struggle and Recharge, and switching reorders `side.pokemon`.
@@ -140,6 +142,7 @@ Each phase ends at its exit criteria. Since 2026-11-25 the PPO learner and toy c
 2. **PPO v0 (M4 Max, 5–8 weeks).**
    - Build:
      - The full v0 net and training on the ~50-team pool, with 10 teams held out.
+     - Early on, an A/B of the token layout: 33 against 53 tokens (own mons' moves as tokens), both with the per-move MLP, trained for equal wall-clock time on the M4 Max (~3 days each). Compare them by SPRT on duplicate games, and at checkpoints with equal game counts. If 53 wins at equal wall clock, switch to it by surgery (Versioning). If it wins only per game, switch once a run is env-bound.
    - Exit:
      - >90% vs max-damage.
      - No regression: no earlier snapshot rates above the final one beyond Bradley-Terry's 95% intervals.

@@ -1,6 +1,6 @@
 # Token-layout deliberation
 
-Added by the planning session, 2026-11-26. After T07, plan.md's token count was still open. An Opus agent compared v0 token layouts. The user's decision is pending (checklist, Needs you). Run everything from this folder.
+Added by the planning session, 2026-11-26. After T07, plan.md's token count was still open. An Opus agent compared v0 token layouts. The user adopted its recommendation on 2026-11-26 (plan.md, Network v0 and Phase 2). Run everything from this folder.
 
 - **Layouts** (`net.py`, an extended copy of T07's): `5M@33enc` passes each mon's 4 moves (embedding, dex features, the move's 6 calcs) through a shared 2-layer MLP. It then sum- and max-pools them into the mon token. `5M@37enc` adds the opposing active's 4 moves as tokens, and `5M@39enc` adds 6 matchup tokens (each own mon against the opposing active) instead.
 - **FLOPs** (`uv run python flops.py`), training GFLOP per decision per epoch: 0.831 at 33 tokens, 0.839 with the encoder, 0.940 at 37, 0.990 at 39, 1.337 at 53 and 1.963 at 77.
