@@ -27,8 +27,8 @@
 
 ```text
 State: done
-Verified: Acceptance checks (Result), torch 2.15.0, code at 3f2c105
-Pending: review (workflow.md, Task session, step 7)
+Verified: Acceptance checks (Result), torch 2.15.0; benchmark code unchanged since a1f9e30
+Pending: the user's review; the Reviewed: line
 Next: review; the net size and D9's threshold need the user's OK
 ```
 
@@ -100,7 +100,7 @@ Each net has 0.9–1.4M parameters (1.1M in the 5M) in embedding tables, input p
 
 ### Throughput
 
-Median (min–max) over 3 runs. Each configuration ran 3 untimed steps first, because MPS builds its graphs on a new shape. It then ran timed steps for at least 2 s and at least 5 steps, with the GPU synchronized at both ends.
+Median (min–max) over 3 runs. Each configuration ran 3 untimed steps first, because MPS builds its graphs on a new shape. It then ran timed steps for at least 2 s and at least 5 steps, with the GPU synchronized before the first timed step and after every step from the fifth.
 
 - **MPS inference** includes copying the batch to the GPU and the logits and value back, as an inference server would. It uses the policy and value heads only.
 - **MPS training** times one PPO minibatch step on data already on the GPU. Minibatches stop at 1024: in an unlogged trial run, the 9M net in fp32 at 2048 pushed the machine into swap.
@@ -200,14 +200,15 @@ Median (min–max) over 3 runs. Each configuration ran 3 untimed steps first, be
 
 Readings:
 
-- **Autocast:** bf16 is 12–16% faster than fp32 for the 5M net at both token counts.
-  - Training at minibatch 1024: 2,163 against 1,936 at 77 tokens, 5,046 against 4,514 at 33.
-  - Inference at batch 256: +16% and +14%.
+- **Autocast:** bf16 is faster than fp32 for the 5M net at both token counts, by how much depending on the minibatch.
+  - Training at minibatch 1024: +12% (2,163 against 1,936 at 77 tokens, 5,046 against 4,514 at 33). But fp32 slows at 1024 and bf16 doesn't. At each dtype's fastest minibatch, bf16 is only 3–4% ahead (2,268 against 2,200 at 256 for 77 tokens, 5,414 against 5,188 at 512 for 33).
+  - Inference at batch 256: +16% and +14%. At batch 16, bf16 is 3–9% slower.
+  - In the learner model, each at its fastest minibatch, bf16 gives 4–5% more decisions/s (860 against 826 at 77 tokens, 2,029 against 1,927 at 33).
   - fp16 is no faster than bf16, needs a `GradScaler`, and is slower than fp32 at minibatch 256.
   - The 9M net gains least at 77 tokens: 3% under bf16.
 - **Batch size:**
   - MPS inference peaks at batch 256. One env process's batch (64) reaches 68–83% of that peak for the 3M and 5M nets at 77 tokens, and 53–68% at 33. So an inference server batching across env processes at 256 gains about 20–90% over each process sending its own.
-  - Training is flat from 512 to 1024 at 77 tokens. At 33 tokens, 1024 is 5–13% below 512 in fp32 and bf16.
+  - Training is flat from 512 to 1024 at 77 tokens. At 33 tokens, 1024 is 5–15% below 512 in fp32 and bf16. At 77 tokens, 256 is the fastest minibatch for most configurations.
 - **Size:** throughput falls with FLOPs, though not in proportion. Against the 5M net under bf16 at minibatch 1024:
 
   | Net | FLOPs (77 tokens) | Throughput, 77 tokens | Throughput, 33 tokens |
@@ -216,11 +217,11 @@ Readings:
   | 9M | 1.84× | 0.56× | 0.61× |
 
 - **Tokens:** going from 77 to 33 tokens cuts the 5M net's FLOPs 2.36×. It then trains 2.33× as fast (5,046 against 2,163) and infers 2.07× as fast. The token count moves throughput more than the size range does: the 9M net at 33 tokens trains faster than the 5M at 77.
-- **CPU inference** of the 5M net at batch 64 on one thread costs 0.96 ms per decision at 77 tokens and 0.39 at 33. More threads cost more core time per decision (1.29 and 1.95 core-ms on 2 and 4 threads at 77). So one thread per env process uses the cores best.
+- **CPU inference** of the 5M net at batch 64 on one thread costs 0.96 ms per decision at 77 tokens and 0.39 at 33. Those are rates for one process alone. This torch build runs CPU matmuls through Apple's Accelerate, which uses the chip's shared matrix units, so processes compete for them. In `cpu_scale.py` (`runs/cpu-scale.log`), 12 processes running 1-thread inference at once totalled only ~8.9k decisions/s at 33 tokens and ~3.75k at 77. That is 3.3–3.5× slower per process than one process alone.
 
 ### Learner and env
 
-**The learner's decisions/s per PPO epoch** at minibatch 1024 is the training rate. **For the 5M net under bf16 that is 5,046 at 33 tokens and 2,163 at 77.** At 33 tokens, minibatch 512 trains 5–13% faster than 1024 (Readings), so the 33-token rates below are that much conservative.
+**The learner's decisions/s per PPO epoch** at minibatch 1024 is the training rate. **For the 5M net under bf16 that is 5,046 at 33 tokens and 2,163 at 77.** At 33 tokens, minibatch 512 trains 5–15% faster than 1024 (Readings), so the 33-token rates below are that much conservative.
 
 **The learner model** (`summarize.py` computes every figure below):
 - **GPU time per decision** = MPS inference for every decision + 0.75 × epochs × training time per decision.
@@ -256,17 +257,17 @@ The table shows selected rows. `uv run python summarize.py runs/2026-11-25.jsonl
 
 | Work | ms per decision | Source |
 |---|---|---|
-| Sim, `Battle` direct, slowed by interleaved calcs | 0.38 | T02 at 14 processes (0.28), × T06's 1.37 slowdown with calcs between sim steps |
+| Sim, `Battle` direct, slowed by interleaved calcs | 0.38 | T02 at 14 processes (0.28), × T06's 1.37 slowdown with calcs between sim steps. T06 ran four calc passes per decision, so this likely overstates the sim's cost |
 | 288 calc set, cached | 0.53 | T06, one process |
 | 48 calc set, cached | 0.25 | T06, one process |
-| CPU inference, 5M fp32, batch 64, 1 thread, unloaded | 0.39 (33 tokens), 0.96 (77) | this task |
+| CPU inference, 5M fp32, batch 64, 1 thread, one process alone | 0.39 (33 tokens), 0.96 (77) | this task. 3.3–3.5× more with 12 processes (Readings) |
 
 - **MPS inference, 288 calcs:** 12 processes / 0.92 ms (0.38 + 0.53, unrounded) ≈ 13k env decisions/s.
   - For the 5M net under bf16 at 3 epochs, that is **6.9× the learner at 33 tokens (1,903) and 15.9× at 77 (824).**
   - T06 timed calcs in one process only. If they slow under load as T02's sim did (×1.52, to 0.81 ms), the env does 10k decisions/s: 5.3× and 12×.
-- **CPU inference, 288 calcs:** the learner then only trains, at 2,090 decisions/s (33 tokens) and 895 (77).
-  - Inference loaded as T02's sim was (×1.52) costs 0.59 and 1.46 ms.
-  - The env gets 13 / (0.38 + 0.53 + 0.59) ≈ 8.6k and 5.5k decisions/s: 4.1× and 6.1× the learner. This is a worse margin than MPS inference at either token count.
+- **CPU inference, 288 calcs:** the learner then only trains, at 2,090 decisions/s at 33 tokens and 895 at 77, 9–10% faster.
+  - The shared matrix units cap CPU inference at ~8.9k and ~3.75k decisions/s across 12 processes (`cpu_scale.py`), before the sim and calcs compete for the same cores.
+  - So the env gets at most ~4.3× and ~4.2× the learner: a worse margin than with MPS inference at either token count. A real CPU-inference setup would need its own multi-process measurement.
 - **What would change it:** per-decision Python parsing and transfer (unmeasured until Phase 1's walking skeleton) add to the env's 0.92 ms. For the 5M net, bf16, 3 epochs and MPS inference:
   - **D7's builder rule** ("reopens if the env's decisions/s ... falls below ~2× the learner's") trips at **~2.2 ms per decision per process at 33 tokens** and ~6.4 ms at 77.
   - **The env becomes the bound** at ~5.4 ms and ~13.6 ms.
@@ -300,18 +301,19 @@ The table shows selected rows. `uv run python summarize.py runs/2026-11-25.jsonl
   - passing observations between env and inference processes. Inference times include the copy to the GPU and back, but no inter-process transfer.
 - **Short runs:** each configuration ran a few seconds. Days of sustained load on a laptop may throttle; that wasn't measured.
 - **77 tokens only:** convergence and contention were checked at 77 tokens, not 33.
-- **Snapshot inference** is assumed to cost the same as the latest policy's. Holding several snapshots on the GPU adds memory, not time.
+- **Snapshot inference** is assumed to cost the same as the latest policy's. Several snapshots split the inference batches, and batch 64's throughput is 17–47% below batch 256's. Inference is ~9% of the learner's GPU time, so this costs up to ~4–8%.
 
 ### Proposals
 
 **v0 net size: 5M parameters** (d=256, 5 layers, ~1.1M of them in embeddings, input projections and heads), trained and run under bf16 autocast.
 
-- **Cost:** on a learner-bound M4 Max, games/day falls with FLOPs. Per 5M-net game, the 3M net plays ~1.45× as many and the 9M ~0.6×.
-- **Prior bots:** the #1 bots used 3–8.7M parameters (prior-work.md). Jaxcalibur found smaller nets trained longer beat larger ones, which argues against 9M on a learner-bound machine.
+- **The measurements price each size, they don't pick one.** On a learner-bound M4 Max, games/day falls with FLOPs. Per 5M-net game, the 3M net plays ~1.45× as many and the 9M ~0.6×. On cost alone, 3M wins.
+- **Why 5M over 3M is a judgment call:** the #1 bots used 3–8.7M parameters (prior-work.md). The 3M one (MissingNo) played random battles, with no team preview and no hidden sets from a pool. NatDex OU with hidden sets and five aux heads asks more of the net. Jaxcalibur found smaller nets trained longer beat larger ones, which argues against 9M on a learner-bound machine. Neither point was measured here.
+- **It depends on the token count:** at 33 tokens the 5M net gives ~2M games/day (35-turn games). If v0 uses ~77 tokens, the 3M net (~1.3M) keeps games/day closer to that than the 5M (~0.9M).
 - **NatDex content:** NatDex has more species, items, Megas and Z-Moves, but these mostly add embedding rows. Those cost parameters and almost no FLOPs, so the trunk keeps most of the 5M: 3.95M in the stand-in. That rests on the stand-in's guessed embedding widths, an assumption.
-- **bf16:** 12–16% faster than fp32, and its loss tracked fp32's within the seed-to-seed gap. It is as fast as fp16 and needs no loss scaling.
+- **bf16:** never slower than fp32 for training. It is 4–5% faster in the learner model, each dtype at its fastest minibatch, and 14–16% faster in inference. Its loss tracked fp32's within the seed-to-seed gap. It is as fast as fp16 and needs no loss scaling.
 - **Fallback:** the 3M net, if a Phase 2 run would pass D9's threshold below.
-- **The token count is the larger lever and isn't part of this proposal.** It needs a planning decision (For integration).
+- **The token count is the larger lever.** It needs a planning decision (For integration).
 
 **D9's threshold:** the M4 Max isn't enough when the next planned run needs more than 14 days on it, at the games/day the current pipeline measures.
 
@@ -385,6 +387,7 @@ uv run python net.py
 | `converge.py` | Autocast against fp32 over 300 steps. `runs/converge.json` holds every loss curve |
 | `contend.py` | Inference and training sharing the GPU, with and without 13 CPU-spinning processes |
 | `flops.py` | FLOPs per decision, from `FlopCounterMode` |
+| `cpu_scale.py` | CPU inference with 1, 4, 8 and 12 processes at once (`uv run python cpu_scale.py m <size>`, under `timed.sh`); output in `runs/cpu-scale.log` |
 | `runs/2026-11-25.jsonl`, `.log` | The three reported runs for the 77- and 53-token sizes |
 | `runs/2026-11-25-33tok.jsonl`, `.log` | The three reported runs for the 33-token sizes. The `.log` also covers their clean rerun |
 | `runs/2026-11-25-clean-rerun.jsonl`, `runs/2026-11-25-33tok-clean-rerun.jsonl` | The runs from fresh clones (Acceptance checks) |
@@ -401,17 +404,17 @@ The edits below record measurements. Their 5M figures are for the proposed size 
 ```markdown
 - **M4 Max** (S4: T07, 2026-11-25, torch 2.15.0, M4 Max with a 32-core GPU and 36 GB). Measured on a stand-in for Network v0 at 33 tokens (the token list above as written) and at 77 (adding every mon's moves as tokens):
   - The learner's cost tracks FLOPs per decision, which scale with net size and token count. The 5M net (3.95M of it in the trunk) costs 0.83 GFLOP per decision per PPO epoch at 33 tokens and 1.96 at 77.
-  - Under bf16 autocast, the 5M net trains at ~5,050 decisions/s per epoch at 33 tokens and ~2,160 at 77 (minibatch 1024). It infers at ~23,400/s and ~11,300/s on MPS (batch 256), and training sustains ~4.2 TFLOP/s. The 3M net is ~1.45× as fast and the 9M ~0.6×. bf16 is 12–16% faster than fp32 and tracked it. fp16 is no faster and needs loss scaling.
+  - Under bf16 autocast, the 5M net trains at ~5,050 decisions/s per epoch at 33 tokens and ~2,160 at 77 (minibatch 1024). It infers at ~23,400/s and ~11,300/s on MPS (batch 256), and training sustains ~4.2 TFLOP/s. The 3M net is ~1.45× as fast and the 9M ~0.6×. bf16 tracked fp32's loss. It infers 14–16% faster, and trains 12% faster at minibatch 1024 but only 3–4% faster with each dtype at its fastest minibatch. fp16 is no faster and needs loss scaling.
   - The learner model: inference on MPS for every decision, 75% of decisions trained (half of games are against frozen snapshots: Training v0, League), and 7% lost to a loaded CPU. On it, the 5M net at 3 PPO epochs gives an estimated ~1,900 learner decisions/s at 33 tokens and ~820 at 77. That is ~2.0–2.9M and ~0.9–1.2M games/day at T04's human lengths.
   - The learner bounds the M4 Max. The env's cost is the sim, slowed by interleaved calcs (0.38 ms per decision per process, T02 and T06), plus the cached 288 calcs (0.53 ms, T06, one process). That gives an estimated ~13k env decisions/s on 12 processes: ~7× the 33-token learner and ~16× the 77-token one.
   - Python parsing and transfer are unmeasured until Phase 1's walking skeleton. They would trip D7's 2× builder rule at ~2.2 ms per decision per process at 33 tokens (~6.4 ms at 77), and make the env the bound at ~5.4 ms (~13.6 ms).
-  - Inference on MPS leaves the env more margin than inference on CPU at either token count. On CPU, one thread per env process uses the cores best.
+  - Inference on MPS leaves the env more margin than inference on CPU at either token count. On CPU, this torch build's matmuls share the chip's matrix units: 12 processes doing 5M-net inference reached only ~3.3–3.5× one process's rate.
 ```
 
 **decisions.md, D7** (v0 carries all 288 calcs): replace "On the M4 Max the learner likely bounds throughput (planning estimate, ~500–700 decisions/s: plan.md, Compute)" with:
 
 ```markdown
-On the M4 Max the learner bounds throughput: S4's timings give an estimated ~1,900 learner decisions/s at 33 tokens and ~820 at 77 (5M net, bf16, 3 epochs), against ~13k env decisions/s from the sim and cached calcs (plan.md, Compute)
+On the M4 Max the learner likely bounds throughput: S4's timings give an estimated ~1,900 learner decisions/s at 33 tokens and ~820 at 77 (5M net, bf16, 3 epochs), against ~13k env decisions/s from the sim and cached calcs before Python parsing and tensor building. D7's builder rule trips if those cost more than ~2.2 ms per decision per process at 33 tokens or ~6.4 ms at 77 (plan.md, Compute)
 ```
 
 **If the user approves the net size, plan.md, Network v0:** replace "- **Size:** 3–9M params, pre-RMSNorm, about 45–80 tokens." with the line below. Put the user's answer on the token count in place of `<tokens>`.
