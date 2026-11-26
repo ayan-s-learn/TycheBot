@@ -38,9 +38,11 @@ Verified: adversarial pass 2 (Opus, high) and its fixes. Supreme Overlord is now
   (poke-env 18,525 mismatches, was 20,652). Regenerator splits into not shown, inferable from the species
   (@pkmn/client 1,607, unsupported) and estimates within rounding. recall.py skips fainted mons and counts Mega
   Stones as derivable. The duplicate-slot fix is sized from a patched run. The committed .pyc is removed.
-  summarize.py assigns every class (exit 0).
-Pending: the clean-checkout rerun on the new commit; the user's review, then the Reviewed: line.
-Next: rerun ./run.sh from a fresh clone and compare results/.
+  summarize.py assigns every class (exit 0). ./run.sh in a fresh clone of 9bd64ad reproduces every file in
+  results/ byte for byte.
+Pending: the user's review.
+Next: after the user's review, a final entry with the Reviewed: line (passes 1 and 2 done; fixes in 658af19,
+  b889dc5, 1c8af29, 9bd64ad).
 ```
 
 ```text
@@ -197,7 +199,7 @@ My estimates of size, not measured.
 
 ### Acceptance checks
 
-- **Rerun on a clean checkout:** passed. `./run.sh` in a fresh clone of b889dc5 reproduces every file in `results/` (all but `timing.log`, which it doesn't write) byte for byte.
+- **Rerun on a clean checkout:** passed. `./run.sh` in a fresh clone of 9bd64ad reproduces every file in `results/` (all but `timing.log`, which it doesn't write) byte for byte.
 - **Every mismatch class has a cause:** passed. `summarize.py` assigns all of them (`results/summary.json`; exit 0).
 - **Timing:** passed. Both trackers are under ~2 ms per decision (above).
 
