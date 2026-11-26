@@ -60,20 +60,28 @@ def _write_all(fd, data):
 class Worker:
     def __init__(self, index, config, node="node", stderr=None):
         self.index = index
+        self.proc = None
         to_node_r, self._w = os.pipe()
         self._r, from_node_w = os.pipe()
         config = {**config, "worker": index, "fds": [to_node_r, from_node_w]}
-        self.proc = subprocess.Popen(
-            [node, str(MAIN), json.dumps(config)], cwd=ROOT, pass_fds=(to_node_r, from_node_w), stderr=stderr
-        )
-        os.close(to_node_r)
-        os.close(from_node_w)
-        self.pending = False  # holds a batch not yet answered
-        kind, payload = self.recv()
-        if kind != HELLO:
-            raise WorkerError(f"worker {index}: expected hello, got frame type {kind}")
-        self.hello = json.loads(payload)
-        check_layout(self.hello["layout"])
+        try:
+            try:
+                self.proc = subprocess.Popen(
+                    [node, str(MAIN), json.dumps(config)], cwd=ROOT, pass_fds=(to_node_r, from_node_w), stderr=stderr
+                )
+            finally:
+                # Closed before reading, so a worker that dies before its hello gives EOF rather than a hang.
+                os.close(to_node_r)
+                os.close(from_node_w)
+            self.pending = False  # holds a batch not yet answered
+            kind, payload = self.recv()
+            if kind != HELLO:
+                raise WorkerError(f"worker {index}: expected hello, got frame type {kind}")
+            self.hello = json.loads(payload)
+            check_layout(self.hello["layout"])
+        except BaseException:
+            self.close()  # a refused worker isn't in Workers.workers, so close it here
+            raise
 
     def recv(self):
         try:
@@ -117,7 +125,7 @@ class Worker:
         return json.loads(payload)
 
     def close(self):
-        if self.proc.poll() is None:
+        if self.proc is not None and self.proc.poll() is None:
             self.proc.kill()
             self.proc.wait()
         for fd in (self._r, self._w):

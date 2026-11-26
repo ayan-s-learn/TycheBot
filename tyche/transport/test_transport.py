@@ -86,3 +86,21 @@ def test_node_refuses_another_frame_version():
     assert w.proc.returncode != 0
     assert f"record version {record.VERSION + 1}" in w.proc.stderr.read().decode()
     w.close()
+
+
+def test_refused_worker_is_closed(monkeypatch):
+    def refuse(theirs):
+        raise VersionError("refused")
+
+    procs = []
+    real_popen = subprocess.Popen
+
+    def popen(*args, **kwargs):
+        procs.append(real_popen(*args, **kwargs))
+        return procs[-1]
+
+    monkeypatch.setattr("tyche.transport.workers.check_layout", refuse)
+    monkeypatch.setattr("tyche.transport.workers.subprocess.Popen", popen)
+    with pytest.raises(VersionError):
+        Worker(0, CONFIG)
+    assert procs[0].poll() is not None

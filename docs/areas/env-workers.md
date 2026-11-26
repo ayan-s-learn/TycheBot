@@ -8,6 +8,7 @@ Components 1 and 2 of plan.md as the walking skeleton built them (T09): Node pro
 - The record is a minimal stand-in for the observation: no events, items, abilities, field or side conditions, and no evidence features.
 - Calcs use both sides' true sets, which leaks hidden information.
 - Tracking is @pkmn/client 0.7.4 as is, constructed in one place: `Client` in `worker/skeleton/env.ts`.
+- An opposing Transform or Illusion stops the worker: the calcs check each tracked opposing species against its set's (`calcs.ts`) and throw. Review pass 2 hit it with a scripted Ditto game. The v0 pool has neither.
 
 ## Code
 
@@ -74,7 +75,7 @@ One per decision: a request that isn't a wait. Every field is 4 bytes, so a reco
 
 These are what the skeleton's calcs leak. The record's other fields hold only what the player is shown. The field comes from the tracker. Each player has a cache per game, keyed on every input. Fainted mons and status moves get no calcs, as in T06.
 
-**Actions** (`mask.ts`): action 3i + v is move i (the request's current index) plain, Mega Evolving (v = 1) or as a Z-Move (v = 2); action 12 + j switches to own mon j. At Team Preview, 12 + j leads with mon j (`team j+1`). A Z-Move is legal when the request lists one for that slot, even if the base move is disabled. Switches are masked when the request says `trapped`, and offered when it says `maybeTrapped`. At a forced switch mid-turn, the mon the player chose to switch to this turn is masked (Gotchas). There is no Ultra Burst action; no pool team has one.
+**Actions** (`mask.ts`): action 3i + v is move i (the request's current index) plain, Mega Evolving (v = 1) or as a Z-Move (v = 2); action 12 + j switches to own mon j. At Team Preview, 12 + j leads with mon j (`team j+1`). A Z-Move is legal when the request lists one for that slot, even if the base move is disabled. Switches are masked when the request says `trapped`, and offered when it says `maybeTrapped`. At a forced switch mid-turn, the mon the player chose to switch to this turn is masked (Gotchas). When the request's move list shrinks (a locked move, Recharge, Struggle), action 0 is that one move, while `moves` and `calcs` slot 0 still describe the mon's first move: review pass 2 counted 48 such decisions in 17,506 move decisions. Action 0 is then the only legal one. There is no Ultra Burst action; no pool team has one.
 
 ## Commands
 
@@ -95,7 +96,7 @@ What the tests cover:
 - `worker/skeleton/mask.test.ts`: hand-made requests; the queued-switch case played out; and on every decision of 6 random games, each of the 18 actions tried on a copy of the battle (`sim/state.ts`), where the mask must allow exactly the actions the sim carries out.
 - `worker/calc/calcs.test.ts`: the record's calcs against the same calcs on the sim's state, on 8 random games: 0 of 141,321 nonzero calcs differed (2026-11-26).
 - `worker/skeleton/record.test.ts`: the layout, and records against the request and the sim.
-- `tyche/transport/test_transport.py`: the round trip, stacking, echo, and both ends refusing another version.
+- `tyche/transport/test_transport.py`: the round trip, stacking, echo, both ends refusing another version, and a refused worker being stopped.
 - `tyche/skeleton/test_skeleton.py`: GAE, and the net's mask and a PPO update on real records.
 
 ## Gotchas

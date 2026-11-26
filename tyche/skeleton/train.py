@@ -181,7 +181,7 @@ def main():
                 log.write(json.dumps(line) + "\n")
                 log.flush()
                 print(f"update {updates}: {line['minutes']:.1f} min, {decisions:,} decisions, {games:,} games, "
-                      f"win rate vs random {line['winRateVsRandom']:.3f} (last {len(results)}), "
+                      f"win rate vs random {line['winRateVsRandom'] or 0:.3f} (last {len(results)}), "
                       f"entropy {stats['entropy']:.3f}, value loss {stats['value']:.3f}", flush=True)
                 torch.save({"net": net.state_dict(), "vocab": vocab, "args": vars(args)}, out / "net.pt")
         stats = ws.stop()

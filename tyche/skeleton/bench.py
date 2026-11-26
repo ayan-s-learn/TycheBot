@@ -10,7 +10,7 @@ frame, and the run stops after `seconds`. It writes one JSON line per run:
   window, from iostat, less the workers' and this process's CPU;
 - the load averages before and after, and this process's scheduling priority.
 A run is flagged if this process runs at background priority (PRI 4 in ps), where the same in-process run took ~5x
-as long on 2026-11-26, or if the median worker got under 0.9 of a core.
+as long on 2026-11-26, or if the median worker playing battles got under 0.9 of a core (echo workers mostly wait).
 With --echo N the workers play no battles and send N blank records per batch: the transport alone.
 
 Usage: python -m tyche.skeleton.bench --out <file.jsonl> [--workers 12] [--battles 32] [--seconds 30] [--warmup 10]
@@ -95,7 +95,7 @@ def run(args, index):
         "counts": counts,
         "loadavg": [load0, load1],
         "priority": pri,
-        "flagged": pri == 4 or statistics.median(share) < 0.9,
+        "flagged": pri == 4 or (not args.echo and statistics.median(share) < 0.9),
         "node": ws.hello["node"], "pin": ws.hello["pin"],
     }
 
