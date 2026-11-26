@@ -118,7 +118,7 @@ class Tally:
         self.by_field = Counter()
         self.by_class = Counter()
         self.class_tags = defaultdict(Counter)
-        self.illusion = {"now": Counter(), "after": Counter()}  # mismatches by Illusion tag, by field
+        self.illusion = {t: Counter() for t in TAGS}  # mismatches by Illusion tag, by field
         self.examples = defaultdict(list)
         self.decisions = 0
         self.bad_decisions = 0
@@ -161,19 +161,51 @@ def jsonable(x):
     return sorted(x) if isinstance(x, set) else x
 
 
+TAGS = ("opp-now", "opp-faint-hidden", "opp-after", "own")
+
+
+def illusion_tag(own_t, opp_t, seen, chunks, upto, opp):
+    """Tags a decision by Illusion, first that applies:
+    opp-now: an opposing Illusion holds (the player isn't shown it);
+    opp-faint-hidden: an opposing Illusion user fainted in disguise, which the protocol shows as the disguise
+      fainting, with no |replace| (data/abilities.ts, illusion);
+    opp-after: an opposing Illusion held earlier in the game and was broken;
+    own: the player's own Illusion holds or held (the player knows it from its request);
+    none.
+    `seen` is [own, opp]: whether an Illusion has held on that side at an earlier decision; updated here.
+    """
+    now = [any(m["illusion"] and m["active"] for m in s["mons"]) for s in (own_t, opp_t)]
+    seen[0], seen[1] = seen[0] or now[0], seen[1] or now[1]
+    if now[1]:
+        return "opp-now"
+    if seen[1]:
+        text = "\n".join(chunks[:upto])
+        for m in opp_t["mons"]:
+            if m["ability"] == "illusion" and m["fainted"] and f"|faint|{opp}a: {m['name']}" not in text:
+                return "opp-faint-hidden"
+        return "opp-after"
+    return "own" if seen[0] else "none"
+
+
+def last_shown_hp(chunks, upto, opp, name):
+    """The opposing mon's HP% as the player's protocol last showed it, or None."""
+    pat = re.compile(r"^\|(?:switch|drag|-damage|-heal|-sethp|replace)\|" + opp + r"a: " + re.escape(name) +
+                     r"\|[^|]*?\|?(\d+)/100", re.M)
+    hp = None
+    for c in chunks[:upto]:
+        for x in pat.findall(c):
+            hp = int(x)
+    return hp
+
+
 def compare_decision(tally, truth, view, me, chunks, upto, where, illusion_seen):
     """Adds this decision's mismatches to the tally. Returns how many it found.
 
-    illusion_seen: per side index, whether an Illusion has held on that side at an earlier decision of this
-    player's game. A mismatch is tagged "now" if an Illusion holds at this decision, "after" if one held
-    earlier in the game, else "none".
+    illusion_seen: as illusion_tag's `seen`, carried across this player's decisions.
     """
     mi = 0 if me == "p1" else 1
     own_t, opp_t = truth["sides"][mi], truth["sides"][1 - mi]
-    now = [any(m["illusion"] and m["active"] for m in s["mons"]) for s in truth["sides"]]
-    tag = "now" if any(now) else "after" if any(illusion_seen) else "none"
-    for i in (0, 1):
-        illusion_seen[i] = illusion_seen[i] or now[i]
+    tag = illusion_tag(own_t, opp_t, illusion_seen, chunks, upto, opp_side(me))
     found = 0
     preview = truth["turn"] == 0
 
@@ -286,7 +318,11 @@ def compare_decision(tally, truth, view, me, chunks, upto, where, illusion_seen)
         for k, (want, got) in checks.items():
             if want == got:
                 continue
-            bad(f"opp.{k}", classify(k, want, got, m), want, got)
+            cls = classify(k, want, got, m)
+            if cls == "regenerator":
+                shown = last_shown_hp(chunks, upto, opp_side(me), m["name"])
+                cls += " (last shown)" if got == shown else " (estimate)"
+            bad(f"opp.{k}", cls, want, got)
         # Revealed attributes must be true ones.
         if v["item"] is not None and v["item"] != m["item"]:
             bad("opp.item", f"{v['item'] or '-'} for {m['item'] or '-'}", m["item"], v["item"])
@@ -339,7 +375,7 @@ def main():
             g, t, v = orjson.loads(gl), orjson.loads(tl), orjson.loads(vl)
             assert g["game"] == t["game"] == v["game"]
             for side in ("p1", "p2"):
-                illusion_seen = [False, False]
+                illusion_seen = [False, False]  # own, opposing
                 td = [d for d in t["decisions"] if d["side"] == side]
                 vd = [x for x in v["views"] if x["side"] == side]
                 assert len(td) == len(vd), (g["game"], side, len(td), len(vd))
@@ -359,10 +395,9 @@ def main():
         # Stage 2: per feature, how many (decision, mon) pairs were compared and the mismatches on them.
         "byFeature": {f: {"compared": n, **dict(tally.feature_bad[f].most_common())}
                       for f, n in sorted(tally.feature_mons.items())},
-        "illusionNow": dict(tally.illusion["now"].most_common()),
-        "illusionEarlier": dict(tally.illusion["after"].most_common()),
-        # Per class: [total, at a decision where an Illusion holds, after one held earlier in the game].
-        "byClass": {f"{f} | {c}": [n, tally.class_tags[(f, c)]["now"], tally.class_tags[(f, c)]["after"]]
+        "byIllusionTag": {t: dict(tally.illusion[t].most_common()) for t in TAGS},
+        # Per class: its total and its count under each Illusion tag (illusion_tag).
+        "byClass": {f"{f} | {c}": {"total": n, **{t: tally.class_tags[(f, c)][t] for t in TAGS}}
                     for (f, c), n in tally.by_class.most_common()},
     }, indent=1))
     with open(examples_path, "w") as out:

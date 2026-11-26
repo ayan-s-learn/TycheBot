@@ -22,7 +22,7 @@
    },
    "illusion-after": {
     "kind": "tracker bug",
-    "n": 1344
+    "n": 1297
    },
    "future-sight-silent": {
     "kind": "tracker bug",
@@ -48,8 +48,12 @@
     "kind": "tracker bug",
     "n": 61
    },
+   "illusion-faint": {
+    "kind": "not shown",
+    "n": 47
+   },
    "pkmn-roost": {
-    "kind": "tracker choice",
+    "kind": "tracker bug (harmless)",
     "n": 9
    }
   },
@@ -62,7 +66,7 @@
   "byCause": {
    "regenerator": {
     "kind": "not shown",
-    "n": 10677
+    "n": 10464
    },
    "pokeenv-activations": {
     "kind": "tracker bug",
@@ -70,7 +74,7 @@
    },
    "illusion-after": {
     "kind": "tracker bug",
-    "n": 1702
+    "n": 1645
    },
    "pokeenv-forme": {
     "kind": "tracker bug",
@@ -90,27 +94,40 @@
    },
    "illusion-hidden": {
     "kind": "not shown",
-    "n": 520
+    "n": 518
    },
    "healing-wish": {
     "kind": "unsupported",
     "n": 430
    },
+   "pokeenv-regenerator-estimate": {
+    "kind": "tracker bug",
+    "n": 213
+   },
    "toxic-cap": {
     "kind": "tracker bug",
     "n": 67
    },
+   "illusion-faint": {
+    "kind": "not shown",
+    "n": 55
+   },
    "pokeenv-rest": {
     "kind": "tracker bug",
     "n": 12
+   },
+   "illusion-own": {
+    "kind": "tracker bug",
+    "n": 4
    }
   },
   "unclassified": {}
  },
  "causes": {
-  "regenerator": "Regenerator's heal on switch-out is never logged, so an opposing benched mon's HP is stale (poke-env estimates it when it knows the ability, off by Showdown's 99% rounding)",
+  "regenerator": "Regenerator's heal on switch-out is never logged, so an opposing benched mon's HP is the last one shown",
+  "pokeenv-regenerator-estimate": "poke-env estimates Regenerator's heal when it knows the ability, and its percent arithmetic misses the true HP%",
   "healing-wish": "a pending Healing Wish or Lunar Dance (a slot condition) isn't tracked",
-  "future-sight-silent": "a pending Future Sight is kept after it ends without a message (its target fainted first)",
+  "future-sight-silent": "a pending Future Sight is kept after it fails because its target fainted, which Showdown shows only as a `-hint` line, which both trackers ignore",
   "toxic-cap": "the toxic counter isn't capped at 15 as the sim's stage is",
   "pkmn-duplicate-slots": "each request duplicates the own active's move slots (rememberMove compares `virtual` with the request slots' undefined)",
   "pkmn-z": "Z-Moves: no Z-used state (`-zpower` is unhandled), and a Z-Move is recorded among the mon's moves under its Z name",
@@ -123,7 +140,9 @@
   "pokeenv-toxic-turns": "the toxic counter moves at `|turn|`, not at the poison damage, so it is one off for a mon that came in after a faint and at decisions between the residual and the next turn",
   "pokeenv-rest": "the counter carries over when Rest replaces toxic",
   "pokeenv-future-sight-user": "a pending Future Sight is an effect on its user, lost when the user switches out or faints",
-  "illusion-hidden": "Illusion, while it holds: the disguise's entry gets the Zoroark's HP, status, boosts and moves",
-  "illusion-after": "Illusion, after `|replace|` breaks it: what was attributed to the disguise stays on the wrong entry (tagged by game: any mismatch no other rule explains, at a decision after an Illusion held in that game)"
+  "illusion-hidden": "an opposing Illusion, while it holds: the disguise's entry gets the Zoroark's HP, status, boosts and moves",
+  "illusion-faint": "an opposing Zoroark that fainted in disguise: the protocol shows the disguise fainting, with no `|replace|`, so the Zoroark looks alive and the disguise fainted",
+  "illusion-after": "an opposing Illusion after `|replace|` broke it: what was attributed to the disguise stays on the wrong entry (any mismatch no other rule explains, at a later decision of that game)",
+  "illusion-own": "the player's own Illusion, which its request shows: events of the active Zoroark go on the disguise's entry (any mismatch no other rule explains, while or after the player's Illusion held)"
  }
 }

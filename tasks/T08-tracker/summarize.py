@@ -1,8 +1,8 @@
 """Assigns every mismatch class in compare.py's output to a cause, and fails if any class is left over.
 
-Each class carries [total, at a decision where an Illusion holds, after one held earlier in the game]. A
-cause's rule matches the class's field and name; the two Illusion causes take only the Illusion-tagged parts of
-a class no other rule matches, so whatever is left of it stays unclassified.
+Each class carries its total and its count under each Illusion tag (compare.py, illusion_tag). A cause's rule
+matches the class's field and name; the four Illusion causes take only the tagged parts of a class no other
+rule matches, so whatever is left of it stays unclassified.
 
 Usage: uv run python summarize.py <cmp-pkmn.json> <cmp-pokeenv.json>   (exit 1 if anything is unclassified)
 """
@@ -26,13 +26,16 @@ ACTIVATIONS = r"(supremeoverlord|terashell|terashift|psychicterrain|endure|polte
 # (cause id, kind, description, tracker or None for both, field regex, class regex)
 CAUSES = [
     ("regenerator", "not shown",
-     "Regenerator's heal on switch-out is never logged, so an opposing benched mon's HP is stale "
-     "(poke-env estimates it when it knows the ability, off by Showdown's 99% rounding)",
-     None, r"opp\.hp", r"regenerator"),
+     "Regenerator's heal on switch-out is never logged, so an opposing benched mon's HP is the last one shown",
+     None, r"opp\.hp", r"^regenerator \(last shown\)$"),
+    ("pokeenv-regenerator-estimate", "tracker bug",
+     "poke-env estimates Regenerator's heal when it knows the ability, and its percent arithmetic misses "
+     "the true HP%", "pokeenv", r"opp\.hp", r"^regenerator \(estimate\)$"),
     ("healing-wish", "unsupported",
      "a pending Healing Wish or Lunar Dance (a slot condition) isn't tracked", None, r"conds\.", r"missing:(healingwish|lunardance)"),
     ("future-sight-silent", "tracker bug",
-     "a pending Future Sight is kept after it ends without a message (its target fainted first)",
+     "a pending Future Sight is kept after it fails because its target fainted, which Showdown shows only as "
+     "a `-hint` line, which both trackers ignore",
      None, r"conds\.", r"extra:futuremove"),
     ("toxic-cap", "tracker bug", "the toxic counter isn't capped at 15 as the sim's stage is",
      None, r"statusTurns", r"tox \+\d+ past cap"),
@@ -51,7 +54,7 @@ CAUSES = [
     ("pkmn-locked-moves", "tracker bug",
      "the own active's move list is emptied when the request lists only a move without PP (a locked move, "
      "recharge or Struggle)", "pkmn", r"own\.moves", r"^missing:[a-z,]+ extra:$"),
-    ("pkmn-roost", "tracker choice",
+    ("pkmn-roost", "tracker bug (harmless)",
      "Roost's volatile is kept only for Flying users, where it has an effect", "pkmn", r"opp\.volatiles", r"^missing:roost$"),
     ("pokeenv-activations", "tracker bug",
      "one-off events (`-activate`, `-singleturn`: Supreme Overlord, Tera Shell, Psychic Terrain's block, "
@@ -70,34 +73,43 @@ CAUSES = [
      "pokeenv", r"conds\.", r"missing:futuremove"),
 ]
 ILLUSION = [
-    ("illusion-hidden", "not shown",
-     "Illusion, while it holds: the disguise's entry gets the Zoroark's HP, status, boosts and moves"),
-    ("illusion-after", "tracker bug",
-     "Illusion, after `|replace|` breaks it: what was attributed to the disguise stays on the wrong entry "
-     "(tagged by game: any mismatch no other rule explains, at a decision after an Illusion held in that game)"),
+    ("opp-now", "illusion-hidden", "not shown",
+     "an opposing Illusion, while it holds: the disguise's entry gets the Zoroark's HP, status, boosts and moves"),
+    ("opp-faint-hidden", "illusion-faint", "not shown",
+     "an opposing Zoroark that fainted in disguise: the protocol shows the disguise fainting, with no "
+     "`|replace|`, so the Zoroark looks alive and the disguise fainted"),
+    ("opp-after", "illusion-after", "tracker bug",
+     "an opposing Illusion after `|replace|` broke it: what was attributed to the disguise stays on the wrong "
+     "entry (any mismatch no other rule explains, at a later decision of that game)"),
+    ("own", "illusion-own", "tracker bug",
+     "the player's own Illusion, which its request shows: events of the active Zoroark go on the disguise's "
+     "entry (any mismatch no other rule explains, while or after the player's Illusion held)"),
 ]
 
 
 def summarize(cmp, tracker):
     by_cause = Counter()
     unclassified = {}
-    for key, (n, now, after) in cmp["byClass"].items():
+    for key, counts in cmp["byClass"].items():
+        n = counts["total"]
         field, cls = key.split(" | ", 1)
         for cid, _, _, who, fre, cre in CAUSES:
             if who in (None, tracker) and re.search(fre, field) and re.search(cre, cls):
                 by_cause[cid] += n
                 break
         else:
-            by_cause["illusion-hidden"] += now
-            by_cause["illusion-after"] += after
-            if n - now - after:
-                unclassified[key] = n - now - after
+            for tag, cid, _, _ in ILLUSION:
+                if counts[tag]:
+                    by_cause[cid] += counts[tag]
+            left = n - sum(counts[tag] for tag, *_ in ILLUSION)
+            if left:
+                unclassified[key] = left
     return by_cause, unclassified
 
 
 def main():
     ok = True
-    desc = {c[0]: (c[1], c[2]) for c in CAUSES + ILLUSION}
+    desc = {c[0]: (c[1], c[2]) for c in CAUSES} | {cid: (kind, d) for _, cid, kind, d in ILLUSION}
     out = {}
     for path in sys.argv[1:]:
         cmp = json.load(open(path))

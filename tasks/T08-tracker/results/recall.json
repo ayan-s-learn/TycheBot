@@ -1,0 +1,85 @@
+{
+ "pkmn only": {
+  "ability: other ability": {
+   "cases": 706,
+   "examples": [
+    "0:p2:36:Mawile:hypercutter",
+    "1:p1:13:Zapdos:static",
+    "1:p1:25:Kingambit:supremeoverlord",
+    "1:p2:3:Mawile:hypercutter",
+    "2:p1:10:Mawile:hypercutter"
+   ]
+  },
+  "item: Z-Crystal": {
+   "cases": 448,
+   "examples": [
+    "0:p1:3:Moltres:flyiniumz",
+    "0:p2:10:Moltres:flyiniumz",
+    "1:p2:38:Moltres:flyiniumz",
+    "2:p1:40:Moltres:flyiniumz",
+    "2:p2:4:Dragonite:dragoniumz"
+   ]
+  },
+  "item: Mega Stone": {
+   "cases": 415,
+   "examples": [
+    "0:p1:13:Mawile:mawilite",
+    "1:p2:2:Mawile:mawilite",
+    "2:p1:10:Mawile:mawilite",
+    "3:p2:13:Diancie:diancite",
+    "4:p1:16:Tyranitar:tyranitarite"
+   ]
+  },
+  "move: move": {
+   "cases": 65,
+   "examples": [
+    "2:p1:25:Zoroark:hypervoice",
+    "3:p2:6:Dragonite:dragondance",
+    "16:p2:34:Tapu Lele:calmmind",
+    "20:p2:2:Tapu Lele:calmmind",
+    "36:p1:2:Tapu Lele:calmmind"
+   ]
+  },
+  "item: other item": {
+   "cases": 37,
+   "examples": [
+    "1:p1:5:Zapdos:heavydutyboots",
+    "25:p2:3:Gliscor:toxicorb",
+    "50:p1:3:Gliscor:toxicorb",
+    "51:p2:10:Gliscor:toxicorb",
+    "69:p1:3:Gliscor:toxicorb"
+   ]
+  }
+ },
+ "pokeenv only": {
+  "ability: single-ability species": {
+   "cases": 1830,
+   "examples": [
+    "0:p1:2:Moltres:berserk",
+    "0:p1:21:Ogerpon:waterabsorb",
+    "0:p2:2:Moltres:berserk",
+    "0:p2:2:Zamazenta:dauntlessshield",
+    "0:p2:4:Ogerpon:waterabsorb"
+   ]
+  },
+  "move: move": {
+   "cases": 16,
+   "examples": [
+    "0:p2:32:Mawile:playrough",
+    "2:p1:19:Ogerpon:swordsdance",
+    "2:p1:19:Ogerpon:ivycudgel",
+    "234:p2:32:Iron Treads:earthquake",
+    "234:p2:33:Iron Treads:stealthrock"
+   ]
+  },
+  "item: other item": {
+   "cases": 4,
+   "examples": [
+    "102:p1:27:Iron Treads:",
+    "338:p2:8:Iron Treads:",
+    "442:p2:23:Iron Treads:",
+    "494:p2:20:Iron Treads:"
+   ]
+  }
+ }
+}

@@ -25,3 +25,5 @@ uv run python compare.py out/games.jsonl out/truth.jsonl out/views-pkmn.jsonl pk
 uv run python compare.py out/games.jsonl out/truth.jsonl out/views-pokeenv.jsonl pokeenv results/examples-pokeenv.jsonl \
 	> results/compare-pokeenv.json
 uv run python summarize.py results/compare-pkmn.json results/compare-pokeenv.json > results/summary.json
+# Recall of revealed opposing attributes, which the diff's subset check doesn't measure.
+uv run python recall.py out/games.jsonl out/truth.jsonl out/views-pkmn.jsonl out/views-pokeenv.jsonl > results/recall.json
