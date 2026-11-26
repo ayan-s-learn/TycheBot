@@ -257,36 +257,20 @@ Gotchas for whoever builds on this:
 - Showdown keeps a benched mon's toxic stage until it switches in again, then resets it; the visible counter restarts on switch-out.
 - The sim's `field.pseudoWeather` holds `sleepclausemod`, a rule, at every decision.
 
-## For integration
 
-The user agreed to the recommendation on 2026-11-25 (in the T08 session). After this change, only S2 is deferred in D7, so the planning session should check that "partly decided" still fits. The user agreed before the adversarial passes, which changed the text's Why and the trigger; the planning session should show the user this version. plan.md's S2 line keeps poke-env's websocket client as the test client for the server side, which the Node online client doesn't change. In the same sweep, prior-work.md's poke-env and @pkmn/client rows ("D7, spike S6"; "Speed and NatDex Mega/Z handling not checked") and plan.md's Phase 0 S6 line can point to T08.
+## Edge-case passes
 
-**decisions.md, D7:** replace the bullet "**The builder is Python.**" and its sub-bullets with:
+Added by the planning session, 2026-11-26. After the review, two agents (Sonnet, medium) tested T08 from opposite sides: `edge-red/` looked for evidence against @pkmn/client and `edge-blue/` against poke-env. Both scripted scenarios by driving `Battle` with fixed seeds and chosen inputs, then fed both trackers and compared against the sim. Usage is in the headers of the harness scripts (`edge-red/h.ts` and `pkmn-fixed.ts`; `edge-blue/gen.ts`, `run_trackers.sh` and `calc_test.ts`). Their generated `out/` folders aren't committed. The planning session checked the totals below against their output files and the ban list against `config/formats.ts` at 29f2d99.
 
-```markdown
-- **Tracking and the observation builder run in the Node env workers** (S6, T08, 2026-11-25).
-  - Each worker runs the sim, one @pkmn/client 0.7.4 `Battle` per player, @smogon/calc on the tracked state, and the builder, which writes a numeric record per decision (ids, numbers, action mask). @pkmn/data's `Generations` keeps Past and Unobtainable content.
-  - Per env step, the worker sends Python the records for every decision in its batch, and Python sends back one action per decision. Python stacks records into tensors.
-  - Our fixes to @pkmn/client (T08, Result) live in a layer over 0.7.4 rather than a fork. The builder keeps an allowlist of the message types the client may ignore and fails on any other. It reads hit-result lines (`-crit`, `-supereffective`, `-resisted`) and `-hint` itself.
-  - Why: @pkmn/client needs about as many fixes as poke-env for Phase 1's ground-truth exit, and poke-env also drops revealed Z-Crystals and abilities (T08). In Node, tracking sits next to the calcs, so there is no calc round trip and no Python env process.
-  - Cost: feature code is TypeScript, apart from the model.
-  - If the env's decisions/s on the M4 Max, measured by Phase 1's walking skeleton, falls below ~2× the learner's (S4's figure until Phase 1's learner track gives its own), the calc revisit trigger (below) applies, then more worker processes. A Python builder would add a round trip, so it isn't the fallback.
-  - Rejected: poke-env in Python env processes, which keeps the calc round trip; our own tracker, since no failure T08 found needs a rewrite.
-```
-
-**plan.md, Components 2:** replace with:
-
-```markdown
-2. **Observation builder** (D7): TypeScript, in the Node env workers. Tracks each player's state with @pkmn/client from its protocol stream and request JSON, runs the damage calcs on that state, and writes a numeric record per decision, which Python stacks into tensors. Used for both training and online play. Built in Phase 1.
-```
-
-**plan.md, Components 7:** replace with:
-
-```markdown
-7. **Online client:** a Showdown websocket client in Node, feeding the same worker code as component 2. Built at Phase 2's online gate, hardened in Phase 4.
-```
-
-**plan.md, Phase 0 (S5) and Phase 1 (Build, Skeleton exit):** D7 no longer has a builder rule.
-- In S5's line, "for D7's builder rule" becomes "for D7's calc revisit trigger".
-- In the walking skeleton, "env workers with the batched 288-calc round trip" becomes "env workers with tracking and the 288 calcs in-process", and "for D7's builder and calc rules" becomes "for D7's calc revisit trigger".
-- In the Skeleton exit, "D7's builder rule and calc revisit trigger checked" becomes "D7's calc revisit trigger checked".
+- **Out of format:** `[Gen 9] National Dex` bans Baton Pass, Shed Tail, Shadow Tag, Arena Trap, Assist and Last Respects, and Terastal Clause bans Tera. So most of Not checked above can't happen. Magnet Pull trapping and Transform/Imposter can.
+- **A thin layer works:** `edge-red/layer.ts` is a 92-line subclass of an unmodified 0.7.4 `Battle` that overrides only `add` and `update`. On games 0–499 it cut @pkmn/client's mismatches from 167,244 to 14,703, and decisions with any mismatch from 51,388 to 13,005, with no throws (`edge-red/pkmn-fixed.ts`, then `compare.py`). It covers the duplicate slots and request ids, the Mega-used and Z-used flags, Z names, the heal reset, the toxic cap, `-prepare`, and part of the Illusion re-attribution, which still leaves 502 opposing-move mismatches. It doesn't cover Future Sight's `-hint`, Healing Wish and Lunar Dance, Regenerator, or the emptied move list.
+- **More @pkmn/client fixes,** none seen in the 500 games, each a few lines:
+  - `-prepare` (Fly, Dig, Bounce) has no handler, so the opponent's charging or semi-invulnerable turn isn't tracked. poke-env tracks it. Stage 1's "carries nothing" was true only of the 527 Chilly Reception lines in the games.
+  - A pending plain Wish isn't tracked by either tracker. The games have no `|move|...|Wish|` line at all.
+  - Gastro Acid's volatile is missing in both.
+  - Yawn is dropped on any `-status` line.
+  - `types` leaves out a type added by Forest's Curse or similar, which the client keeps in `addedType`. The builder must read both.
+- **Transform:** after the player's own Ditto transforms, its request lists the foe's true moves. @pkmn/client copies them onto the foe's entry, duplicated. The player does see those moves, but the spectator doesn't, so the leak test needs an exception (plan.md, Phase 1 exit).
+- **poke-env did worse,** in scenarios: it loses Baton Pass state (banned anyway), keeps species `ditto` after Imposter and loses its copied boosts after an Illusion break, and copies Psych Up's boosts the wrong way.
+- **Worked in both:** Revival Blessing, Court Change, hazard absorption, Pursuit, drags, U-turn and Volt Switch, Eject Button and Eject Pack, Emergency Exit, Skill Swap, Trace, Trick and Knock Off, Perish Song, Crowned formes from `-*`, and nicknames containing `p2a: ` or non-ASCII characters.
+- **Calcs on tracked state** (`edge-blue/calc_test.ts`, `out/calc-500.json`): the active pair's calcs built from @pkmn/client's view match those built from the sim's state in 199,948 of 199,986 (49,877 decisions). The 38 that differ are all on one Zoroark-Hisui after its Illusion broke. The opposing item was unknown at 57% of decisions and the ability at 54%, and 108,249 of 199,508 opposing moves were revealed, so the calcs lean on the set priors (D7). @pkmn/client keeps no own stats; they come from the request.

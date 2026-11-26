@@ -91,23 +91,23 @@ Revisit later. The likely first use is behavior-cloning initialization on NatDex
 
 PyTorch, because the same code runs on MPS (M4 Max) and CUDA (5090). JAX's Metal backend is experimental, and MLX is Mac-only.
 
-## D7. Observation: partly decided (2026-11-25)
+## D7. Observation: decided (2026-11-26)
 
-- **One builder:** a single observation builder over the per-player Showdown protocol, used for both training and online play. Training then sees exactly what the ladder client sees. S2, which checks that the server's per-player streams match the in-process sim's, is deferred to Phase 2's online gate, so S6 checks trackers against the in-process sim only.
-- **The builder is Python.**
-  - Node workers send raw protocol lines and request JSON. Python parses them, tracks state and builds tensors.
-  - It runs in Python env processes separate from the learner, so parsing doesn't compete with PPO for the GIL.
-  - Damage calcs stay in @smogon/calc (JavaScript). Python sends one batched calc request per env step, covering every battle in the batch, to the Node workers.
-  - Why: one language for features, model and training.
-  - Cost: a second round trip per step, plus Python parsing load. This choice reopens if the env's decisions/s on the M4 Max, measured by Phase 1's walking skeleton, falls below ~2× the learner's (S4's figure until Phase 1's learner track gives its own).
-  - **Open until spike S6:** write our own battle-state tracker, fork poke-env's, or use @pkmn/client (prior-work.md, Reusable code). @pkmn/client is TypeScript, so choosing it moves tracking into the Node worker next to @smogon/calc, removes the second round trip, and reopens "the builder is Python". S6 ends with a recommendation for the user.
+- **One builder:** a single observation builder over the per-player Showdown protocol, used for both training and online play. Training then sees exactly what the ladder client sees. S2, the check that the server's per-player streams match the in-process sim's, runs at Phase 2's online gate (T03), so S6 checked trackers against the in-process sim only.
+- **Tracking and the observation builder run in the Node env workers** (S6: T08, 2026-11-25).
+  - Each worker runs the sim, one @pkmn/client 0.7.4 `Battle` per player, @smogon/calc on the tracked state, and the builder, which writes a numeric record per decision (ids, numbers, action mask). @pkmn/data's `Generations` keeps Past and Unobtainable content.
+  - Per env step, the worker sends Python the records for every decision in its batch, and Python sends back one action per decision. Python stacks records into tensors.
+  - Our fixes to @pkmn/client (T08: Result, Edge-case passes) live in a layer over 0.7.4 rather than a fork. The builder keeps an allowlist of the message types the client may ignore and fails on any other. It reads hit-result lines (`-crit`, `-supereffective`, `-resisted`) and `-hint` itself.
+  - Why: @pkmn/client needs about as many fixes as poke-env for Phase 1's ground-truth exit, and poke-env also drops revealed Z-Crystals and abilities (T08). A 92-line subclass with most of the small fixes and part of the Illusion one cut @pkmn/client's mismatches on T08's games from 167,244 to 14,703 without touching the package (T08, Edge-case passes). In Node, tracking sits next to the calcs, so there is no calc round trip and no Python env process.
+  - Cost: feature code is TypeScript, apart from the model.
+  - Rejected: poke-env in Python env processes, which keeps the calc round trip; our own tracker, since no failure T08 found needs a rewrite.
 - **Damage calcs are in v0.**
   - Why: NatDex's species/item/ability diversity makes damage expensive to learn from embeddings alone. Jaxcalibur used them.
   - Calcs assume the species-level usage prior: the highest-weight library set (D4) consistent with what the protocol has explicitly revealed (moves, item, ability, forme). They don't use the aux-head belief, which would feed the net's output back into its input.
   - For a species with no library set, or none consistent with what has been revealed, the prior is its most common 1760 item, ability, spread and moves, with revealed attributes kept. That can be an incoherent set, but here it is only a calc input, never a training set. A species with no 1760 stats gets no calcs.
   - Implicit evidence (speed order, damage compared to the calc) enters as observation features instead (plan.md, Network v0). Narrowing the prior on that evidence, as Foul Play does, is a later option.
-  - **v0 carries all 288 calcs (decided 2026-11-25).** This replaces the rule that cut calcs to the active mons' 48 if they took >30% of env time. T06 measured even the 48, cached, at 52–60% of sim + calc time per decision, and that share was the wrong measure: calcs matter only if they lower games/day (the env bounding the M4 Max) or raise $ per million games (D2). On the M4 Max the learner likely bounds throughput (planning estimate, ~500–700 decisions/s: plan.md, Compute), and the 288 as T06 ran them (~96 calcs per decision, skipping fainted mons and status moves), cached, cost ~0.53 ms of CPU per decision in one process.
-    - **Revisit** if S4 and Phase 1's walking skeleton show the env bounds the M4 Max, or the D2 trial is env-bound and the 68 set would cut $ per million games by ≥$1 or bring a tripped $8 gate back under it. The fallback is then the 48 plus the own bench mons' moves against the opposing active (68, unmeasured), which switch decisions need and the 48 lack.
+  - **v0 carries all 288 calcs (decided 2026-11-25).** This replaces the rule that cut calcs to the active mons' 48 if they took >30% of env time. T06 measured even the 48, cached, at 52–60% of sim + calc time per decision, and that share was the wrong measure: calcs matter only if they lower games/day (the env bounding the M4 Max) or raise $ per million games (D2). On the M4 Max the learner bounds throughput: the env runs ~7× faster than the learner at 33 tokens and ~16× at 77, before record building and transfer (S4: plan.md, Compute). The 288 as T06 ran them (~96 calcs per decision, skipping fainted mons and status moves), cached, cost ~0.53 ms of CPU per decision in one process.
+    - **Revisit** if the env bounds the M4 Max, measured by Phase 1's walking skeleton and again with the full observation builder, or the D2 trial is env-bound and the 68 set would cut $ per million games by ≥$1 or bring a tripped $8 gate back under it. The fallback is then the 48 plus the own bench mons' moves against the opposing active (68, unmeasured), which switch decisions need and the 48 lack.
     - Forking @smogon/calc to remove its per-call copies waits until a measurement shows calcs limit throughput.
 
 ## D8. Play-time search: deferred (2026-11-22)
@@ -123,14 +123,14 @@ Either way:
 - Guard against leaking hidden information.
 - Override the policy only when search wins by a margin (MissingNo).
 
-## D9. Success bar and budget: partly decided (2026-11-23)
+## D9. Success bar and budget: partly decided (2026-11-26)
 
 - **Target:** an Elo at or above #10 on the default `gen9nationaldex` board, shown on the bots-included board, held over ≥100 rated games. Then pivot toward the default board's #1 Elo.
   - Why not "top 10 on the board": since 2026-11-13 the default board hides registered bots, so a bot can't appear on it (prior-work.md, MissingNo ladder).
   - On 2026-11-23, #10 was 1856 and #1 was 1940 ([ladder JSON](https://pokemonshowdown.com/ladder/gen9nationaldex.json); add `?includebots` for the other board).
   - **Open:** does "held over ≥100 rated games" mean 100 games in total, or 100 played at or above the bar?
 - **Budget:** up to $1k of rented compute for now. Spend only when measurements show the M4 Max isn't enough, apart from the ~$10 Phase 2 trial that measures the D2 gate.
-  - **Open:** the threshold for "isn't enough". S4 proposes one (plan.md, Phase 0).
+  - **Threshold (decided 2026-11-26):** the M4 Max isn't enough when the next planned run needs more than 7 days on it, at the games/day the current pipeline measures. Until Phase 1 measures its own, S4's estimate for the 5M net at 3 epochs and 35-turn games is ~2.05M games/day at 33 tokens and ~0.89M at 77 (T07, Learner and env), so runs above ~14M or ~6M games.
 - **Reference:** MissingNo's gen 9 run cost ~$350 and its whole project ~$2.1k (prior-work.md).
 
 ## D10. Training details: decided (2026-11-23)

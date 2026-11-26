@@ -1,6 +1,6 @@
 # Plan
 
-Draft, updated 2026-11-25. Choices tagged D1… are argued in [decisions.md](decisions.md). Background and sources are in [prior-work.md](prior-work.md).
+Draft, updated 2026-11-26. Choices tagged D1… are argued in [decisions.md](decisions.md). Background and sources are in [prior-work.md](prior-work.md).
 
 ## Goal
 
@@ -40,12 +40,12 @@ Training runs on Showdown's simulator through the first scale-up. A Rust engine 
 ## Components
 
 1. **Env workers:** Node processes that drive Showdown's sim through `Battle` directly (S1 picked it by its 10% rule: T02, 2026-11-25). Many battles run per process, batched to Python. Built in Phase 1.
-2. **Observation builder** (D7): Python, in env processes separate from the learner. Reads each player's protocol stream and request JSON, requests damage calcs from the Node workers in one batch per step, and emits tensors. Used for both training and online play. Built in Phase 1.
+2. **Observation builder** (D7): TypeScript, in the Node env workers. Tracks each player's state with @pkmn/client from its protocol stream and request JSON, runs the damage calcs on that state, and writes a numeric record per decision, which Python stacks into tensors. Used for both training and online play. Built in Phase 1.
 3. **Network:** PyTorch (D6). A stand-in in Phase 1's learner track; the full v0 in Phase 2.
 4. **Learner and actors:** PPO + GAE with asynchronous collection (D10), plus a snapshot store for the league. Built in Phase 1's learner track.
 5. **Team pool and set priors** (D4). Stub pool in Phase 0; the ~50-team pool and the set library in Phase 1; growth in Phase 3.
 6. **Eval harness:** runs in-process with fixed baselines, snapshot ratings and held-out teams. A local Showdown server is used only for the online client and Foul Play. Built in Phase 1.
-7. **Online client:** a Showdown websocket feeding component 2. Built at Phase 2's online gate, hardened in Phase 4.
+7. **Online client:** a Showdown websocket client in Node, feeding the same worker code as component 2. Built at Phase 2's online gate, hardened in Phase 4.
 8. **Later:** play-time search (D8, Phase 5), and the Rust engine if gated in (D2).
 
 ## Network v0
@@ -61,7 +61,7 @@ Training runs on Showdown's simulator through the first scale-up. A Rust engine 
   - @smogon/calc's gen 9 data covers NatDex content; it lacks only cosmetic formes and names Aegislash differently (T06). Its gaps found against the sim: Ruination returns 0 (so does Super Fang, checked directly); Payback is doubled by Speed order; no input for Roost's type loss or for damage taken this turn (Counter, Mirror Coat). Field-wide effects (Ruin abilities, Auras) must be passed as field flags for pairs that don't hold the ability.
 - **Static dex features:** species tokens also carry base stats and types, and move tokens carry base power, type, category, priority and flags. The ladder will show species the pool never trained, whose ID embeddings alone would be untrained (mikumiku used static dex data). Items and abilities rely on embeddings in v0.
 - **Mega and Z flags:** whether a Mega or Z-Move is still available this battle, and whether this mon could use one.
-- **Size:** 3–9M params, pre-RMSNorm, about 45–80 tokens.
+- **Size:** 5M params (d=256, 5 layers; ~1.1M of them in embeddings, input projections and heads), pre-RMSNorm, trained and run under bf16 autocast (S4: T07). The token count is open: the list above comes to 33 tokens, and S4 also timed 77, with every mon's moves as tokens (checklist, Needs you).
 - **Action head:**
   - 4 moves × {plain, Mega Evolve, as Z-Move}, plus a switch logit per team slot. Masked by the request.
   - Map moves by the request's current index: the move list shrinks for locked moves, Struggle and Recharge, and switching reorders `side.pokemon`.
@@ -92,10 +92,13 @@ These are estimates; Phase 0 spikes replace them.
   - MissingNo ran gen 9 on Showdown at ~64 games/s (~$7 per million games). After optimization it reached ~205/s (~$1.80 per million) on one rented GPU box (its README).
 - **Damage calcs** (S3, T06): @smogon/calc 0.12.0 takes ~15–16 µs per calc on the M4 Max, in one process. In random-AI games, skipping fainted mons and status moves, the 288 set averaged 96 calcs (1.45 ms per decision uncached, 0.53 ms cached) and the 48 set 20 (0.32 ms, 0.25 ms cached). The sim takes 0.17 ms per decision alone and 0.23 ms when calcs run between its steps (T02: 0.18 with 32 battles interleaved). In one profile, roughly half the time inside the calc went to copying its inputs.
 - **Turns per game** (T04: 1,000 public replays of human games, uploaded 2026-11-22 to 11-25 UTC): mean 24.6, median 22, p90 38, including 35 custom-rule games (without them: mean 24.9, p90 39). 42% ended by forfeit or inactivity, so these are too low for games played to the end. A Kaplan-Meier correction gives median 27, p90 56 and mean 35.0 counted up to turn 137, likely too high: counting the nearly decided cut games (a side down to one Pokémon or none) as ended gives 26, 47 and 30.8. Games not ended by forfeit or inactivity: mean 26.2, median 24, p90 39; the ladder ones among them (403 of 794 ladder games): mean 25.7, median 23, p90 38. Self-play lengths are unmeasured.
-- **M4 Max:**
-  - Planning estimate until S4 measures it: the learner does ~500–700 decisions/s (the 2.4 GFLOP below, 3–4 PPO epochs, an assumed 4–6 TFLOP/s sustained on MPS), so ~0.4–1M games/day at 60–112 decisions per game, limited by the learner.
-  - A 5M-param net over ~80 tokens costs ~2.4 GFLOP per decision step per PPO epoch.
-  - PyTorch 2.15 has MPS autocast (fp16/bf16), checked 2026-11-22. S4 times it against fp32.
+- **M4 Max** (S4: T07, 2026-11-25, torch 2.15.0, M4 Max with a 32-core GPU and 36 GB). Measured on a stand-in for Network v0 at 33 tokens (the token list above as written) and at 77 (adding every mon's moves as tokens):
+  - The learner's cost tracks FLOPs per decision, which scale with net size and token count. The 5M net (3.95M of it in the trunk) costs 0.83 GFLOP per decision per PPO epoch at 33 tokens and 1.96 at 77.
+  - Under bf16 autocast, the 5M net trains at ~5,050 decisions/s per epoch at 33 tokens and ~2,160 at 77 (minibatch 1024). It infers at ~23,400/s and ~11,300/s on MPS (batch 256), and training sustains ~4.2 TFLOP/s. The 3M net is ~1.45× as fast and the 9M ~0.6×. bf16 tracked fp32's loss. It infers 14–16% faster, and trains 12% faster at minibatch 1024 but only 3–4% faster with each dtype at its fastest minibatch. fp16 is no faster and needs loss scaling.
+  - The learner model: inference on MPS for every decision, 75% of decisions trained (half of games are against frozen snapshots: Training v0, League), and 7% lost to a loaded CPU. On it, the 5M net at 3 PPO epochs gives an estimated ~1,900 learner decisions/s at 33 tokens and ~820 at 77. That is ~2.0–2.9M and ~0.9–1.2M games/day at T04's human lengths.
+  - The learner bounds the M4 Max. The env's cost is the sim, slowed by interleaved calcs (0.38 ms per decision per process, T02 and T06), plus the cached 288 calcs (0.53 ms, T06, one process). That gives an estimated ~13k env decisions/s on 12 processes: ~7× the 33-token learner and ~16× the 77-token one.
+  - Tracking adds 0.018 ms per decision (T08, one process). Record building and transfer to Python are unmeasured until Phase 1's walking skeleton. The env becomes the bound if they cost more than ~5.4 ms per decision per process at 33 tokens (~13.6 ms at 77).
+  - Inference on MPS leaves the env more margin than inference on CPU at either token count. On CPU, this torch build's matmuls (Accelerate) scale poorly across processes: 12 processes doing 5M-net inference reached only ~3.3–3.5× one process's rate.
 - **Games needed:** MissingNo reached #1 in gens 6 and 7 at ~16M games and in gen 9 at ~49.5M. For NatDex top 10, guess 15–50M.
 - **Rented:**
   - While Showdown is the env, the CPU count is probably the cap. RunPod 5090 pods have only 9 vCPUs (unverified), so filter vast.ai for many vCPUs (≥48 is a guess until S1). The GPU class matters less.
@@ -111,28 +114,28 @@ Each phase ends at its exit criteria. Since 2026-11-25 the PPO learner and toy c
      - Python version and environment manager; Node version; TS or JS for the workers.
      - How Showdown is pinned: a git dependency (needs Showdown's build step), the `pokemon-showdown` npm package, or @pkmn/sim.
      - Whether spike code is throwaway or becomes the Phase 1 base.
-   - Spikes. S1, S3 and S4 record numbers that replace the Compute estimates, and S4 and Phase 1's walking skeleton check D7's calc revisit trigger.
+   - Spikes. S1, S3 and S4 record numbers that replace the Compute estimates. S4 found the learner bounds the M4 Max, so Phase 1's walking skeleton checks D7's calc revisit trigger.
      - S1: sim harness, starting from Showdown's `sim/tools/runner.ts`. ms per turn per core, for `Battle` driven directly and for `BattleStream`. Take the faster; within 10%, `Battle` direct, since `BattleStream` is marked not finalized. `Battle` direct still gets per-player streams through `extractChannelMessages`, exported from `sim/battle.ts`. Turns per game come from ≥1k public NatDex replays (T04), not random-AI games; Phase 1's robustness test reuses them.
      - S2: play a game on a local server, export it with `/exportinputlog`, replay it in-process with the same seed, and diff the streams (`rqid`, room lines, `|split|` handling). Use poke-env's websocket client for the server side. Deferred 2026-11-25 to the online gate before Phase 2's rated games (T03's brief waits for it).
      - S3: µs per damage calc, with a cache, for both calc sets in Network v0 (288 and 48 per decision).
-     - S4: MPS training and inference samples/s for 3M/5M/9M nets, fp32 vs autocast, with CPU fallback disabled. Also gives the learner's games/day, for D7's calc revisit trigger. Ends with the v0 net size and a proposed threshold for D9's "the M4 Max isn't enough", both for the user's OK.
-     - S5 (cut 2026-11-25): its transfer-overhead measurement is replaced by Phase 1's walking skeleton, which measures env decisions/s end to end for D7's builder rule.
-     - S6: battle tracker: poke-env's, @pkmn/client, or our own (D7). Check each against the sim's state on recorded games (Megas, Z-Moves, Illusion, `-*` formes, Past content) and on public replays. Weigh how each keeps up with the monthly re-pin, then time them. Ends with a recommendation for the user, including where tracking, calcs and tensor building run.
+     - S4: MPS training and inference samples/s for 3M/5M/9M nets, fp32 vs autocast, with CPU fallback disabled. Also gives the learner's games/day, for D7's calc revisit trigger. Ends with the v0 net size and a proposed threshold for D9's "the M4 Max isn't enough", both for the user's OK. Done: T07; the user picked 5M and a 7-day threshold (Network v0, D9).
+     - S5 (cut 2026-11-25): its transfer-overhead measurement is replaced by Phase 1's walking skeleton, which measures env decisions/s end to end for D7's calc revisit trigger.
+     - S6: battle tracker: poke-env's, @pkmn/client, or our own (D7). Check each against the sim's state on recorded games (Megas, Z-Moves, Illusion, `-*` formes, Past content) and on public replays. Weigh how each keeps up with the monthly re-pin, then time them. Ends with a recommendation for the user, including where tracking, calcs and tensor building run. Done: T08; @pkmn/client in the Node workers (D7).
    - A 20-team validated stub pool.
-   - Exit: the toolchain is recorded, the stub pool validates, the results of S1, S3, S4 and S6 (numbers, documented differences or recommendation) are written up, and the user has signed off on S4's and S6's proposals.
+   - Exit (met 2026-11-26): the toolchain is recorded, the stub pool validates, the results of S1, S3, S4 and S6 (numbers, documented differences or recommendation) are written up, and the user has signed off on S4's and S6's proposals.
 1. **Env and plumbing (M4 Max, 5–7 weeks).**
-   - Build: first a walking skeleton (env workers with the batched 288-calc round trip, on true sets until the set library exists, a minimal observation, a simple synchronous PPO, beating random), which measures env decisions/s end to end for D7's builder and calc rules. Then env workers, observation builder, action masks, damage-calc features, the Python batch env, the ~50-team pool (correcting the stub pool's skew: docs/areas/team-pool.md), the set library (`data/priors/v0/species_sets.json`, D4), baselines (random, max-damage) and the eval runner.
+   - Build: first a walking skeleton (env workers with tracking and the 288 calcs in-process, on true sets until the set library exists, a minimal observation, a simple synchronous PPO, beating random), which measures env decisions/s end to end for D7's calc revisit trigger. Then env workers, observation builder, action masks, damage-calc features, the Python batch env, the ~50-team pool (correcting the stub pool's skew: docs/areas/team-pool.md), the set library (`data/priors/v0/species_sets.json`, D4), baselines (random, max-damage) and the eval runner.
    - In parallel: the PPO learner with asynchronous collection (D10), and the toy checks: rock-paper-scissors ends near uniform, small endgames have known answers. OpenSpiel's matrix games and solvers supply the reference answers.
    - The observation builder is the long pole (2–3 weeks).
    - Exit, all passing:
-     - **Ground truth:** across ≥10k games, the tracked state matches the sim at every decision, for every field the observation uses.
+     - **Ground truth:** across ≥10k games, from random players and, once the baselines exist, max-damage players, the tracked state matches the sim at every decision, for every field the observation uses. So does a suite of scripted scenarios for content those players rarely produce, such as Wish, two-turn moves, Transform and Illusion (T08's edge-case scripts are the seed). Random players used no plain Wish in T08's 500 games.
        - This includes sleep and toxic counters, which the builder must track itself.
        - Fields the player can't see are covered by the leak tests below.
      - **Leak tests:**
        - Two opposing teams that differ only in content never revealed must produce bit-identical tensors.
-       - Opponent features built from the player stream must match those built from the spectator stream.
+       - Opponent features built from the player stream must match those built from the spectator stream, except where the player's own requests show more: a transformed mon's request lists the moves it copied from its target (T08, Edge-case passes).
      - **Action masks:** fuzzed over 1M requests from policy and random games. Each candidate action is probed with `strictChoices` on a clone of the battle (`sim/state.ts`), so probes don't change what the player sees. No legal action masked, no illegal one unmasked. `[Unavailable choice]` rejections (hidden trapping or disabling) count as expected. The mid-turn switch case (Network v0, Action head) is masked from the player's own queued choice, since the request doesn't show it. Training logs `[Invalid choice]` rejections and re-queries, so leftover mask bugs show up as a rate.
-     - **Skeleton:** env decisions/s recorded, and D7's builder rule and calc revisit trigger checked against the learner's.
+     - **Skeleton:** env decisions/s recorded, and D7's calc revisit trigger checked against the learner's.
      - **Robustness:** ≥1,000 public replays parse without error. This covers the protocol parser only, since replays carry no request JSON.
 2. **PPO v0 (M4 Max, 5–8 weeks).**
    - Build:

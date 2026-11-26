@@ -53,6 +53,8 @@ Next: write the stand-in net and benchmark
 
 ## Result
 
+Superseded in part, 2026-11-26: D7 no longer has a builder rule, so of the parsing bounds below only "the env becomes the bound" (~5.4 ms at 33 tokens) still applies (plan.md, Compute). The user set D9's threshold at 7 days, not the 14 proposed below. The token-layout follow-up is in `tokens/`.
+
 **Proposals for the user:**
 - A 5M v0 net, trained and run under bf16 autocast.
 - For D9: the M4 Max "isn't enough" when the next planned run needs more than 14 days on it, at the games/day the current pipeline measures.
@@ -403,38 +405,3 @@ uv run python net.py
 | `runs/2026-11-25-clean-rerun.jsonl`, `runs/2026-11-25-33tok-clean-rerun.jsonl` | The runs from fresh clones (Acceptance checks) |
 | `runs/converge.json`, `runs/contend.jsonl`, `runs/checks.log` | The autocast and contention checks |
 
-## For integration
-
-**Ask the user (Needs you):** plan.md's Network v0 lists tokens that come to 33, while its Size line says "about 45–80 tokens". Which is v0's? It decides the learner's speed (about 2.3× between 33 and 77) and how close D7's builder rule is.
-
-The edits below record measurements. Their 5M figures are for the proposed size at bf16 and 3 epochs, so reword them if the user picks another size, token count or epoch count. The two proposals need the user's OK first. `<date>` is the date of that OK.
-
-**plan.md, Compute:** replace the M4 Max bullet and its three sub-bullets with:
-
-```markdown
-- **M4 Max** (S4: T07, 2026-11-25, torch 2.15.0, M4 Max with a 32-core GPU and 36 GB). Measured on a stand-in for Network v0 at 33 tokens (the token list above as written) and at 77 (adding every mon's moves as tokens):
-  - The learner's cost tracks FLOPs per decision, which scale with net size and token count. The 5M net (3.95M of it in the trunk) costs 0.83 GFLOP per decision per PPO epoch at 33 tokens and 1.96 at 77.
-  - Under bf16 autocast, the 5M net trains at ~5,050 decisions/s per epoch at 33 tokens and ~2,160 at 77 (minibatch 1024). It infers at ~23,400/s and ~11,300/s on MPS (batch 256), and training sustains ~4.2 TFLOP/s. The 3M net is ~1.45× as fast and the 9M ~0.6×. bf16 tracked fp32's loss. It infers 14–16% faster, and trains 12% faster at minibatch 1024 but only 3–4% faster with each dtype at its fastest minibatch. fp16 is no faster and needs loss scaling.
-  - The learner model: inference on MPS for every decision, 75% of decisions trained (half of games are against frozen snapshots: Training v0, League), and 7% lost to a loaded CPU. On it, the 5M net at 3 PPO epochs gives an estimated ~1,900 learner decisions/s at 33 tokens and ~820 at 77. That is ~2.0–2.9M and ~0.9–1.2M games/day at T04's human lengths.
-  - The learner bounds the M4 Max. The env's cost is the sim, slowed by interleaved calcs (0.38 ms per decision per process, T02 and T06), plus the cached 288 calcs (0.53 ms, T06, one process). That gives an estimated ~13k env decisions/s on 12 processes: ~7× the 33-token learner and ~16× the 77-token one.
-  - Python parsing and transfer are unmeasured until Phase 1's walking skeleton. They would trip D7's 2× builder rule at ~2.2 ms per decision per process at 33 tokens (~6.4 ms at 77), and make the env the bound at ~5.4 ms (~13.6 ms).
-  - Inference on MPS leaves the env more margin than inference on CPU at either token count. On CPU, this torch build's matmuls (Accelerate) scale poorly across processes: 12 processes doing 5M-net inference reached only ~3.3–3.5× one process's rate.
-```
-
-**decisions.md, D7** (v0 carries all 288 calcs): replace "On the M4 Max the learner likely bounds throughput (planning estimate, ~500–700 decisions/s: plan.md, Compute)" with:
-
-```markdown
-On the M4 Max the learner likely bounds throughput: S4's timings give an estimated ~1,900 learner decisions/s at 33 tokens and ~820 at 77 (5M net, bf16, 3 epochs), against ~13k env decisions/s from the sim and cached calcs before Python parsing and tensor building. D7's builder rule trips if those cost more than ~2.2 ms per decision per process at 33 tokens or ~6.4 ms at 77 (plan.md, Compute)
-```
-
-**If the user approves the net size, plan.md, Network v0:** replace "- **Size:** 3–9M params, pre-RMSNorm, about 45–80 tokens." with the line below. Put the user's answer on the token count in place of `<tokens>`.
-
-```markdown
-- **Size:** 5M params (d=256, 5 layers; ~1.1M of them in embeddings, input projections and heads), pre-RMSNorm, <tokens>, trained and run under bf16 autocast (S4: T07).
-```
-
-**If the user approves the threshold, decisions.md, D9:** replace "**Open:** the threshold for "isn't enough". S4 proposes one (plan.md, Phase 0)." with:
-
-```markdown
-**Threshold (decided <date>):** the M4 Max isn't enough when the next planned run needs more than 14 days on it, at the games/day the current pipeline measures. Until Phase 1 measures its own, S4's estimate for the 5M net at 3 epochs and 35-turn games is ~2.05M games/day at 33 tokens and ~0.89M at 77 (plan.md, Compute). So the threshold is runs above ~29M games at 33 tokens or ~12M at 77.
-```
