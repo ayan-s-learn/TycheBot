@@ -5,12 +5,14 @@ the player must answer) writes the tracked state in the shared view format (view
 
 Usage: uv run python pokeenv.py games <games.jsonl> <views.jsonl>
        uv run python pokeenv.py replays <replays.jsonl.gz>...
+       uv run python pokeenv.py time <games.jsonl> [runs=3]   (tracking only, no views: ms per decision)
 """
 
 import gzip
 import json
 import logging
 import sys
+import time
 from collections import Counter
 
 import orjson
@@ -39,8 +41,10 @@ class Errors:
         self.games_with_throw = set()
         self.handler = Counts()
         self.logger = logging.getLogger("tracker")
-        self.logger.addHandler(self.handler)
-        self.logger.propagate = False
+        # poke-env also warns through its own module logger (unknown effects, for example).
+        for logger in (self.logger, logging.getLogger("poke-env")):
+            logger.addHandler(self.handler)
+            logger.propagate = False
 
     def summary(self, games):
         return {
@@ -170,6 +174,26 @@ def main():
                                     ok = feed(battle, l, errs, f"{g['game']}{side}")
                 out.write(json.dumps({"game": g["game"], "views": views}) + "\n")
         print(json.dumps({"tracker": "poke-env", "decisions": decisions, **errs.summary(games * 2)}, indent=1))
+    elif mode == "time":
+        src, runs = rest[0], int(rest[1]) if len(rest) > 1 else 3
+        games, decisions = [], 0
+        for line in lines(src):
+            g = orjson.loads(line)
+            for side in ("p1", "p2"):
+                games.append((g["game"], side, g[side]))
+                decisions += sum(c.startswith("|request|") and '"wait":true' not in c for c in g[side])
+        ms = []
+        for _ in range(runs):
+            t0 = time.perf_counter()
+            for game, side, chunks in games:
+                battle = new_battle(f"battle-gen9nationaldex-{game}", "Bot 1" if side == "p1" else "Bot 2", errs)
+                for chunk in chunks:
+                    if not chunk.startswith("|error|"):
+                        for l in chunk.split("\n"):
+                            feed(battle, l, errs, game)
+            ms.append((time.perf_counter() - t0) * 1000 / decisions)
+        print(json.dumps({"tracker": "poke-env", "decisions": decisions, "msPerDecision": [round(x, 4) for x in ms],
+                          "thrown": len(errs.games_with_throw)}))
     elif mode == "replays":
         for path in rest:
             for line in lines(path):

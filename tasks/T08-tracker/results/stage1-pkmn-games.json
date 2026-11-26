@@ -1,0 +1,21 @@
+{
+ "tracker": "@pkmn/client",
+ "gens": "natdex",
+ "decisions": 55563,
+ "games": 1000,
+ "gamesWithThrow": 0,
+ "thrown": {},
+ "unhandled": {
+  "t:": 62538,
+  "-resisted": 10118,
+  "-supereffective": 7408,
+  "-crit": 2134,
+  "-miss": 1412,
+  "-prepare": 1054,
+  "win": 1000,
+  "-zpower": 908,
+  "-hitcount": 284,
+  "-hint": 218,
+  "-zbroken": 2
+ }
+}

@@ -2,9 +2,9 @@
 
 Reads the recorded games (for what each player has been shown), the truth (truth.ts) and one tracker's views
 (pkmn.ts or pokeenv.py), all in game order. Writes mismatch counts by field and class to stdout as JSON, and
-up to --examples examples per class to <views>.examples.jsonl.
+up to N examples per class and Illusion tag to the examples file.
 
-Usage: uv run python compare.py <games.jsonl> <truth.jsonl> <views.jsonl> <pkmn|pokeenv> [--examples N]
+Usage: uv run python compare.py <games.jsonl> <truth.jsonl> <views.jsonl> <pkmn|pokeenv> <examples.jsonl> [N=5]
 """
 
 import json
@@ -315,7 +315,9 @@ def classify(k, want, got, m):
     if k == "hp" and m["ability"] == "regenerator" and not m["active"]:
         return "regenerator"
     if k == "statusTurns":
-        return f"{m['status']} {got - want:+d}"
+        # The sim's toxic stage stops at 15 (data/conditions.ts).
+        cap = " past cap" if m["status"] == "tox" and want == 15 and got > 15 else ""
+        return f"{m['status']} {got - want:+d}{cap}"
     if k == "hp":
         return "off"
     if k == "moves":
@@ -328,8 +330,8 @@ def opp_side(me):
 
 
 def main():
-    games_path, truth_path, views_path, tracker = sys.argv[1:5]
-    n_ex = int(sys.argv[sys.argv.index("--examples") + 1]) if "--examples" in sys.argv else 5
+    games_path, truth_path, views_path, tracker, examples_path = sys.argv[1:6]
+    n_ex = int(sys.argv[6]) if len(sys.argv) > 6 else 5
     tally = Tally(n_ex)
     null_views = 0
     with open(games_path, "rb") as gf, open(truth_path, "rb") as tf, open(views_path, "rb") as vf:
@@ -363,7 +365,7 @@ def main():
         "byClass": {f"{f} | {c}": [n, tally.class_tags[(f, c)]["now"], tally.class_tags[(f, c)]["after"]]
                     for (f, c), n in tally.by_class.most_common()},
     }, indent=1))
-    with open(views_path.replace(".jsonl", ".examples.jsonl"), "w") as out:
+    with open(examples_path, "w") as out:
         for (f, c), ex in sorted(tally.examples.items(), key=lambda kv: -tally.by_class[kv[0]]):
             out.write(json.dumps({"field": f, "class": c, "count": tally.by_class[(f, c)], "examples": ex}) + "\n")
 

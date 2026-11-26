@@ -1,0 +1,129 @@
+{
+ "pkmn": {
+  "decisions": 55563,
+  "decisionsWithMismatch": 51388,
+  "mismatches": 167244,
+  "byCause": {
+   "pkmn-duplicate-slots": {
+    "kind": "tracker bug",
+    "n": 108723
+   },
+   "pkmn-z": {
+    "kind": "unsupported",
+    "n": 25085
+   },
+   "pkmn-mega": {
+    "kind": "unsupported",
+    "n": 18021
+   },
+   "regenerator": {
+    "kind": "not shown",
+    "n": 12071
+   },
+   "illusion-after": {
+    "kind": "tracker bug",
+    "n": 1344
+   },
+   "future-sight-silent": {
+    "kind": "tracker bug",
+    "n": 696
+   },
+   "illusion-hidden": {
+    "kind": "not shown",
+    "n": 478
+   },
+   "healing-wish": {
+    "kind": "unsupported",
+    "n": 430
+   },
+   "pkmn-heal-reset": {
+    "kind": "tracker bug",
+    "n": 175
+   },
+   "pkmn-locked-moves": {
+    "kind": "tracker bug",
+    "n": 151
+   },
+   "toxic-cap": {
+    "kind": "tracker bug",
+    "n": 61
+   },
+   "pkmn-roost": {
+    "kind": "tracker choice",
+    "n": 9
+   }
+  },
+  "unclassified": {}
+ },
+ "pokeenv": {
+  "decisions": 55563,
+  "decisionsWithMismatch": 16917,
+  "mismatches": 20652,
+  "byCause": {
+   "regenerator": {
+    "kind": "not shown",
+    "n": 10677
+   },
+   "pokeenv-activations": {
+    "kind": "tracker bug",
+    "n": 3565
+   },
+   "illusion-after": {
+    "kind": "tracker bug",
+    "n": 1702
+   },
+   "pokeenv-forme": {
+    "kind": "tracker bug",
+    "n": 1581
+   },
+   "pokeenv-toxic-turns": {
+    "kind": "tracker bug",
+    "n": 823
+   },
+   "future-sight-silent": {
+    "kind": "tracker bug",
+    "n": 687
+   },
+   "pokeenv-future-sight-user": {
+    "kind": "tracker bug",
+    "n": 588
+   },
+   "illusion-hidden": {
+    "kind": "not shown",
+    "n": 520
+   },
+   "healing-wish": {
+    "kind": "unsupported",
+    "n": 430
+   },
+   "toxic-cap": {
+    "kind": "tracker bug",
+    "n": 67
+   },
+   "pokeenv-rest": {
+    "kind": "tracker bug",
+    "n": 12
+   }
+  },
+  "unclassified": {}
+ },
+ "causes": {
+  "regenerator": "Regenerator's heal on switch-out is never logged, so an opposing benched mon's HP is stale (poke-env estimates it when it knows the ability, off by Showdown's 99% rounding)",
+  "healing-wish": "a pending Healing Wish or Lunar Dance (a slot condition) isn't tracked",
+  "future-sight-silent": "a pending Future Sight is kept after it ends without a message (its target fainted first)",
+  "toxic-cap": "the toxic counter isn't capped at 15 as the sim's stage is",
+  "pkmn-duplicate-slots": "each request duplicates the own active's move slots (rememberMove compares `virtual` with the request slots' undefined)",
+  "pkmn-z": "Z-Moves: no Z-used state (`-zpower` is unhandled), and a Z-Move is recorded among the mon's moves under its Z name",
+  "pkmn-mega": "no Mega-used state; derived from the side's formes, it is lost when a fainted Mega reverts",
+  "pkmn-heal-reset": "any `-heal` without `[from]` (Roost, Recover, Leech Seed's silent heal) runs the Healing Wish branch and zeroes the sleep and toxic counters",
+  "pkmn-locked-moves": "the own active's move list is emptied when the request lists only a move without PP (a locked move, recharge or Struggle)",
+  "pkmn-roost": "Roost's volatile is kept only for Flying users, where it has an effect",
+  "pokeenv-activations": "one-off events (`-activate`, `-singleturn`: Supreme Overlord, Tera Shell, Psychic Terrain's block, Endure, ...) are stored as effects and some are never cleared",
+  "pokeenv-forme": "`species` keeps the pre-change name after Mega Evolution and other forme changes (types, base stats and ability do change)",
+  "pokeenv-toxic-turns": "the toxic counter moves at `|turn|`, not at the poison damage, so it is one off for a mon that came in after a faint and at decisions between the residual and the next turn",
+  "pokeenv-rest": "the counter carries over when Rest replaces toxic",
+  "pokeenv-future-sight-user": "a pending Future Sight is an effect on its user, lost when the user switches out or faints",
+  "illusion-hidden": "Illusion, while it holds: the disguise's entry gets the Zoroark's HP, status, boosts and moves",
+  "illusion-after": "Illusion, after `|replace|` breaks it: what was attributed to the disguise stays on the wrong entry (tagged by game: any mismatch no other rule explains, at a decision after an Illusion held in that game)"
+ }
+}

@@ -3,12 +3,13 @@
 // shared view format (view.md). On public replays (spectator view, no requests) it only counts errors.
 // Usage: node pkmn.ts games <games.jsonl> <views.jsonl> [natdex|default]
 //        node pkmn.ts replays <replays.jsonl.gz>... [natdex|default]
+//        node pkmn.ts time <games.jsonl> [runs=3]   (tracking only, no views: ms per decision in this process)
 // `natdex` (the default) builds @pkmn/data's Generations with Past and Unobtainable content kept.
 import { createReadStream, createWriteStream } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { createGunzip } from 'node:zlib';
 import { Battle } from '@pkmn/client';
-import { Generations } from '@pkmn/data';
+import { Generations, type ID } from '@pkmn/data';
 import { Dex } from '@pkmn/dex';
 
 type Client = InstanceType<typeof Battle>;
@@ -45,7 +46,7 @@ export function view(b: Client, me: 'p1' | 'p2') {
 	// @pkmn/client keeps no Mega or Z flag. Derived here: a Mega forme on the side, or a Z-Move among a mon's
 	// moves (it records Z-Moves as moves).
 	const flags = (s: typeof own) => ({
-		megaUsed: s.team.some(p => p.species.isMega),
+		megaUsed: s.team.some(p => p.species?.isMega),
 		zUsed: s.team.some(p => p.moveSlots.some(m => b.gen.moves.get(m.id)?.isZ)),
 	});
 	return {
@@ -106,7 +107,7 @@ if (import.meta.main) {
 			games++;
 			const views: unknown[] = [];
 			for (const side of ['p1', 'p2'] as const) {
-				const b = new Battle(gens, side);
+				const b = new Battle(gens, side as ID);
 				let ok = true;
 				for (const chunk of g[side] as string[]) {
 					if (chunk.startsWith('|request|')) {
@@ -123,6 +124,31 @@ if (import.meta.main) {
 		}
 		out.end();
 		console.log(JSON.stringify({ tracker: '@pkmn/client', gens: genMode, decisions, ...summary(errs, games * 2) }, null, 1));
+	} else if (mode === 'time') {
+		const [input, runs = '3'] = rest;
+		const gens = generations('natdex');
+		const games: string[][] = [];
+		let decisions = 0;
+		for await (const line of lines(input)) {
+			const g = JSON.parse(line);
+			for (const side of ['p1', 'p2']) {
+				games.push(g[side]);
+				decisions += g[side].filter((c: string) => c.startsWith('|request|') && !c.includes('"wait":true')).length;
+			}
+		}
+		const ms: number[] = [];
+		for (let r = 0; r < +runs; r++) {
+			const t0 = performance.now();
+			for (const [i, chunks] of games.entries()) {
+				const b = new Battle(gens, (i % 2 ? 'p2' : 'p1') as ID);
+				for (const chunk of chunks) {
+					if (chunk.startsWith('|error|')) continue;
+					for (const l of chunk.split('\n')) b.add(l);
+				}
+			}
+			ms.push((performance.now() - t0) / decisions);
+		}
+		console.log(JSON.stringify({ tracker: '@pkmn/client', decisions, msPerDecision: ms.map(x => +x.toFixed(4)) }));
 	} else if (mode === 'replays') {
 		const genMode = rest.at(-1) === 'default' || rest.at(-1) === 'natdex' ? rest.pop()! : 'natdex';
 		const gens = generations(genMode);

@@ -1,0 +1,52 @@
+{
+ "species": {
+  "legal": 1365,
+  "@pkmn/dex": {
+   "missing": 0,
+   "differ": 0,
+   "missingEx": [],
+   "differEx": []
+  },
+  "poke-env": {
+   "missing": 0,
+   "differ": 0,
+   "missingEx": [],
+   "differEx": []
+  }
+ },
+ "moves": {
+  "legal": 904,
+  "@pkmn/dex": {
+   "missing": 0,
+   "differ": 0,
+   "missingEx": [],
+   "differEx": []
+  },
+  "poke-env": {
+   "missing": 0,
+   "differ": 0,
+   "missingEx": [],
+   "differEx": []
+  }
+ },
+ "items": {
+  "legal": 536,
+  "@pkmn/dex": {
+   "missing": 0,
+   "differ": 0,
+   "missingEx": [],
+   "differEx": []
+  },
+  "poke-env": "no data (stores ids only)"
+ },
+ "abilities": {
+  "legal": 310,
+  "@pkmn/dex": {
+   "missing": 0,
+   "differ": 0,
+   "missingEx": [],
+   "differEx": []
+  },
+  "poke-env": "no data (stores ids only)"
+ }
+}

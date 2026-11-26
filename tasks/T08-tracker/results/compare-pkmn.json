@@ -1,0 +1,654 @@
+{
+ "tracker": "pkmn",
+ "decisions": 55563,
+ "noView": 0,
+ "decisionsWithMismatch": 51388,
+ "byField": {
+  "own.moveSlots": 108723,
+  "flags.own": 24659,
+  "opp.hp": 12277,
+  "flags.opp": 12155,
+  "opp.moves": 7273,
+  "conds.own": 596,
+  "conds.opp": 530,
+  "opp.item": 287,
+  "opp.active": 221,
+  "own.moves": 155,
+  "opp.statusTurns": 121,
+  "own.statusTurns": 115,
+  "opp.fainted": 87,
+  "opp.status": 20,
+  "opp.boosts": 11,
+  "opp.volatiles": 9,
+  "opp.ability": 3,
+  "opp.species": 2
+ },
+ "byFeature": {
+  "hidden forme (Urshifu)": {
+   "compared": 11282,
+   "own.moveSlots": 1700
+  },
+  "hidden forme (Zamazenta)": {
+   "compared": 51705,
+   "own.moveSlots": 7510,
+   "opp.moves": 2918,
+   "opp.item": 284,
+   "opp.active": 112,
+   "opp.hp": 28,
+   "opp.status": 7,
+   "opp.fainted": 6
+  },
+  "illusion user": {
+   "compared": 3100,
+   "own.moveSlots": 651,
+   "opp.active": 43,
+   "opp.fainted": 41,
+   "opp.hp": 25,
+   "opp.boosts": 11,
+   "opp.moves": 4,
+   "opp.statusTurns": 4,
+   "opp.item": 3,
+   "opp.ability": 3,
+   "opp.species": 1,
+   "own.statusTurns": 1
+  },
+  "mega": {
+   "compared": 14888,
+   "own.moveSlots": 5033,
+   "opp.moves": 21,
+   "opp.statusTurns": 19,
+   "own.statusTurns": 18,
+   "opp.hp": 13,
+   "opp.volatiles": 5,
+   "opp.active": 2,
+   "opp.species": 1
+  },
+  "past item": {
+   "compared": 126974,
+   "own.moveSlots": 19455,
+   "opp.moves": 6372,
+   "opp.hp": 437,
+   "own.moves": 140,
+   "opp.active": 35,
+   "opp.statusTurns": 27,
+   "own.statusTurns": 26,
+   "opp.fainted": 14,
+   "opp.status": 11,
+   "opp.volatiles": 8,
+   "opp.species": 1
+  },
+  "past moves": {
+   "compared": 35652,
+   "own.moveSlots": 4602,
+   "opp.moves": 132
+  },
+  "past species": {
+   "compared": 70355,
+   "own.moveSlots": 12550,
+   "opp.moves": 784,
+   "opp.hp": 46,
+   "opp.active": 24,
+   "opp.statusTurns": 19,
+   "own.statusTurns": 18,
+   "opp.status": 11,
+   "opp.volatiles": 5,
+   "opp.fainted": 2,
+   "opp.species": 1
+  },
+  "zcrystal": {
+   "compared": 78171,
+   "own.moveSlots": 12053,
+   "opp.moves": 6308,
+   "opp.hp": 391,
+   "own.moves": 140,
+   "opp.fainted": 12,
+   "opp.active": 11,
+   "opp.statusTurns": 8,
+   "own.statusTurns": 8,
+   "opp.volatiles": 3
+  }
+ },
+ "illusionNow": {
+  "own.moveSlots": 469,
+  "opp.active": 211,
+  "opp.moves": 156,
+  "flags.own": 109,
+  "opp.hp": 103,
+  "flags.opp": 42,
+  "opp.status": 20,
+  "opp.item": 14,
+  "opp.boosts": 11,
+  "opp.fainted": 4,
+  "opp.statusTurns": 4,
+  "opp.species": 1,
+  "opp.ability": 1,
+  "own.statusTurns": 1
+ },
+ "illusionEarlier": {
+  "own.moveSlots": 6213,
+  "flags.own": 1385,
+  "opp.moves": 1274,
+  "flags.opp": 582,
+  "opp.hp": 296,
+  "opp.item": 273,
+  "opp.fainted": 83,
+  "conds.own": 14,
+  "conds.opp": 12,
+  "opp.active": 10,
+  "own.moves": 3,
+  "opp.ability": 2,
+  "opp.species": 1
+ },
+ "byClass": {
+  "own.moveSlots | duplicate slots": [
+   108723,
+   469,
+   6213
+  ],
+  "flags.own | zUsed True->False": [
+   15556,
+   71,
+   845
+  ],
+  "opp.hp | regenerator": [
+   12071,
+   13,
+   180
+  ],
+  "flags.own | megaUsed True->False": [
+   9103,
+   38,
+   540
+  ],
+  "flags.opp | megaUsed True->False": [
+   8918,
+   39,
+   497
+  ],
+  "flags.opp | zUsed True->False": [
+   3237,
+   3,
+   85
+  ],
+  "opp.moves | not in set:supersonicskystrike": [
+   1109,
+   22,
+   232
+  ],
+  "opp.moves | not in set:alloutpummeling": [
+   1060,
+   1,
+   0
+  ],
+  "opp.moves | not in set:neverendingnightmare": [
+   1029,
+   5,
+   108
+  ],
+  "opp.moves | not in set:blackholeeclipse": [
+   857,
+   0,
+   30
+  ],
+  "opp.moves | not in set:devastatingdrake": [
+   817,
+   2,
+   16
+  ],
+  "opp.moves | not in set:shatteredpsyche": [
+   720,
+   0,
+   0
+  ],
+  "opp.moves | not in set:tectonicrage": [
+   451,
+   0,
+   9
+  ],
+  "conds.own | extra:futuremove": [
+   357,
+   0,
+   14
+  ],
+  "conds.opp | extra:futuremove": [
+   339,
+   0,
+   12
+  ],
+  "opp.item | - for lightclay": [
+   284,
+   13,
+   271
+  ],
+  "opp.moves | not in set:continentalcrush": [
+   245,
+   0,
+   20
+  ],
+  "opp.moves | not in set:focusblast": [
+   234,
+   24,
+   210
+  ],
+  "opp.hp | off": [
+   206,
+   90,
+   116
+  ],
+  "opp.active | -->True": [
+   176,
+   172,
+   4
+  ],
+  "opp.moves | not in set:nastyplot": [
+   165,
+   15,
+   150
+  ],
+  "conds.own | missing:healingwish": [
+   157,
+   0,
+   0
+  ],
+  "opp.moves | not in set:bittermalice,hypervoice": [
+   156,
+   12,
+   144
+  ],
+  "conds.opp | missing:healingwish": [
+   131,
+   0,
+   0
+  ],
+  "opp.moves | not in set:bittermalice": [
+   95,
+   13,
+   82
+  ],
+  "opp.moves | not in set:hypervoice": [
+   87,
+   8,
+   79
+  ],
+  "conds.own | missing:lunardance": [
+   82,
+   0,
+   0
+  ],
+  "own.moves | missing:dragondance,earthquake,firepunch,outrage extra:": [
+   78,
+   0,
+   3
+  ],
+  "conds.opp | missing:lunardance": [
+   60,
+   0,
+   0
+  ],
+  "own.moves | missing:earthquake,outrage,stealthrock,swordsdance extra:": [
+   58,
+   0,
+   0
+  ],
+  "opp.moves | not in set:focusblast,hypervoice,nastyplot": [
+   55,
+   9,
+   46
+  ],
+  "opp.moves | not in set:bittermalice,focusblast,hypervoice,nastyplot": [
+   55,
+   3,
+   52
+  ],
+  "opp.fainted | True->False": [
+   46,
+   2,
+   44
+  ],
+  "opp.moves | not in set:bittermalice,focusblast": [
+   46,
+   3,
+   43
+  ],
+  "opp.active | True->-": [
+   45,
+   39,
+   6
+  ],
+  "opp.fainted | False->True": [
+   41,
+   2,
+   39
+  ],
+  "opp.statusTurns | tox -1": [
+   38,
+   2,
+   0
+  ],
+  "own.statusTurns | tox -1": [
+   35,
+   1,
+   0
+  ],
+  "opp.statusTurns | tox -2": [
+   25,
+   2,
+   0
+  ],
+  "opp.moves | not in set:hypervoice,nastyplot": [
+   24,
+   5,
+   19
+  ],
+  "own.statusTurns | tox -2": [
+   23,
+   0,
+   0
+  ],
+  "opp.moves | not in set:bittermalice,nastyplot": [
+   22,
+   8,
+   14
+  ],
+  "opp.moves | not in set:focusblast,nastyplot": [
+   21,
+   6,
+   15
+  ],
+  "opp.statusTurns | tox -3": [
+   18,
+   0,
+   0
+  ],
+  "own.statusTurns | tox -3": [
+   18,
+   0,
+   0
+  ],
+  "opp.boosts | differ:spa": [
+   11,
+   11,
+   0
+  ],
+  "opp.status | -->psn": [
+   11,
+   11,
+   0
+  ],
+  "opp.volatiles | missing:roost": [
+   9,
+   0,
+   0
+  ],
+  "opp.status | -->tox": [
+   9,
+   9,
+   0
+  ],
+  "opp.moves | not in set:bittermalice,focusblast,nastyplot": [
+   9,
+   9,
+   0
+  ],
+  "own.moves | missing:hex,makeitrain,recover,thunderwave extra:": [
+   6,
+   0,
+   0
+  ],
+  "opp.moves | not in set:focusblast,supersonicskystrike": [
+   5,
+   3,
+   2
+  ],
+  "own.statusTurns | tox -5": [
+   5,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox -5": [
+   5,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +1 past cap": [
+   5,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +2 past cap": [
+   5,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +1 past cap": [
+   5,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +2 past cap": [
+   5,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +3 past cap": [
+   4,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +3 past cap": [
+   4,
+   0,
+   0
+  ],
+  "own.moves | missing: extra:devastatingdrake": [
+   4,
+   0,
+   0
+  ],
+  "opp.item | mawilite for -": [
+   3,
+   1,
+   2
+  ],
+  "opp.ability | hugepower for illusion": [
+   3,
+   1,
+   2
+  ],
+  "opp.moves | not in set:playrough": [
+   3,
+   1,
+   2
+  ],
+  "own.moves | missing:defog,earthquake,stoneedge,uturn extra:": [
+   3,
+   0,
+   0
+  ],
+  "own.moves | missing:dracometeor,thunderbolt,thunderclap,voltswitch extra:": [
+   3,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +8 past cap": [
+   3,
+   0,
+   0
+  ],
+  "opp.moves | not in set:bittermalice,hypervoice,nastyplot": [
+   3,
+   3,
+   0
+  ],
+  "opp.moves | not in set:focusblast,hypervoice": [
+   2,
+   2,
+   0
+  ],
+  "opp.moves | not in set:bittermalice,focusblast,hypervoice": [
+   2,
+   2,
+   0
+  ],
+  "own.statusTurns | tox +4 past cap": [
+   2,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +5 past cap": [
+   2,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +6 past cap": [
+   2,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +7 past cap": [
+   2,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +8 past cap": [
+   2,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +9 past cap": [
+   2,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +4 past cap": [
+   2,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +5 past cap": [
+   2,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +6 past cap": [
+   2,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +7 past cap": [
+   2,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +9 past cap": [
+   2,
+   0,
+   0
+  ],
+  "own.moves | missing:heatwave,hurricane,roost,voltswitch extra:": [
+   2,
+   0,
+   0
+  ],
+  "opp.species | mawilemega->mawile": [
+   1,
+   0,
+   1
+  ],
+  "opp.species | zoroarkhisui->mawilemega": [
+   1,
+   1,
+   0
+  ],
+  "opp.statusTurns | tox -4": [
+   1,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +10 past cap": [
+   1,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +11 past cap": [
+   1,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +12 past cap": [
+   1,
+   0,
+   0
+  ],
+  "own.statusTurns | tox +13 past cap": [
+   1,
+   0,
+   0
+  ],
+  "own.statusTurns | tox -4": [
+   1,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +10 past cap": [
+   1,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +11 past cap": [
+   1,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +12 past cap": [
+   1,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox +13 past cap": [
+   1,
+   0,
+   0
+  ],
+  "opp.statusTurns | slp -2": [
+   1,
+   0,
+   0
+  ],
+  "own.statusTurns | slp -2": [
+   1,
+   0,
+   0
+  ],
+  "own.moves | missing:makeitrain,recover,shadowball,trick extra:": [
+   1,
+   0,
+   0
+  ],
+  "opp.moves | not in set:roar": [
+   1,
+   0,
+   1
+  ],
+  "own.statusTurns | tox -7": [
+   1,
+   0,
+   0
+  ],
+  "own.statusTurns | tox -8": [
+   1,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox -7": [
+   1,
+   0,
+   0
+  ],
+  "opp.statusTurns | tox -8": [
+   1,
+   0,
+   0
+  ]
+ }
+}

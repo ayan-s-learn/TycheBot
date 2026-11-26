@@ -1,0 +1,6 @@
+2026-11-25T20:53:03 node v24.22.3, Python 3.14.7, Showdown 29f2d99
+loadavg before: { 1.37 2.07 2.70 }
+{"tracker":"@pkmn/client","decisions":55563,"msPerDecision":[0.0193,0.0179,0.0179]}
+loadavg: { 1.42 2.07 2.70 }
+{"tracker": "poke-env", "decisions": 55563, "msPerDecision": [0.0368, 0.038, 0.0365], "thrown": 0}
+loadavg after: { 1.38 2.05 2.69 }

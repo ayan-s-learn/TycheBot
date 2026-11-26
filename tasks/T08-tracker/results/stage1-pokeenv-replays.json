@@ -1,0 +1,33 @@
+{
+ "tracker": "poke-env",
+ "games": 1100,
+ "gamesWithThrow": 0,
+ "thrown": {},
+ "ignored": {
+  "upkeep": 26482,
+  "-supereffective": 7068,
+  "-resisted": 5196,
+  "j": 2804,
+  "-crit": 1467,
+  "l": 1142,
+  "gametype": 1100,
+  "teampreview": 1100,
+  "rated": 933,
+  "-fail": 928,
+  "-miss": 693,
+  "-hitcount": 687,
+  "n": 176,
+  "-anim": 150,
+  "-hint": 113,
+  "-fieldactivate": 35,
+  "badge": 8,
+  "uhtml": 8,
+  "inactiveoff": 7,
+  "-zbroken": 5
+ },
+ "warnings": {
+  "Rating information regarding an unrecognized username received. Received '%s', while only known players are '%s' and '%s'": 876,
+  "Unexpected effect '%s' received. Effect.UNKNOWN will be used instead. If this is unexpected, please open an issue at https://github.com/hsahovic/poke-env/issues/ along with this error message and a description of your program.": 2,
+  "Unmanaged move message format received - cleaned up message %s in battle %s turn %d": 1
+ }
+}
