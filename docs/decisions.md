@@ -127,18 +127,24 @@ Either way:
 
 - **Target:** an Elo at or above #10 on the default `gen9nationaldex` board, shown on the bots-included board, held over ≥100 rated games. Then pivot toward the default board's #1 Elo.
   - Why not "top 10 on the board": since 2026-11-13 the default board hides registered bots, so a bot can't appear on it (prior-work.md, MissingNo ladder).
-  - On 2026-11-23, #10 was 1856 and #1 was 1940 ([ladder JSON](https://pokemonshowdown.com/ladder/gen9nationaldex.json); add `?includebots` for the other board).
-  - **Open:** does "held over ≥100 rated games" mean 100 games in total, or 100 played at or above the bar?
+  - On 2026-11-26, #10 was 1868 and #1 was 1946; on 11-23, 1856 and 1940 ([ladder JSON](https://pokemonshowdown.com/ladder/gen9nationaldex.json); add `?includebots` for the other board).
+  - **What the bar takes** (2026-11-26):
+    - The pinned server matches a registered bot only with players who opted in and with other bots, within a rating gap that starts at ±100 and widens to ±600 the longer they wait (`server/ladders.ts`, `matchmakingOK`).
+    - Two registered bots were in the bots-included top 500: guoguo10000 at 1736 and imjustpixel2 at 1676. In 11 of their replays from the public replay search, fetched by hand on 2026-11-26, their opponents were rated 1393–1690 (the ratings on each log's `|player|` lines), and guoguo10000 played one game at 1829 (2026-11-07).
+    - Against opponents around 1550–1650, holding 1868 takes a ~77–86% win rate and holding 1946 ~85–91%, the Elo expectation at those gaps. So the bar is consistency against mid-ladder players on their own teams.
+    - T13 measures the pool over ≥14 days ([brief](../tasks/T13-ladder-monitor/README.md)).
+  - **Open:** does "held over ≥100 rated games" mean 100 games in total, or 100 played at or above the bar? It matters: guoguo10000 moved from 1829 to 1736 within three weeks.
 - **Budget:** up to $1k of rented compute for now. Spend only when measurements show the M4 Max isn't enough, apart from the ~$10 Phase 2 trial that measures the D2 gate.
   - **Threshold (decided 2026-11-26):** the M4 Max isn't enough when the next planned run needs more than 7 days on it, at the games/day the current pipeline measures. Until Phase 1 measures its own, S4's estimate for the 5M net at 3 epochs and 35-turn games is ~2.05M games/day at 33 tokens and ~0.89M at 77 (T07, Learner and env), so runs above ~14M or ~6M games.
 - **Reference:** MissingNo's gen 9 run cost ~$350 and its whole project ~$2.1k (prior-work.md).
 
-## D10. Training details: decided (2026-11-23)
+## D10. Training details: decided (2026-11-26)
 
 - **The turn cap is a truncation.** A game that hits the cap is cut off, and its last step bootstraps from V(s) (Pardo et al. 2018, prior-work.md). It is not scored with a tiebreak (HP or mons left).
   - Why: the ladder has no such rule. It auto-ties at turn 1000 (`sim/battle.ts`), and nothing on the server calls `RoomBattle.tiebreak()`. Scoring capped games would teach a win condition the ladder doesn't have. With bootstrapping, a losing side that stalls to the cap gets its own low value, so stalling gains nothing as long as V is accurate.
 - **The KL term is KL(uniform‖π)** over legal actions, added to the entropy bonus.
   - Why: KL(π‖uniform) = log|A| − H(π), so that direction only duplicates the entropy bonus. KL(uniform‖π) grows without bound as any legal action's probability nears 0, which keeps situational moves like Encore alive. Jaxcalibur describes its term as zero-avoiding, which is this direction.
-- **Collection is asynchronous.** Env workers keep playing during PPO updates, on a policy at most one update stale. Behavior log-probs are stored for the PPO ratio.
-  - Why: with synchronous PPO the env cores sit idle during updates, and updates took ~70% of mikumiku's wall time.
-  - Caveat: the clip is then centred on the stale behavior policy. Log the clip fraction on stale data, and if it runs high, switch to decoupled PPO ([Hilton et al. 2021](https://arxiv.org/abs/2110.00641)), which clips around a separate proximal policy and uses the behavior policy only for the off-policy correction.
+- **Collection starts synchronous, and goes asynchronous once that pays** (changed 2026-11-26). Asynchronous collection means env workers keep playing during PPO updates, on a policy at most one update stale, with behavior log-probs stored for the PPO ratio. The learner is built so collection can go asynchronous without a rewrite.
+  - Why it can pay: with synchronous PPO the env cores sit idle during updates, and updates took ~70% of mikumiku's wall time.
+  - Why not yet: on the M4 Max the env is ~7× faster than the learner (plan.md, Compute), so overlapping them would save only ~13% of wall time at 33 tokens (~6% at 77). Switch when a measurement on the machine a run trains on puts the env within ~3× of that machine's learner. On the M4 Max that is T09's skeleton, at first against T07's learner estimate; rented machines are measured in the D2 trial or a rented run.
+  - Caveat, once asynchronous: the clip is then centred on the stale behavior policy. Log the clip fraction on stale data, and if it runs high, switch to decoupled PPO ([Hilton et al. 2021](https://arxiv.org/abs/2110.00641)), which clips around a separate proximal policy and uses the behavior policy only for the off-policy correction.

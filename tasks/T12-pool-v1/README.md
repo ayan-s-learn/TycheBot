@@ -12,6 +12,7 @@
   - `data/pool/v1/teams.jsonl`: ~50 teams in v0's format, 10 of them held out, listed in a file whose format you define and document.
     - Report the stub pool's skew (Z-Crystals on 19 of 20 teams, Zamazenta on 12: team-pool.md) next to v1's.
     - Report how far v1's species usage is from the 1760 stats.
+    - Count how many more valid teams D4's sources and Smogon's tournament team dumps (such as the NatDex tour threads) could yield, so the next replan can size the Phase 2 pool. Count only; v1 stays at ~50.
   - `data/priors/v0/species_sets.json`: the analysis sets plus every set on a training pool team (not the held-out ones), weighted as D4 says. Tag each set with what resampling keeps: Mega Stone, Z-Crystal, Stealth Rock setter, hazard removal.
   - Build scripts in `scripts/pool/` that rebuild both files from the snapshots.
   - docs/areas/team-pool.md updated with v1, the library's format, commands and gotchas. The library's format is an interface: the calc features and set resampling will link to it. Propose the AGENTS.md Areas row change under For integration.

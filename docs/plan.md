@@ -42,7 +42,7 @@ Training runs on Showdown's simulator through the first scale-up. A Rust engine 
 1. **Env workers:** Node processes that drive Showdown's sim through `Battle` directly (S1 picked it by its 10% rule: T02, 2026-11-25). Many battles run per process, batched to Python. Built in Phase 1.
 2. **Observation builder** (D7): TypeScript, in the Node env workers. Tracks each player's state with @pkmn/client from its protocol stream and request JSON, runs the damage calcs on that state, and writes a numeric record per decision, which Python stacks into tensors. Used for both training and online play. Built in Phase 1.
 3. **Network:** PyTorch (D6). A stand-in in Phase 1's learner track; the full v0 in Phase 2.
-4. **Learner and actors:** PPO + GAE with asynchronous collection (D10), plus a snapshot store for the league. Built in Phase 1's learner track.
+4. **Learner and actors:** PPO + GAE (D10), plus a snapshot store for the league. Built in Phase 1's learner track.
 5. **Team pool and set priors** (D4). Stub pool in Phase 0; the ~50-team pool and the set library in Phase 1; growth in Phase 3.
 6. **Eval harness:** runs in-process with fixed baselines, snapshot ratings and held-out teams. A local Showdown server is used only for the online client and Foul Play. Built in Phase 1.
 7. **Online client:** a Showdown websocket client in Node, feeding the same worker code as component 2. Built at Phase 2's online gate, hardened in Phase 4.
@@ -80,7 +80,7 @@ Training runs on Showdown's simulator through the first scale-up. A Rust engine 
 - **Reward:** +1 win, −1 loss, 0 tie.
   - Turn cap: start at 300 and tune from game-length data. None of T04's 1,100 public replays passed 300 turns, but that is a weak check: the longest (263) was cut off by a tournament disqualification with no Pokémon fainted, 5 of the 7 games over 100 turns ended early, and no game past turn 137 was played out. A Kaplan-Meier correction on the 1,000-game corpus puts 4.7% of games past turn 100 (95% interval 2.5 to 8.0; 0.6% observed), likely too high (2.2% if the nearly decided cut games count as ended), and can't estimate the share past 300. These are human games, and self-play lengths are unmeasured. Capped games are truncated and bootstrap from V(s) (D10). Log the cap-hit rate.
 - **Regularization:** entropy plus KL(uniform‖π) over legal actions (Jaxcalibur, D10). Scale down the value gradient into the trunk, and log the value/policy gradient ratio (MissingNo).
-- **Collection:** asynchronous, on a policy at most one update stale (D10).
+- **Collection:** synchronous at first, asynchronous once the env is within ~3× of the learner (D10).
 - **League:** half of games vs the latest policy, half vs past snapshots, weighted toward the ones it loses to (mikumiku).
   - Later (Phase 3+): exploiter agents (prior-work.md, Methods), to find holes like mikumiku's Kingambit weakness before humans do.
 - **Teams:** sampled and resampled per D4.
@@ -109,7 +109,7 @@ These are estimates; Phase 0 spikes replace them.
 
 ## Phases
 
-Each phase ends at its exit criteria. Since 2026-11-25 the PPO learner and toy checks are built in Phase 1 (In parallel), so Phase 2 starts from a working learner; neither phase's duration was re-estimated. Durations are a planning agent's estimates for a solo developer with Claude Code.
+Each phase ends at its exit criteria. Since 2026-11-25 the PPO learner and toy checks are built in Phase 1 (In parallel), so Phase 2 starts from a working learner; neither phase's duration was re-estimated. Since 2026-11-26 a first self-play run on real NatDex (v0-lite) comes inside Phase 1, and the strictest correctness bars moved to Phase 2's online gate. Durations are a planning agent's estimates for a solo developer with Claude Code. Phase 0 took 5 days against its 1.5–2 weeks, so treat them as rough.
 
 0. **Decisions and spikes (1.5–2 weeks).**
    - First, the toolchain, picked with the user's OK and then recorded in AGENTS.md (Conventions):
@@ -125,18 +125,20 @@ Each phase ends at its exit criteria. Since 2026-11-25 the PPO learner and toy c
      - S6: battle tracker: poke-env's, @pkmn/client, or our own (D7). Check each against the sim's state on recorded games (Megas, Z-Moves, Illusion, `-*` formes, Past content) and on public replays. Weigh how each keeps up with the monthly re-pin, then time them. Ends with a recommendation for the user, including where tracking, calcs and tensor building run. Done: T08; @pkmn/client in the Node workers (D7).
    - A 20-team validated stub pool.
    - Exit (met 2026-11-26): the toolchain is recorded, the stub pool validates, the results of S1, S3, S4 and S6 (numbers, documented differences or recommendation) are written up, and the user has signed off on S4's and S6's proposals.
-1. **Env and plumbing (M4 Max, 5–7 weeks).**
+1. **Env and plumbing (M4 Max, 5–7 weeks, plus up to the v0-lite run's 3–5 days).**
    - Build: first a walking skeleton (env workers with tracking and the 288 calcs in-process, on true sets until the set library exists, a minimal observation, a simple synchronous PPO, beating random), which measures env decisions/s end to end for D7's calc revisit trigger. Then env workers, observation builder, action masks, damage-calc features, the Python batch env, the ~50-team pool (correcting the stub pool's skew: docs/areas/team-pool.md), the set library (`data/priors/v0/species_sets.json`, D4), baselines (random, max-damage) and the eval runner.
-   - In parallel: the PPO learner with asynchronous collection (D10), and the toy checks: rock-paper-scissors ends near uniform, small endgames have known answers. OpenSpiel's matrix games and solvers supply the reference answers.
+   - In parallel: the PPO learner (D10), and the toy checks: rock-paper-scissors ends near uniform, small endgames have known answers. OpenSpiel's matrix games and solvers supply the reference answers.
    - The observation builder is the long pole (2–3 weeks).
+   - **v0-lite run:** once the skeleton's transport, the learner, the set library and the max-damage baseline exist, a first self-play run on real NatDex with whatever else exists. That means the tracker layer as it stands, calcs on the set library's priors, a first cut of the observation, and the 5M net, for 3–5 days on the M4 Max. It reports learning curves and the win rate against max-damage. Whether PPO learns this format is the project's biggest unknown, and the exhaustive bars would otherwise delay the answer to Phase 2. The weights carry across later observation changes (Versioning). A run that doesn't learn sends Phase 1 back to planning.
    - Exit, all passing:
-     - **Ground truth:** across ≥10k games, from random players and, once the baselines exist, max-damage players, the tracked state matches the sim at every decision, for every field the observation uses. So does a suite of scripted scenarios for content those players rarely produce, such as Wish, two-turn moves, Transform and Illusion (T08's edge-case scripts are the seed). Random players used no plain Wish in T08's 500 games.
+     - **Ground truth:** across ≥10k games, from random players and, once the baselines exist, max-damage players, every mismatch between the tracked state and the sim, on every field the observation uses, is listed with its cause and count. Under 0.5% of all decisions in those games have a tracker-bug or unsupported-content mismatch on a field the observation uses. A suite of scripted scenarios passes, covering content those players rarely produce, such as Wish, two-turn moves, Transform and Illusion (T08's edge-case scripts are the seed). Random players used no plain Wish in T08's 500 games. The bar of no such mismatch at all is at Phase 2's online gate.
        - This includes sleep and toxic counters, which the builder must track itself.
        - Fields the player can't see are covered by the leak tests below.
      - **Leak tests:**
        - Two opposing teams that differ only in content never revealed must produce bit-identical tensors.
        - Opponent features built from the player stream must match those built from the spectator stream, except where the player's own requests show more: a transformed mon's request lists the moves it copied from its target (T08, Edge-case passes).
-     - **Action masks:** fuzzed over 1M requests from policy and random games. Each candidate action is probed with `strictChoices` on a clone of the battle (`sim/state.ts`), so probes don't change what the player sees. No legal action masked, no illegal one unmasked. `[Unavailable choice]` rejections (hidden trapping or disabling) count as expected. The mid-turn switch case (Network v0, Action head) is masked from the player's own queued choice, since the request doesn't show it. Training logs `[Invalid choice]` rejections and re-queries, so leftover mask bugs show up as a rate.
+     - **Action masks:** the mid-turn switch case (Network v0, Action head) is masked from the player's own queued choice, since the request doesn't show it. Training logs `[Invalid choice]` rejections and re-queries, so leftover mask bugs show up as a rate, which is reported. The 1M-request fuzz is at Phase 2's online gate.
+     - **v0-lite:** run and written up, with its learning curves and its win rate against max-damage.
      - **Skeleton:** env decisions/s recorded, and D7's calc revisit trigger checked against the learner's.
      - **Robustness:** ≥1,000 public replays parse without error. This covers the protocol parser only, since replays carry no request JSON.
 2. **PPO v0 (M4 Max, 5–8 weeks).**
@@ -152,9 +154,11 @@ Each phase ends at its exit criteria. Since 2026-11-25 the PPO learner and toy c
      - Before the rated games, build the online client (component 7) and pass an online gate, each item below:
        - S2's server-vs-in-process stream diff (T03's brief), passing its acceptance checks;
        - online parity: live tensors equal an offline re-parse of the same game;
-       - the action-mask fuzz extended with Showdown's `exhaustive-runner.ts`, adapted to NatDex (at the pin its pools leave out Mega Stones, Z-Crystals and Past Pokémon), which cycles every species, move, item and ability. No legal action masked, no illegal one unmasked.
+       - ground truth with no mismatch beyond information the player isn't shown, across ≥10k games and the scenario suite (moved from Phase 1's exit, 2026-11-26);
+       - the action masks fuzzed over 1M requests from policy and random games (moved from Phase 1's exit). Each candidate action is probed with `strictChoices` on a clone of the battle (`sim/state.ts`), so probes don't change what the player sees. `[Unavailable choice]` rejections (hidden trapping or disabling) count as expected;
+       - that fuzz extended with Showdown's `exhaustive-runner.ts`, adapted to NatDex (at the pin its pools leave out Mega Stones, Z-Crystals and Past Pokémon), which cycles every species, move, item and ability. No legal action masked, no illegal one unmasked.
      - ~50 low-stakes rated games with this policy, on its best self-play pool team. They test the online client against the live server and give a first rating against opted-in players and other bots (prior-work.md, MissingNo ladder).
-     - Log queue times and opponent Elo in those games. NatDex OU's opted-in pool is much smaller than random battles', so this checks whether the D9 target is reachable at all.
+     - Log queue times and opponent Elo in those games. NatDex OU's opted-in pool is much smaller than random battles', so this checks D9's win-rate estimate against the live pool.
      - After profiling and optimizing the env, a 2-hour rented trial measures $ per million games. This is the D2 gate.
 3. **Scale on Showdown (rented, 2–3 weeks).**
    - Build:
