@@ -10,7 +10,7 @@ Phase 1 exit ([plan.md](plan.md), Phases).
 
 ## Next replan
 
-When any of T09–T13 has a `Reviewed:` line or stops on a stop condition (workflow.md, Task session). T09's skeleton result decides whether D7's calc revisit trigger fires and whether D10's collection goes asynchronous. Once T09, T11 and T12 are merged, brief the max-damage baseline, the sampled mask check and the first leak test, then the v0-lite run.
+When any of T09–T13 has a `Reviewed:` line or stops on a stop condition (workflow.md, Task session). T09's skeleton result decides whether D7's calc revisit trigger fires and whether D10's collection goes asynchronous. Once T09, T11 and T12 are merged, brief what the v0-lite run needs (plan.md, Phase 1), then the run.
 
 ## Needs you
 
@@ -34,7 +34,7 @@ All five can start now, each in its own session (`/do-task T09` and so on). Each
 
 Briefed once their inputs exist (plan.md, Phase 1):
 
-- **The v0-lite run** (plan.md, Phase 1), first: after T09, T11, T12, the max-damage baseline, the sampled mask check and the first leak test. Its calcs use T12's priors, not T09's true sets.
+- **The v0-lite run** (plan.md, Phase 1), first. It needs T09, T10's layer as it stands, T11, T12, the max-damage baseline, the eval runner, a first cut of the observation with calcs on T12's priors, and the sampled mask check and first leak test passing on it.
 - Observation features and the full record, after T09's record format and T10's tracker. Then the leak tests; the hidden-content one comes before v0-lite.
 - Calc features on the species-level prior (D7), after T12's library and T09's calcs.
 - Action masks: the sampled check for masked-out legal actions (before v0-lite), and training's `[Invalid choice]` rate. The 1M-request fuzz is at Phase 2's online gate.
@@ -48,7 +48,7 @@ Raised by the strategic review of PR #8 (2026-11-26), not yet planned:
 
 - D4: grow the Phase 2 pool toward 200–300 teams, sized from T12's count of what the sources yield. mikumiku trained on ~1,260.
 - D2: restate the gate so the Rust engine comes only after cheaper levers (the 68-calc set, fewer PPO epochs, a calc fork, a modest budget increase), and recalibrate it after the trial.
-- Phase 2's experiments: ablate the calcs (288 against 68 against none) ahead of the token A/B, since mikumiku reached #1 with no calcs and they cost ~60–70% of env CPU (derived from plan.md, Compute: 0.53 ms of calcs, plus ~0.10 ms of sim slowdown when they run between its steps, out of 0.91 ms per decision). Consider running the token A/B rented.
+- Phase 2's experiments: ablate the calcs (288 against 68 against none) ahead of the token A/B, since mikumiku reached #1 with no calcs and they cost ~58–69% of env CPU (derived from plan.md, Compute: of 0.91 ms per decision, 0.53 ms is calcs and up to ~0.10 ms is the sim's slowdown with calcs between its steps, 0.38 against ~0.28 without). Consider running the token A/B rented.
 - Play-time search cost on Showdown (`sim/state.ts` serialize and deserialize per rollout), D2's second trigger. A microbenchmark fits in Phase 1's slack.
 - D9's open question on "held" (decisions.md, D9).
 - Whether to register a bot account early and play ~100 rated games with a poke-env heuristic player, to measure queue times and the client before the online gate. Your call.

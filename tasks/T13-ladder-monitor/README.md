@@ -9,14 +9,14 @@
 - **Deliverables,** in this folder:
   - A fetcher. Every hour it snapshots both boards, and every day it collects the new replays of each registered bot in the bots-included top 500. It runs as a scheduled job on this Mac for at least 14 days.
   - A summary script, which builds Result's tables from the snapshots and replays:
-    - #10 and #1 over time;
-    - each registered bot's rating over time and its rated games per day, from the win, loss and tie counts (`w`, `l`, `t`) that change between snapshots;
+    - #10 and #1 over time. Ratings mean the ladder's `elo` field throughout;
+    - each registered bot's rating over time and its rated games per day, from the win, loss and tie counts (`w`, `l`, `t`) that change between snapshots while it is in the top 500;
     - the ratings of the opponents it met (each replay log's `|player|` lines carry both players' ratings), and its win rate by rating gap, both by the bot's own rating at the time;
     - how many distinct opponents the bots met per week.
   - Result: those tables, and whether the bots' opponents and win rates by rating gap fit what D9's estimate assumes: opponents around 1550–1650, and win rates near the Elo expectation (~77–86% to hold #10, ~85–91% to hold #1). Proposed D9 text goes under For integration.
 - **Acceptance checks:**
   - ≥14 days of hourly snapshots, with any gaps listed.
-  - All the replays the search returns for every registered bot in the top 500 over those days. The search lists only saved replays, so Result compares their count with the games the snapshots show and says how far the sample may be biased.
+  - All the replays the search returns for every registered bot in the top 500 over those days. The search lists only saved replays, so Result gives their count next to the games the snapshots show, and compares the replays' win rate with the snapshots'.
   - The summary script rebuilds Result's tables from the raw data.
 - **May change:** `tasks/T13-ladder-monitor/` only.
 - **Limits:**
