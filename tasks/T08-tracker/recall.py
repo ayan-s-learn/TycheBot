@@ -71,7 +71,7 @@ def main():
                         true = truth_of(m)
                         ka, kb = known(va[m["name"]]) & true, known(vb[m["name"]]) & true
                         for label, only in (("pkmn only", ka - kb), ("pokeenv only", kb - ka)):
-                            for attr, value in only:
+                            for attr, value in sorted(only):  # sets of str iterate in a per-process order
                                 k = (attr, kind(attr, value, m))
                                 key = (g["game"], side, m["name"], attr, value)
                                 if key not in cases[label][k] and len(examples[(label, k)]) < 5:
