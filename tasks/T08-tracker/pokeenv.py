@@ -1,6 +1,6 @@
 """poke-env's tracker (poke_env.battle.Battle). Feeds each player's chunks of the recorded games to its own
 Battle, dispatching lines as poke-env's Player._handle_battle_message does, and at each decision (a request
-the player must answer) writes the tracked state in the shared view format (view.md). On public replays
+the player must answer) writes the tracked state in the view format compare.py reads. On public replays
 (spectator view, no requests) it only counts errors, playing as p1.
 
 Usage: uv run python pokeenv.py games <games.jsonl> <views.jsonl>

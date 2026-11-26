@@ -2,7 +2,7 @@
 
 compare.py checks only that revealed items, abilities and moves are true ones, which a tracker that records
 nothing passes. This counts, at decisions where no opposing Illusion holds, each correct item, ability and move
-one tracker holds for a seen opposing mon and the other lacks. Counts are unique game:player:mon:attribute
+one tracker holds for a seen, unfainted opposing mon and the other lacks. Counts are unique game:player:mon:attribute
 cases, by kind. What both trackers miss isn't measured.
 
 Usage: uv run python recall.py <games.jsonl> <truth.jsonl> <views-pkmn.jsonl> <views-pokeenv.jsonl>
@@ -24,7 +24,7 @@ MEGA_STONES = {to_id(d["requiredItem"]) for d in DEX.values()
 
 def kind(attr, value, m):
     if attr == "item":
-        return "Mega Stone" if value in MEGA_STONES else "Z-Crystal" if value.endswith("iumz") else "other item"
+        return "Mega Stone (derivable from the Mega forme)" if value in MEGA_STONES else "Z-Crystal" if value.endswith("iumz") else "other item"
     if attr == "ability":
         abilities = DEX.get(to_id(m["species"]), {}).get("abilities", {})
         return "single-ability species" if len(abilities) == 1 else "other ability"
@@ -66,7 +66,9 @@ def main():
                     seen = revealed_names(g[side], d["chunk"], opp)
                     va, vb = norm_view(va, "pkmn")["mons"]["opp"], norm_view(vb, "pokeenv")["mons"]["opp"]
                     for m in opp_t["mons"]:
-                        if m["name"] not in seen or m["name"] not in va or m["name"] not in vb:
+                        # Fainted mons are left out: compare.py doesn't check them, and @pkmn/client guesses
+                        # the base forme's first ability when a fainted Mega reverts.
+                        if m["fainted"] or m["name"] not in seen or m["name"] not in va or m["name"] not in vb:
                             continue
                         true = truth_of(m)
                         ka, kb = known(va[m["name"]]) & true, known(vb[m["name"]]) & true

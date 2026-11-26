@@ -1,6 +1,6 @@
 // @pkmn/client as the tracker. Feeds each player's chunks of the recorded games, line by line, to its own
 // client Battle, and at each decision (a request the player must answer) writes the tracked state in the
-// shared view format (view.md). On public replays (spectator view, no requests) it only counts errors.
+// view format compare.py reads. On public replays (spectator view, no requests) it only counts errors.
 // Usage: node pkmn.ts games <games.jsonl> <views.jsonl> [natdex|default]
 //        node pkmn.ts replays <replays.jsonl.gz>... [natdex|default]
 //        node pkmn.ts time <games.jsonl> [runs=3]   (tracking only, no views: ms per decision in this process)

@@ -32,6 +32,18 @@
 ## Progress
 
 ```text
+2026-11-25 (5)
+State: done
+Verified: adversarial pass 2 (Opus, high) and its fixes. Supreme Overlord is now a marker for both trackers
+  (poke-env 18,525 mismatches, was 20,652). Regenerator splits into not shown, inferable from the species
+  (@pkmn/client 1,607, unsupported) and estimates within rounding. recall.py skips fainted mons and counts Mega
+  Stones as derivable. The duplicate-slot fix is sized from a patched run. The committed .pyc is removed.
+  summarize.py assigns every class (exit 0).
+Pending: the clean-checkout rerun on the new commit; the user's review, then the Reviewed: line.
+Next: rerun ./run.sh from a fresh clone and compare results/.
+```
+
+```text
 2026-11-25 (4)
 State: done
 Verified: adversarial pass 1 (Opus, high) and its fixes. New recall.py: @pkmn/client holds 706 abilities,
@@ -77,7 +89,7 @@ Next: record 500 games with a copy of T02's recorder, then build the stage-1 har
 
 ## Result
 
-**Recommendation: @pkmn/client, in the Node env workers, with our fixes in a thin layer over 0.7.4.** Both trackers represent Megas, Z-Moves, Illusion, `-*` formes and Past content without a rewrite, so no stop condition was hit. @pkmn/client needs about nine fixes to pass Phase 1's ground-truth exit (Fixes, below), mostly one-line ones plus Z-Move support, and it records more of what the opponent reveals. poke-env needs about as many fixes to the state it tracks, including separating lasting effects from one-off events. On top of those it misses revealed items and abilities @pkmn/client holds: Mega Stones, Z-Crystals, abilities named in `[of]` (Recall, below). The headline counts mislead: @pkmn/client's 167,244 mismatches against poke-env's 20,652 are mostly one 1-line bug (108,723 duplicate move slots), and 36,814 more are the Mega and Z flags it doesn't keep. @pkmn/client also puts tracking next to the sim and @smogon/calc, which removes D7's calc round trip and the Python env processes (Architecture). poke-env is the pick if the builder stays in Python. Our own tracker isn't worth building. Speed doesn't separate them (Timing).
+**Recommendation: @pkmn/client, in the Node env workers, with our fixes in a thin layer over 0.7.4.** Both trackers represent Megas, Z-Moves, Illusion, `-*` formes and Past content without a rewrite, so no stop condition was hit. @pkmn/client needs about ten fixes to pass Phase 1's ground-truth exit (Fixes, below), mostly small ones plus Z-Move support, and it records more of what the opponent reveals. poke-env needs about as many fixes to the state it tracks, including separating lasting effects from one-off events. On top of those it misses revealed Z-Crystals and abilities @pkmn/client holds (Recall, below). The headline counts mislead: @pkmn/client's 167,244 mismatches against poke-env's 18,525 are mostly one bug (108,723 duplicate move slots), and 36,814 more are the Mega and Z flags it doesn't keep. @pkmn/client also puts tracking next to the sim and @smogon/calc, which removes D7's calc round trip and the Python env processes (Architecture). poke-env is the pick if the builder stays in Python. Our own tracker isn't worth building. Speed doesn't separate them (Timing).
 
 All figures: 2026-11-25, Showdown 29f2d99, @pkmn/client 0.7.4 with @pkmn/data and @pkmn/dex 0.10.15, poke-env 0.17.0, on games 0–499 recorded with T02's recorder (500 games, 24,235 turns, 55,563 decisions: 418 Mega Evolutions, 454 Z-Moves, 57 Illusions broken; Team Preview showed 541 `Zamazenta-*` and 117 `Urshifu-*`, and the forme to resolve was Urshifu-Rapid-Strike, in 109 games, since the pool has no Zamazenta-Crowned) and T04's 1,100 replays.
 
@@ -85,7 +97,7 @@ All figures: 2026-11-25, Showdown 29f2d99, @pkmn/client 0.7.4 with @pkmn/data an
 
 - `truth.ts` replays each recorded game in-process from its seeds (T02's `sim.ts`, `Battle` direct), checks the replay gives the recorded chunks and input log, and snapshots the sim's `Battle` at every request a player must answer. Reading the state needed no Showdown patch.
 - `pkmn.ts` and `pokeenv.py` feed each player's chunks, line by line, to that tracker (requests included; `|error|` chunks skipped), and write its state at each decision in a shared view format. `pokeenv.py` dispatches lines as poke-env's `Player._handle_battle_message` does.
-- `compare.py` derives each player's expected view from the sim's state and diffs it: the own side in full; the opposing mons seen so far (HP% as the protocol rounds it); revealed opposing moves, items and abilities as subsets of the true ones; side and slot conditions; the field; and whether each side has used its Mega and its Z-Move. Names are normalized to Showdown ids. It leaves out the sim volatiles no protocol line announces (`choicelock`, `stall`, `lockedmove`, `chillyreception`, `counter`, `mirrorcoat`, `pursuit`) and tracker markers that aren't volatiles (`fallenN`, `itemremoved`, `airballoon`, Protosynthesis' stat suffixes). A mismatch is one field of one mon (or one condition or flag) at one decision.
+- `compare.py` derives each player's expected view from the sim's state and diffs it: the own side in full; the opposing mons seen so far (HP% as the protocol rounds it); revealed opposing moves, items and abilities as subsets of the true ones; side and slot conditions; the field; and whether each side has used its Mega and its Z-Move. Names are normalized to Showdown ids. It leaves out the sim volatiles no protocol line announces (`choicelock`, `stall`, `lockedmove`, `chillyreception`, `counter`, `mirrorcoat`, `pursuit`) and tracker markers that aren't volatiles (Supreme Overlord's count, `fallenN` in @pkmn/client and `supremeoverlord` in poke-env; `itemremoved`, `airballoon`, Protosynthesis' stat suffixes). It maps request move ids (`return102`) to moves, which hides that @pkmn/client stores them as moves of their own (Fixes). A mismatch is one field of one mon (or one condition or flag) at one decision.
 - `summarize.py` assigns every mismatch class a cause and exits 1 if any is left over.
 - `recall.py` covers what the subset check can't: correct revealed attributes one tracker holds and the other lacks.
 
@@ -95,20 +107,21 @@ All figures: 2026-11-25, Showdown 29f2d99, @pkmn/client 0.7.4 with @pkmn/data an
 |---|---|---|
 | Recorded games (1,000 player-games): games with a throw | 0 with the NatDex filter; 248 with @pkmn/data's default | 0 |
 | T04's 1,100 replays, spectator view: games with a throw | 0 | 0 |
-| Message types it doesn't handle that carry state | `-zpower` (908 lines across both players' streams) | `-fail ...\|[from] ability:` (15 lines), which reveals an ability |
+| Message types it doesn't handle that carry state | `-zpower` (908 lines across both players' streams) | `-fail ...\|[from] ability:` (30 lines across both streams), which reveals an ability |
 | Unknown message types | ignored silently | `NotImplementedError` |
-| Data lag at the pin, NatDex legal set | none: 1,365 species, 904 moves, 536 items, 310 abilities | none on species and moves; it has no item or ability data |
+| Data lag at the pin, NatDex legal set, on the fields compared | none: 1,365 species, 904 moves, 536 items, 310 abilities | none on species and moves; it has no item or ability data |
 
 - **@pkmn/client needs a non-default `Generations`.** The default filter drops Past content, so Past Megas (Latios-Mega, Lopunny-Mega) have no species and `getPressurePP` and `types` throw. `new Generations(Dex, d => !!d.exists && [undefined, null, 'Past', 'Unobtainable'].includes(d.isNonstandard))` fixes it (`pkmn.ts`, `generations`).
-- The other unhandled or ignored types are hit-result lines (`-resisted`, `-supereffective`, `-crit`, `-miss`, `-hitcount`, `-zbroken`), `-hint`, `-prepare`, timestamps and room lines, and for poke-env also the rest of `-fail` and `|upkeep|`. They carry nothing the trackers' state needs, except `-hint`'s Future Sight failure (table below). The builder needs the hit-result lines itself, for Network v0's damage evidence. poke-env also logged 2 unknown effects (`HEALREPLACEMENT`) in the replays. Counts are in `results/stage1-*.json`.
-- Data lag (`datalag.ts`) compares each tracker's species, move, item and ability data with Showdown's NatDex legal set.
+- The other unhandled or ignored types are hit-result lines (`-resisted`, `-supereffective`, `-crit`, `-miss`, `-hitcount`, `-zbroken`), `-hint`, `-prepare`, timestamps and room lines, and for poke-env also the rest of `-fail` and `|upkeep|`. They carry nothing the trackers' state needs, except `-hint`'s Future Sight failure and `|upkeep|`'s end of the residual phase, where toxic counts belong (table below). The builder needs the hit-result lines itself, for Network v0's damage evidence. poke-env also logged 2 unknown effects (`HEALREPLACEMENT`) in the replays. Counts are in `results/stage1-*.json`.
+- Data lag (`datalag.ts`) compares species' base stats, types and abilities, moves' base power, type, category, accuracy, priority and PP, and items' and abilities' existence and names, with Showdown's NatDex legal set. It doesn't compare fields @pkmn/client also reads, such as `isZ`, `zMoveFrom` and `requiredItem`.
 
 ### Stages 2 and 3: the diff against the sim
 
 | Cause | Kind | @pkmn/client | poke-env |
 |---|---|---|---|
-| Regenerator's heal on switch-out is never logged (`pokemon.heal` writes no line), so an opposing benched mon's HP is the last one shown | not shown | 12,071 | 10,464 |
-| poke-env estimates Regenerator's heal when it knows the ability, and its percent arithmetic misses the true HP% (13:p1:42: shown 44, true 78, estimate 77) | tracker bug | | 213 |
+| Regenerator's heal on switch-out is never logged (`pokemon.heal` writes no line), so an opposing benched mon's HP is the last one shown | not shown | 10,464 | 10,464 |
+| The same, on a species that can have no other ability (Tornadus-Therian): the heal could be estimated, and poke-env does | unsupported | 1,607 | |
+| poke-env's estimate of that heal is 1% off, because the HP% it starts from is rounded (13:p1:42: shown 44, true 78, estimate 77) | not shown | | 213 |
 | An opposing Illusion, while it holds: the disguise's entry gets the Zoroark's HP, status, boosts and moves | not shown | 478 | 518 |
 | An opposing Zoroark that fainted in disguise: the protocol shows the disguise fainting, with no `\|replace\|` (`data/abilities.ts`, Illusion), so the Zoroark looks alive | not shown | 47 | 55 |
 | An opposing Illusion after `\|replace\|` broke it: what was attributed to the disguise stays on the wrong entry | tracker bug | 1,297 | 1,645 |
@@ -122,13 +135,13 @@ All figures: 2026-11-25, Showdown 29f2d99, @pkmn/client 0.7.4 with @pkmn/data an
 | Any `-heal` without `[from]` (Roost, Recover, Leech Seed's silent heal) runs the Healing Wish branch and zeroes the sleep and toxic counters | tracker bug | 175 | |
 | The own active's move list is emptied when the request lists only a move without PP (a locked move, recharge, Struggle) | tracker bug | 151 | |
 | Roost's volatile is kept only for Flying users, where it has an effect | tracker bug, harmless | 9 | |
-| One-off events (`-activate`, `-singleturn`: Supreme Overlord, Tera Shell, Tera Shift, Psychic Terrain's block, Endure, Poltergeist) are stored as effects, and some are never cleared | tracker bug | | 3,565 |
+| One-off events (`-activate`, `-singleturn`: Tera Shell, Tera Shift, Psychic Terrain's block, Endure, Poltergeist) are stored as effects that last until the mon switches out | tracker bug | | 1,438 |
 | `species` keeps the pre-change name after Mega Evolution and other forme changes (Terapagos-Terastal); types, base stats and ability do change | tracker bug | | 1,581 |
 | The toxic counter moves at `\|turn\|`, not at the poison damage, so it is one off for a mon that came in after a faint, and at decisions between the residual and the next turn | tracker bug | | 823 |
 | A pending Future Sight is an effect on its user, lost when the user switches out or faints | tracker bug | | 588 |
 | The counter carries over when Rest replaces toxic | tracker bug | | 12 |
-| **Mismatches** | | 167,244 | 20,652 |
-| **Decisions with any mismatch,** of 55,563 | | 51,388 | 16,917 |
+| **Mismatches** | | 167,244 | 18,525 |
+| **Decisions with any mismatch,** of 55,563 | | 51,388 | 15,487 |
 
 - Most of @pkmn/client's 51,388 decisions with a mismatch are the duplicate slots. Own HP, status, item, ability and species matched for both trackers, since the request carries them.
 - The four Illusion causes are assigned by tag (`compare.py`, `illusion_tag`), and take only mismatches no other rule explains. "While it holds" covers decisions where an opposing Illusion is active. "Fainted in disguise" applies once an opposing Zoroark fainted without a faint line under its own name. "After" covers later decisions of a game where an opposing Illusion held and broke. "Own" covers decisions while or after the player's own Illusion held. Pass 1 checked the "after" remainder by hand: all of it is on the Zoroark or a disguise, apart from about 30 cases per tracker on a disguise target that never held at a decision. The "while it holds" mismatches are real, but the protocol hides the Illusion until `|replace|`, so they count as not shown.
@@ -136,7 +149,7 @@ All figures: 2026-11-25, Showdown 29f2d99, @pkmn/client 0.7.4 with @pkmn/data an
 
 **Stage 2, the targeted checks** (`byFeature` in `results/compare-*.json` counts mismatches on mons with each feature):
 
-- **Mega Evolution:** both get the Mega's ability right; types and base stats weren't compared (poke-env updates them in `_update_from_pokedex`). poke-env keeps the pre-Mega `species` name (1,100 mismatches on Megas). poke-env doesn't record the Mega Stone (Recall). poke-env's Mega-used flags match the sim at every decision; @pkmn/client has none.
+- **Mega Evolution:** both get the Mega's ability right; types and base stats weren't compared (poke-env updates them in `_update_from_pokedex`). poke-env keeps the pre-Mega `species` name (1,100 mismatches on Megas), and doesn't record the Mega Stone, which the forme implies (Recall). poke-env's Mega-used flags match the sim at every decision; @pkmn/client has none.
 - **Z-Moves:** poke-env's Z-used flags match everywhere, and it keeps Z names out of the moves. @pkmn/client: as in the table. Own Z availability comes from the request for both.
 - **Illusion:** as in the table. Neither infers a disguise before `|replace|`.
 - **`Zamazenta-*` and `Urshifu-*`:** both resolve the forme when the mon switches in (Zamazenta as itself, Urshifu as Rapid-Strike), with no extra or missing entries and no species mismatch. No game had a Crowned forme to resolve. The mismatches on Zamazenta are from Illusion (it is the disguise in the Illusion team) and the general causes.
@@ -144,25 +157,25 @@ All figures: 2026-11-25, Showdown 29f2d99, @pkmn/client 0.7.4 with @pkmn/data an
 
 ### Recall of revealed attributes
 
-`compare.py` checks only that the revealed items, abilities and moves a tracker holds are true ones, which a tracker that records nothing passes. `recall.py` (`results/recall.json`) counts, at decisions with no opposing Illusion, each correct one a tracker holds for a seen opposing mon that the other lacks, as unique game:player:mon:attribute cases:
+`compare.py` checks only that the revealed items, abilities and moves a tracker holds are true ones, which a tracker that records nothing passes. `recall.py` (`results/recall.json`) counts, at decisions with no opposing Illusion, each correct one a tracker holds for a seen, unfainted opposing mon that the other lacks, as unique game:player:mon:attribute cases. Fainted mons are left out: compare.py doesn't check them, and @pkmn/client guesses the base forme's first ability when a fainted Mega reverts.
 
 | Held by one tracker only | @pkmn/client | poke-env |
 |---|---|---|
-| Abilities: revealed by protocol lines (e.g. `[of] p2a: Zapdos` on Static's paralysis, 1:p1:13) | 706 | |
-| Abilities: species with one possible ability, inferred, not revealed | | 1,830 |
-| Items: Mega Stones (from `-mega`) | 415 | |
-| Items: Z-Crystals (from a Z-Move) | 448 | |
-| Items: other | 37 | 4 |
+| Abilities: revealed by protocol lines (e.g. `[of] p2a: Zapdos` on Static's paralysis, 1:p1:13) | 585 | |
+| Abilities: species with one possible ability, inferred, not revealed | | 1,768 |
+| Items: Mega Stones (from `-mega`; derivable from the Mega forme) | 373 | |
+| Items: Z-Crystals (from a Z-Move) | 434 | |
+| Items: other | 35 | 4 |
 | Moves (e.g. a status Z-Move's base move, 3:p2:6) | 65 | 16 |
 
-poke-env's inference needs no tracker: the builder can take it from the dex. Attributes both trackers miss aren't measured, since that needs an expected set derived from the protocol.
+poke-env's ability inference and @pkmn/client's Mega Stones need no tracker: the builder can take both from the dex. The rest is @pkmn/client's real edge. Attributes both trackers miss aren't measured, since that needs an expected set derived from the protocol.
 
 ### Fixes each tracker needs for the ground-truth exit
 
 My estimates of size, not measured.
 
-- **@pkmn/client:** the duplicate slots (1 line), the heal reset (1 line), the emptied move list (a few lines), the toxic cap (1 line), Future Sight's `-hint` (a few lines), Healing Wish and Lunar Dance (a few lines), Mega-used and Z-used flags from `-mega` and `-zpower` (a few lines), Z names kept out of revealed moves (tens of lines), and Illusion re-attribution at `|replace|` (tens of lines). Plus the NatDex `Generations`, and an allowlist of the message types it may ignore, with any other type an error. Most can go in a layer of our own rather than a fork: a handler run around the client's on each line, or overrides of its handler methods.
-- **poke-env:** separating lasting effects from one-off events (tens of lines: its `Effect` enum mixes both), the forme name (a few lines, but `species` also identifies mons in `get_pokemon`), toxic counting at the poison damage, Future Sight as side state that survives its user leaving (tens of lines), Rest's carry-over (1 line), the toxic cap, Future Sight's failure line, Healing Wish and Lunar Dance, the Regenerator estimate, the player's own Illusion, and Illusion re-attribution. And the reveals it drops: abilities from `[of]` and `-fail`, Mega Stones, Z-Crystals and status Z-Moves' base moves. Its Mega and Z flags already work.
+- **@pkmn/client:** the duplicate slots (setting `virtual` on the request's slots, plus mapping request ids like `return102` and `frustration102` to their moves: with `virtual` alone, 9,177 decisions still hold a slot under such an id), a Regenerator estimate for species that can have no other ability, the heal reset (1 line), the emptied move list (a few lines), the toxic cap (1 line), Future Sight's `-hint` (a few lines), Healing Wish and Lunar Dance (a few lines), Mega-used and Z-used flags from `-mega` and `-zpower` (a few lines), Z names kept out of revealed moves (tens of lines), and Illusion re-attribution at `|replace|` (tens of lines). Plus the NatDex `Generations`, and an allowlist of the message types it may ignore, with any other type an error. Most can go in a layer of our own rather than a fork: a handler run around the client's on each line, or overrides of its handler methods.
+- **poke-env:** separating lasting effects from one-off events (tens of lines: its `Effect` enum mixes both), the forme name (a few lines, but `species` also identifies mons in `get_pokemon`), toxic counting at the poison damage, Future Sight as side state that survives its user leaving (tens of lines), Rest's carry-over (1 line), the toxic cap, Future Sight's failure line, Healing Wish and Lunar Dance, the player's own Illusion, and Illusion re-attribution. And the reveals it drops: abilities from `[of]` and `-fail`, Z-Crystals and status Z-Moves' base moves. Its Mega and Z flags already work.
 - **Both:** the toxic cap, Future Sight's `-hint`, Healing Wish and Lunar Dance, and Illusion re-attribution.
 - **Our own** would need to cover everything both trackers already handle without mismatches here: switches and drags, `-*` formes and Team Preview, damage and heals with their `[from]` and `[of]` reveals, status and its counters, boosts, the volatiles `-start` and `-end` bracket, side and slot conditions, weather and terrain, Megas, Z-Moves, items and abilities revealed in passing, Illusion, requests merged into the own side, and the spectator view. On top of that come the fixes above. None of the failures needs a rewrite, so building our own buys nothing.
 
@@ -204,7 +217,7 @@ Setup as in AGENTS.md (Conventions), then from this folder on Node 24:
 ./run.sh
 ```
 
-It records games 0–499 into `out/` (gitignored; with truth and views ~0.8 GB) and writes `results/` (except `timing.log`, below), in about 75 s:
+It records games 0–499 into `out/` (gitignored; with truth and views ~0.8 GB) and writes `results/` (except `timing.log`, below), in 75–125 s, depending on load:
 
 | File | What it is |
 |---|---|
@@ -235,7 +248,7 @@ Gotchas for whoever builds on this:
 
 ## For integration
 
-The user agreed to the recommendation on 2026-11-25 (in the T08 session). D7's header stays "partly decided": S2 stays deferred and the calc revisit trigger open. The user agreed before adversarial pass 1, which strengthened the case (Recall) and changed the text's Why and the trigger; the planning session should show the user this version. In the same sweep, prior-work.md's poke-env and @pkmn/client rows ("D7, spike S6"; "Speed and NatDex Mega/Z handling not checked") and plan.md's Phase 0 S6 line can point to T08.
+The user agreed to the recommendation on 2026-11-25 (in the T08 session). After this change, only S2 is deferred in D7, so the planning session should check that "partly decided" still fits. The user agreed before the adversarial passes, which changed the text's Why and the trigger; the planning session should show the user this version. plan.md's S2 line keeps poke-env's websocket client as the test client for the server side, which the Node online client doesn't change. In the same sweep, prior-work.md's poke-env and @pkmn/client rows ("D7, spike S6"; "Speed and NatDex Mega/Z handling not checked") and plan.md's Phase 0 S6 line can point to T08.
 
 **decisions.md, D7:** replace the bullet "**The builder is Python.**" and its sub-bullets with:
 
@@ -244,9 +257,9 @@ The user agreed to the recommendation on 2026-11-25 (in the T08 session). D7's h
   - Each worker runs the sim, one @pkmn/client 0.7.4 `Battle` per player, @smogon/calc on the tracked state, and the builder, which writes a numeric record per decision (ids, numbers, action mask). @pkmn/data's `Generations` keeps Past and Unobtainable content.
   - Per env step, the worker sends Python the records for every decision in its batch, and Python sends back one action per decision. Python stacks records into tensors.
   - Our fixes to @pkmn/client (T08, Result) live in a layer over 0.7.4 rather than a fork. The builder keeps an allowlist of the message types the client may ignore and fails on any other. It reads hit-result lines (`-crit`, `-supereffective`, `-resisted`) and `-hint` itself.
-  - Why: @pkmn/client needs about as many fixes as poke-env for Phase 1's ground-truth exit, and poke-env also drops revealed Mega Stones, Z-Crystals and abilities (T08). In Node, tracking sits next to the calcs, so there is no calc round trip and no Python env process.
+  - Why: @pkmn/client needs about as many fixes as poke-env for Phase 1's ground-truth exit, and poke-env also drops revealed Z-Crystals and abilities (T08). In Node, tracking sits next to the calcs, so there is no calc round trip and no Python env process.
   - Cost: feature code is TypeScript, apart from the model.
-  - If Phase 1's walking skeleton shows the env bounds the M4 Max, the calc revisit trigger (below) applies, then more worker processes. A Python builder would add a round trip, so it isn't the fallback.
+  - If the env's decisions/s on the M4 Max, measured by Phase 1's walking skeleton, falls below ~2× the learner's (S4's figure until Phase 1's learner track gives its own), the calc revisit trigger (below) applies, then more worker processes. A Python builder would add a round trip, so it isn't the fallback.
   - Rejected: poke-env in Python env processes, which keeps the calc round trip; our own tracker, since no failure T08 found needs a rewrite.
 ```
 

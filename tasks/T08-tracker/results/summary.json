@@ -18,7 +18,11 @@
    },
    "regenerator": {
     "kind": "not shown",
-    "n": 12071
+    "n": 10464
+   },
+   "regenerator-inferable": {
+    "kind": "unsupported",
+    "n": 1607
    },
    "illusion-after": {
     "kind": "tracker bug",
@@ -61,16 +65,12 @@
  },
  "pokeenv": {
   "decisions": 55563,
-  "decisionsWithMismatch": 16917,
-  "mismatches": 20652,
+  "decisionsWithMismatch": 15487,
+  "mismatches": 18525,
   "byCause": {
    "regenerator": {
     "kind": "not shown",
     "n": 10464
-   },
-   "pokeenv-activations": {
-    "kind": "tracker bug",
-    "n": 3565
    },
    "illusion-after": {
     "kind": "tracker bug",
@@ -79,6 +79,10 @@
    "pokeenv-forme": {
     "kind": "tracker bug",
     "n": 1581
+   },
+   "pokeenv-activations": {
+    "kind": "tracker bug",
+    "n": 1438
    },
    "pokeenv-toxic-turns": {
     "kind": "tracker bug",
@@ -100,8 +104,8 @@
     "kind": "unsupported",
     "n": 430
    },
-   "pokeenv-regenerator-estimate": {
-    "kind": "tracker bug",
+   "regenerator-rounding": {
+    "kind": "not shown",
     "n": 213
    },
    "toxic-cap": {
@@ -125,7 +129,9 @@
  },
  "causes": {
   "regenerator": "Regenerator's heal on switch-out is never logged, so an opposing benched mon's HP is the last one shown",
-  "pokeenv-regenerator-estimate": "poke-env estimates Regenerator's heal when it knows the ability, and its percent arithmetic misses the true HP%",
+  "regenerator-inferable": "Regenerator's heal on switch-out isn't estimated although the species can have no other ability (Tornadus-Therian), so the HP is the last one shown",
+  "regenerator-rounding": "an estimate of Regenerator's heal is 1% off: the HP% it starts from is rounded",
+  "regenerator-estimate": "an estimate of Regenerator's heal is more than 1% off",
   "healing-wish": "a pending Healing Wish or Lunar Dance (a slot condition) isn't tracked",
   "future-sight-silent": "a pending Future Sight is kept after it fails because its target fainted, which Showdown shows only as a `-hint` line, which both trackers ignore",
   "toxic-cap": "the toxic counter isn't capped at 15 as the sim's stage is",
@@ -135,7 +141,7 @@
   "pkmn-heal-reset": "any `-heal` without `[from]` (Roost, Recover, Leech Seed's silent heal) runs the Healing Wish branch and zeroes the sleep and toxic counters",
   "pkmn-locked-moves": "the own active's move list is emptied when the request lists only a move without PP (a locked move, recharge or Struggle)",
   "pkmn-roost": "Roost's volatile is kept only for Flying users, where it has an effect",
-  "pokeenv-activations": "one-off events (`-activate`, `-singleturn`: Supreme Overlord, Tera Shell, Psychic Terrain's block, Endure, ...) are stored as effects and some are never cleared",
+  "pokeenv-activations": "one-off events (`-activate`, `-singleturn`: Tera Shell, Tera Shift, Psychic Terrain's block, Endure, ...) are stored as effects that last until the mon switches out",
   "pokeenv-forme": "`species` keeps the pre-change name after Mega Evolution and other forme changes (types, base stats and ability do change)",
   "pokeenv-toxic-turns": "the toxic counter moves at `|turn|`, not at the poison damage, so it is one off for a mon that came in after a faint and at decisions between the residual and the next turn",
   "pokeenv-rest": "the counter carries over when Rest replaces toxic",

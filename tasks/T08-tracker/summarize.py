@@ -21,16 +21,21 @@ Z_MOVES = (
     r"clangoroussoulblaze|guardianofalola|searingsunrazesmash|menacingmoonrazemaelstrom|"
     r"lightthatburnsthesky|soulstealing7starstrike)"
 )
-ACTIVATIONS = r"(supremeoverlord|terashell|terashift|psychicterrain|endure|poltergeist|struggle|roost|protect)"
+ACTIVATIONS = r"(terashell|terashift|psychicterrain|endure|poltergeist|struggle|roost|protect)"
 
 # (cause id, kind, description, tracker or None for both, field regex, class regex)
 CAUSES = [
     ("regenerator", "not shown",
      "Regenerator's heal on switch-out is never logged, so an opposing benched mon's HP is the last one shown",
      None, r"opp\.hp", r"^regenerator \(last shown\)$"),
-    ("pokeenv-regenerator-estimate", "tracker bug",
-     "poke-env estimates Regenerator's heal when it knows the ability, and its percent arithmetic misses "
-     "the true HP%", "pokeenv", r"opp\.hp", r"^regenerator \(estimate\)$"),
+    ("regenerator-inferable", "unsupported",
+     "Regenerator's heal on switch-out isn't estimated although the species can have no other ability "
+     "(Tornadus-Therian), so the HP is the last one shown", None, r"opp\.hp", r"^regenerator \(last shown, inferable\)$"),
+    ("regenerator-rounding", "not shown",
+     "an estimate of Regenerator's heal is 1% off: the HP% it starts from is rounded",
+     None, r"opp\.hp", r"^regenerator \(estimate, within 1\)$"),
+    ("regenerator-estimate", "tracker bug", "an estimate of Regenerator's heal is more than 1% off",
+     None, r"opp\.hp", r"^regenerator \(estimate\)$"),
     ("healing-wish", "unsupported",
      "a pending Healing Wish or Lunar Dance (a slot condition) isn't tracked", None, r"conds\.", r"missing:(healingwish|lunardance)"),
     ("future-sight-silent", "tracker bug",
@@ -57,8 +62,8 @@ CAUSES = [
     ("pkmn-roost", "tracker bug (harmless)",
      "Roost's volatile is kept only for Flying users, where it has an effect", "pkmn", r"opp\.volatiles", r"^missing:roost$"),
     ("pokeenv-activations", "tracker bug",
-     "one-off events (`-activate`, `-singleturn`: Supreme Overlord, Tera Shell, Psychic Terrain's block, "
-     "Endure, ...) are stored as effects and some are never cleared",
+     "one-off events (`-activate`, `-singleturn`: Tera Shell, Tera Shift, Psychic Terrain's block, Endure, ...) "
+     "are stored as effects that last until the mon switches out",
      "pokeenv", r"(own|opp)\.volatiles", r"^(extra:" + ACTIVATIONS + r" ?)+$"),
     ("pokeenv-forme", "tracker bug",
      "`species` keeps the pre-change name after Mega Evolution and other forme changes (types, base stats and "

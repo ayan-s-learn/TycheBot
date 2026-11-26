@@ -2,15 +2,15 @@
  "tracker": "pokeenv",
  "decisions": 55563,
  "noView": 0,
- "decisionsWithMismatch": 16917,
+ "decisionsWithMismatch": 15487,
  "byField": {
   "opp.hp": 11135,
-  "opp.volatiles": 1932,
-  "own.volatiles": 1634,
   "opp.species": 1581,
   "opp.moves": 1136,
   "conds.own": 880,
   "conds.opp": 825,
+  "opp.volatiles": 776,
+  "own.volatiles": 663,
   "opp.statusTurns": 500,
   "own.statusTurns": 404,
   "opp.item": 284,
@@ -113,10 +113,10 @@
    "opp.status": 23,
    "opp.item": 13,
    "opp.boosts": 11,
-   "own.volatiles": 4,
    "opp.statusTurns": 4,
    "own.statusTurns": 3,
-   "conds.opp": 1
+   "conds.opp": 1,
+   "own.volatiles": 1
   },
   "opp-faint-hidden": {
    "opp.fainted": 50,
@@ -128,8 +128,8 @@
    "opp.hp": 358,
    "opp.item": 271,
    "opp.species": 98,
-   "own.volatiles": 55,
    "opp.boosts": 18,
+   "own.volatiles": 15,
    "conds.opp": 14,
    "opp.statusTurns": 10,
    "own.statusTurns": 6,
@@ -138,7 +138,7 @@
   "own": {
    "opp.hp": 182,
    "opp.species": 69,
-   "opp.volatiles": 66,
+   "opp.volatiles": 17,
    "opp.statusTurns": 15,
    "conds.own": 14,
    "own.statusTurns": 9,
@@ -153,20 +153,6 @@
    "opp-faint-hidden": 0,
    "opp-after": 0,
    "own": 182
-  },
-  "opp.volatiles | extra:supremeoverlord": {
-   "total": 1156,
-   "opp-now": 0,
-   "opp-faint-hidden": 0,
-   "opp-after": 0,
-   "own": 49
-  },
-  "own.volatiles | extra:supremeoverlord": {
-   "total": 971,
-   "opp-now": 3,
-   "opp-faint-hidden": 0,
-   "opp-after": 40,
-   "own": 0
   },
   "opp.species | terapagosterastal->terapagos": {
    "total": 481,
@@ -273,7 +259,7 @@
    "opp-after": 0,
    "own": 9
   },
-  "opp.hp | regenerator (estimate)": {
+  "opp.hp | regenerator (estimate, within 1)": {
    "total": 213,
    "opp-now": 0,
    "opp-faint-hidden": 0,
@@ -364,6 +350,13 @@
    "opp-after": 84,
    "own": 0
   },
+  "opp.volatiles | extra:psychicterrain": {
+   "total": 95,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 2
+  },
   "opp.moves | not in set:focusblast,hypervoice,nastyplot": {
    "total": 91,
    "opp-now": 10,
@@ -378,13 +371,6 @@
    "opp-after": 4,
    "own": 6
   },
-  "opp.volatiles | extra:psychicterrain": {
-   "total": 89,
-   "opp-now": 0,
-   "opp-faint-hidden": 0,
-   "opp-after": 0,
-   "own": 2
-  },
   "opp.species | tyranitarmega->tyranitar": {
    "total": 82,
    "opp-now": 0,
@@ -392,18 +378,18 @@
    "opp-after": 0,
    "own": 11
   },
+  "own.volatiles | extra:psychicterrain": {
+   "total": 82,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 2,
+   "own": 0
+  },
   "conds.own | missing:lunardance": {
    "total": 82,
    "opp-now": 0,
    "opp-faint-hidden": 0,
    "opp-after": 0,
-   "own": 0
-  },
-  "own.volatiles | extra:psychicterrain": {
-   "total": 78,
-   "opp-now": 0,
-   "opp-faint-hidden": 0,
-   "opp-after": 2,
    "own": 0
   },
   "conds.opp | missing:lunardance": {
@@ -546,13 +532,6 @@
    "opp-after": 0,
    "own": 0
   },
-  "opp.volatiles | extra:psychicterrain extra:supremeoverlord": {
-   "total": 6,
-   "opp-now": 0,
-   "opp-faint-hidden": 0,
-   "opp-after": 0,
-   "own": 0
-  },
   "own.volatiles | extra:struggle": {
    "total": 6,
    "opp-now": 0,
@@ -618,13 +597,6 @@
   },
   "own.statusTurns | tox +3 past cap": {
    "total": 5,
-   "opp-now": 0,
-   "opp-faint-hidden": 0,
-   "opp-after": 0,
-   "own": 0
-  },
-  "own.volatiles | extra:psychicterrain extra:supremeoverlord": {
-   "total": 4,
    "opp-now": 0,
    "opp-faint-hidden": 0,
    "opp-after": 0,

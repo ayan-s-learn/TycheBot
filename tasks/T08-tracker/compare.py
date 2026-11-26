@@ -13,6 +13,9 @@ import sys
 from collections import Counter, defaultdict
 
 import orjson
+from poke_env.data import GenData
+
+DEX = GenData.from_gen(9).pokedex
 
 
 def to_id(s):
@@ -26,8 +29,10 @@ NOT_SHOWN = {"choicelock", "stall", "lockedmove", "chillyreception", "mirrorcoat
 TRAPPING = {"bind", "wrap", "firespin", "whirlpool", "sandtomb", "clamp", "infestation", "magmastorm",
             "snaptrap", "thundercage"}
 # Markers the trackers keep as volatiles that are not sim volatiles: ability or item state, which the
-# view compares elsewhere (item, ability) or doesn't use.
-MARKERS = re.compile(r"^(fallen\d|itemremoved|airballoon|(quarkdrive|protosynthesis)(atk|def|spa|spd|spe))$")
+# view compares elsewhere (item, ability) or doesn't use. Supreme Overlord's count is @pkmn/client's fallenN
+# and poke-env's supremeoverlord effect, both set by the same -activate and -start lines.
+MARKERS = re.compile(r"^(fallen\d|supremeoverlord|itemremoved|airballoon|"
+                     r"(quarkdrive|protosynthesis)(atk|def|spa|spd|spe))$")
 WEATHER = {"rain": "raindance", "sun": "sunnyday", "sand": "sandstorm", "snow": "snowscape",
            "harshsunshine": "desolateland", "heavyrain": "primordialsea", "strongwinds": "deltastream"}
 FUTURE = {"futuresight": "futuremove", "doomdesire": "futuremove"}
@@ -321,7 +326,13 @@ def compare_decision(tally, truth, view, me, chunks, upto, where, illusion_seen)
             cls = classify(k, want, got, m)
             if cls == "regenerator":
                 shown = last_shown_hp(chunks, upto, opp_side(me), m["name"])
-                cls += " (last shown)" if got == shown else " (estimate)"
+                if got == shown:
+                    # Inferable: the species can have no other ability, so a tracker could estimate the heal.
+                    only = list(DEX.get(to_id(m["species"]), {}).get("abilities", {}).values()) == ["Regenerator"]
+                    cls += " (last shown, inferable)" if only else " (last shown)"
+                else:
+                    # The HP% shown is rounded, so an estimate from it can be 1 off without a tracker error.
+                    cls += " (estimate, within 1)" if abs(got - want) <= 1 else " (estimate)"
             bad(f"opp.{k}", cls, want, got)
         # Revealed attributes must be true ones.
         if v["item"] is not None and v["item"] != m["item"]:

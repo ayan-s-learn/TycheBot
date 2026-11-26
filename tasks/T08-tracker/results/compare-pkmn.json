@@ -171,11 +171,11 @@
    "own": 411
   },
   "opp.hp | regenerator (last shown)": {
-   "total": 12071,
+   "total": 10464,
    "opp-now": 0,
    "opp-faint-hidden": 0,
    "opp-after": 0,
-   "own": 193
+   "own": 182
   },
   "flags.own | megaUsed True->False": {
    "total": 9103,
@@ -197,6 +197,13 @@
    "opp-faint-hidden": 0,
    "opp-after": 0,
    "own": 88
+  },
+  "opp.hp | regenerator (last shown, inferable)": {
+   "total": 1607,
+   "opp-now": 0,
+   "opp-faint-hidden": 0,
+   "opp-after": 0,
+   "own": 11
   },
   "opp.moves | not in set:supersonicskystrike": {
    "total": 1109,
