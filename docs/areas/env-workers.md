@@ -6,8 +6,8 @@ Components 1 and 2 of plan.md as the walking skeleton built them (T09): Node pro
 
 - Works end to end: 12 workers at ~11k decisions/s on the M4 Max with Python answering at random, and a PPO policy trained through it beats random ([T09](../../tasks/T09-skeleton/README.md), Result).
 - The record is a minimal stand-in for the observation: no events, items, abilities, field or side conditions, and no evidence features.
-- Calcs use both sides' true sets, which leaks hidden information. The set library (T12) replaces the opposing sets.
-- Tracking is @pkmn/client 0.7.4 as is. T10's layer replaces it by changing the `Client` import in `worker/skeleton/env.ts`.
+- Calcs use both sides' true sets, which leaks hidden information.
+- Tracking is @pkmn/client 0.7.4 as is, constructed in one place: `Client` in `worker/skeleton/env.ts`.
 
 ## Code
 
@@ -75,25 +75,13 @@ From the root, after setup (AGENTS.md, Conventions), with `nvm use` in the same 
 
 ```bash
 node --test 'worker/**/*.test.ts'
-```
-
-```bash
 uv run pytest
-```
-
-```bash
 uv run python -m tyche.skeleton.bench --out <file.jsonl> --workers 12 --runs 3
-```
-
-```bash
 uv run python -m tyche.skeleton.train --out <dir> --minutes 10
-```
-
-```bash
 uv run python -m tyche.skeleton.eval <dir>/net.pt --games 1000
 ```
 
-`node tasks/T09-skeleton/inproc.ts [games] [battles]` runs the env in one process without the transport. Python scripts under `tyche/` run as modules from the root: run by path, the root isn't on `sys.path`.
+The flags T09 ran are in its Outputs. Python scripts under `tyche/` run as modules from the root: run by path, the root isn't on `sys.path`.
 
 What the tests cover:
 
@@ -101,13 +89,14 @@ What the tests cover:
 - `worker/calc/calcs.test.ts`: the record's calcs against the same calcs on the sim's state, on 8 random games: 0 of 141,321 nonzero calcs differed (2026-11-26).
 - `worker/skeleton/record.test.ts`: the layout, and records against the request and the sim.
 - `tyche/transport/test_transport.py`: the round trip, stacking, echo, and both ends refusing another version.
+- `tyche/skeleton/test_skeleton.py`: GAE, and the net's mask and a PPO update on real records.
 
 ## Gotchas
 
 - **A forced switch mid-turn lists a mon the sim rejects.** When Eject Pack forces a switch while the side's own switch is queued, the request lists the queued mon, but choosing it is `[Invalid choice]` (T02; `Side.clearChoice` seeds `switchIns` from the queue). Forcing out the mon that switch was for cancels it (`queue.cancelAction` in `sim/battle-actions.ts`), so the queued mon is legal again afterwards. The env tracks the queued mon per player from its own choice, and clears it after the forced switch, when the mon comes in, or at `|upkeep|`. `mask.test.ts` plays the case out.
 - **A locked move accepts `mega` and `zmove` and ignores them** (`Side.chooseMove` returns at the locked move before checking Mega Evolution). The mask leaves them out, so a probe has to compare what the sim does, not whether it accepts the choice.
 - **@pkmn/client names weather and terrain as @smogon/calc does** (`field.weather` is `Sand`, `field.terrain` is `Psychic`), and `weatherState.id` is the id of that name (`sand`), not Showdown's. Looked up by Showdown ids, both came out empty and 2.8% of calcs differed from the sim's.
-- **@pkmn/client holds 0/0 HP for an opposing mon it hasn't seen,** so `hp / maxhp` is NaN.
-- **The request marks slot 1 active at Team Preview,** before any mon is in battle.
-- **`Teams.unpack` leaves unset EVs and IVs undefined;** the sim fills in defaults on its own copy. True sets come from `battle.sides[i].pokemon[j].set` right after `setPlayer`, when the order is still team order.
-- `[Invalid choice]` is counted, logged to stderr and answered by asking again, up to 100 per game. None occurred in T09's runs.
+- **@pkmn/client holds 0/0 HP for an opposing mon it hasn't seen,** so `hp / maxhp` is NaN: `test_transport.py` found NaN opposing HP at Team Preview. The record and the calcs take such a mon as full HP (`hpOf` in `calcs.ts`).
+- **The request marks slot 1 active at Team Preview,** before any mon is in battle (`getSwitchRequestData`: `active` is `position < active.length`). `record.test.ts` caught it against the sim's `isActive`; the record shows no active mon there.
+- **`Teams.unpack` leaves unset EVs and IVs undefined,** and the calc then threw reading `evs.hp`. The sim fills in defaults on its own copy, so true sets come from `battle.sides[i].pokemon[j].set` right after `setPlayer`, when the order is still team order.
+- `[Invalid choice]` is counted, logged to stderr and answered by asking again, up to 100 per game. None occurred in T09's runs (2026-11-26).
