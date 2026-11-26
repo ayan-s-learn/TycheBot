@@ -32,6 +32,15 @@
 ## Progress
 
 ```text
+2026-11-25 (6)
+State: done
+Verified: as in entry (5); ./run.sh in a fresh clone of 9bd64ad reproduces results/ byte for byte.
+Pending: none
+Next: a planning session merges the PR and applies For integration, showing the user the revised D7 text.
+Reviewed: user, passes 1 and 2 (2026-11-25), fixes in 658af19, b889dc5, 1c8af29, 9bd64ad
+```
+
+```text
 2026-11-25 (5)
 State: done
 Verified: adversarial pass 2 (Opus, high) and its fixes. Supreme Overlord is now a marker for both trackers
