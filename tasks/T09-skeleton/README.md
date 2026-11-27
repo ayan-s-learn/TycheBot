@@ -221,38 +221,3 @@ uv run python -m tyche.skeleton.eval tasks/T09-skeleton/runs/train-0/net.pt --ga
 | `results/eval-1000.json` | The evaluation |
 | `inproc.ts` | `node tasks/T09-skeleton/inproc.ts [games] [battles]`: the env in one process with random actions and no transport |
 | `timed.sh` | T02's lock wrapper with owner T09 |
-
-## For integration
-
-1. **AGENTS.md, Areas:** add a row after Team pool and set priors:
-
-   ```markdown
-   | Env workers | Walking skeleton: sim, tracking, 288 calcs on true sets, record v1, transport | `worker/sim/`, `worker/calc/`, `worker/skeleton/`, `tyche/transport/` | [env-workers](docs/areas/env-workers.md) |
-   ```
-
-2. **AGENTS.md, Conventions:** after the Tests bullet, add:
-
-   ```markdown
-   - **Python entry points** under `tyche/` run as modules from the root: `uv run python -m tyche.skeleton.train`. Run by path, the root isn't on `sys.path`. Those that start env workers need Node 24 on `PATH` (`nvm use` in the same command), and refuse another major.
-   ```
-
-3. **AGENTS.md, Conventions, Timed runs:** after "Record `sysctl -n vm.loadavg` with each run.", add:
-
-   ```markdown
-   Check the agent shell isn't at background priority first: `ps -o pri= -p $$` prints 4 there, against 31 normally. At 4 the same in-process run took ~5× as long (T09, 2026-11-26), with one process still at more than a full core, so CPU share doesn't show it. If it prints 4, tell the user rather than timing.
-   ```
-
-4. **decisions.md, D7, "v0 carries all 288 calcs":** replace "the env runs ~7× faster than the learner at 33 tokens and ~16× at 77, before record building and transfer (S4: plan.md, Compute)" with "the env runs ~7× faster than the learner at 33 tokens and ~16× at 77, before record building and transfer (S4: plan.md, Compute; T09's skeleton measured ~5.8× and ~13× with them)".
-
-5. **plan.md, Compute, M4 Max:** replace the bullet "The learner bounds the M4 Max. The env's cost is the sim, …" and the next one ("Tracking adds 0.018 ms …") with:
-
-   ```markdown
-   - The learner bounds the M4 Max. T09's walking skeleton measured ~11.1k env decisions/s on 12 worker processes (median of 3 runs, 10.1–11.2k; 2026-11-26), with tracking, the cached 288 calcs on true sets, a minimal record and transfer to Python, which answered at random. That is ~5.8× T07's 33-token learner estimate and ~13× the 77-token one. Per decision per process: sim 0.26 ms, tracking 0.05, calcs 0.74, record 0.02, transfer 0.02, 1.09 ms in all. The transport alone costs ~0.001–0.005 ms per decision. Those games had uniformly random players.
-   - The full observation builder adds to the record's cost. Derived from those rates, the env becomes the bound at ~6.3 ms per decision per process at 33 tokens (12 processes against ~1,900 learner decisions/s; ~14.6 ms at 77), and comes within D10's ~3× at ~2.1 ms (~4.9 ms at 77).
-   ```
-
-6. **decisions.md, D7, the Revisit bullet:** after "measured by Phase 1's walking skeleton and again with the full observation builder", add "(the skeleton: not env-bound, ~5.8× T07's 33-token learner estimate; T09, 2026-11-26)".
-
-7. **decisions.md, D10, "Why not yet":** replace "on the M4 Max the env is ~7× faster than the learner (plan.md, Compute), so overlapping them would save only ~13% of wall time at 33 tokens (~6% at 77)" with "on the M4 Max T09's skeleton measured the env at ~5.8× T07's learner estimate at 33 tokens (~13× at 77; plan.md, Compute), so overlapping them would save only ~15% of wall time at 33 tokens (~7% at 77)". After "On the M4 Max that is T09's skeleton, at first against T07's learner estimate" add "(not yet within 3×; the full observation builder is measured next)".
-
-8. **plan.md, Phase 1, Exit, Skeleton:** met (Result).
