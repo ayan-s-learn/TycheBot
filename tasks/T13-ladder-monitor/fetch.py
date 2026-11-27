@@ -105,13 +105,29 @@ def snapshot(data, bots_seen, now):
             raise RuntimeError("empty board")
     profiles = {}
     for bot in bots_seen:
-        profile = get(f"{PROFILE}/{bot}.json")
+        # A renamed or deleted bot must not cost the board snapshot.
+        try:
+            profile = get(f"{PROFILE}/{bot}.json")
+        except Exception as e:
+            print(f"no profile for {bot}: {e}", flush=True)
+            profile = None
         profiles[bot] = ((profile or {}).get("ratings") or {}).get(FORMAT)
     out = data / "snapshots" / time.strftime("%Y%m%dT%H%M%SZ.json.gz", time.gmtime(now))
     out.parent.mkdir(parents=True, exist_ok=True)
     body = {"time": now, "default": default, "bots": bots, "profiles": profiles}
     write_atomic(out, gzip.compress(json.dumps(body).encode()))
     return flagged(default, bots)
+
+
+def read_index(index):
+    """Index entries, skipping a last line cut short by a killed run."""
+    entries = []
+    for line in index.read_text().splitlines():
+        try:
+            entries.append(json.loads(line))
+        except json.JSONDecodeError:
+            pass
+    return entries
 
 
 def collect(data, state, now):
@@ -125,7 +141,7 @@ def collect(data, state, now):
     index = replays / "index.jsonl"
     known = set()
     if index.exists():
-        known = {json.loads(line)["id"] for line in index.read_text().splitlines()}
+        known = {entry["id"] for entry in read_index(index)}
     new = 0
     for bot in state["bots_seen"]:
         before = None
@@ -143,8 +159,10 @@ def collect(data, state, now):
                     except Blocked:
                         raise
                     except Exception as e:
-                        # Left out of the index, so the next collection retries it.
                         print(f"skipping {entry['id']}: {e}", flush=True)
+                        log = None
+                    if log is None:
+                        # Left out of the index, so the next collection retries it.
                         continue
                 if log is not None:
                     (replays / f"{entry['id']}.log.gz").write_bytes(gzip.compress(log))

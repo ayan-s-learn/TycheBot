@@ -31,6 +31,20 @@
 ## Progress
 
 ```text
+2026-11-27 (3)
+State: done (the setup half; the write-up is proposed as its own task under For integration)
+Verified: review pass 2 (Sonnet, high) fixes are in: a failed profile no longer costs the board
+  snapshot; a replay log that 404s is retried at the next collection; a cut-short index line is
+  skipped; summary rating ranges use every snapshot; the write-up brief removes the job before
+  its last collection. 5 tests pass. The job was reinstalled with this fetch.py and its run
+  exited 0.
+Pending: nothing here.
+Next: a planning session merges and briefs the write-up task.
+Reviewed: user, passes 1 and 2 (2026-11-27), fixes in cd3efbd, 5831cbb and the commit adding
+  this entry
+```
+
+```text
 2026-11-27 (2)
 State: done (the setup half, as in the entry below)
 Verified: review pass 1 (Sonnet, high) fixes are in at cd3efbd. fetch.py also snapshots each
@@ -89,7 +103,8 @@ Setup only; the tables and the D9 check are the write-up task's. What the first 
 - **Registered bots:** two in the bots-included top 500, guoguo10000 (#117, 1717) and imjustpixel2
   (#248, 1672). By 2026-11-27 imjustpixel2 was at 1639, 17 points above the board's 500th, so
   `fetch.py` also reads each bot's profile (`pokemonshowdown.com/users/<id>.json`, which gives
-  `elo`, `w` and `l` but not `t`) and keeps tracking a bot off the board.
+  `elo`, `w` and `l` but not `t`) and keeps tracking a bot off the board. That endpoint is an
+  addition to the brief's Inputs: public, read-only, at the same request rate.
 - **False flags:** the boards are fetched seconds apart, so a human who climbs past the default
   board's cutoff in between shows up as a bot once. An account counts as a bot only after two
   snapshots in a row flag it, in both scripts.
@@ -146,17 +161,23 @@ Setup only; the tables and the D9 check are the write-up task's. What the first 
      are built by `tasks/T13-ladder-monitor/summary.py`, and proposed D9 text goes under For
      integration.
    - **May change:** `tasks/T<NN>-ladder-writeup/`. Fixes to T13's scripts are proposed under For
-     integration, or made in this folder as copies.
+     integration, or made in this folder as copies of both scripts (`summary.py` imports from
+     `fetch.py`).
    - **Spec:** T13's Brief, with this brief taking precedence. T13 closes without its acceptance
      checks, which are this task's.
    - **Limits:** one session, from 2026-12-10 22:52 UTC. Commit only aggregates and registered
-     bots' names. When the snapshots it needs are in, run a last collection
+     bots' names. When the snapshots it needs are in, remove the job
+     (`tasks/T13-ladder-monitor/job.sh uninstall`), which is persistent configuration, and then
+     run a last collection by hand
      (`uv run --no-project ~/.tychebot/t13-ladder-monitor/bin/fetch.py ~/.tychebot/t13-ladder-monitor --collect`),
-     then remove the job (`tasks/T13-ladder-monitor/job.sh uninstall`), which is persistent
-     configuration. Sleep gaps are expected and only need listing.
-   - **If few replays:** with under 30 saved replays in the monitored days, report the snapshot
-     tables and the since-opt-in replay tables, labelled as such, rather than stopping.
+     never both at once. Sleep gaps are expected and only need listing; `runs.jsonl` tells a dead
+     job from sleep.
+   - **If few replays:** with under 30 saved replays in the monitored days, the likely case
+     (29 since 2026-10-20 on 2026-11-27, 23 of them imjustpixel2's), report the snapshot tables
+     and the since-opt-in replay tables, labelled as such, and say how few games the D9 check
+     rests on, rather than stopping.
    - **Stop and report if,** checked first at session start:
      - `runs.jsonl` shows `"blocked": true`, or an endpoint needs a login;
-     - fewer than two registered bots played rated games in the first week (to 2026-12-03).
+     - fewer than two registered bots played rated games in the first week (to 2026-12-03), from
+       the per-day tables. guoguo10000 last played on 2026-11-25, so this may trigger.
    ```

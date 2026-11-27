@@ -87,11 +87,13 @@ def test_a_single_flag_is_not_a_bot_and_profiles_cover_a_bot_off_the_board(tmp_p
 def test_collect_pages_back_once_then_stops_at_known_replays(tmp_path, monkeypatch):
     entries = [{"id": f"r{i}", "uploadtime": 1000 - i, "private": 0, "password": None} for i in range(60)]
     requests = []
+    missing = False
 
     def fake_get(url, as_json=True):
+        nonlocal missing
         requests.append(url)
         if url.endswith(".log"):
-            return b"|t:|1\n"
+            return None if missing else b"|t:|1\n"
         before = int(url.split("before=")[1]) if "before=" in url else 10**9
         return [e for e in entries if e["uploadtime"] < before][:51]
 
@@ -102,8 +104,12 @@ def test_collect_pages_back_once_then_stops_at_known_replays(tmp_path, monkeypat
     lines = (tmp_path / "replays" / "index.jsonl").read_text().splitlines()
     assert len({json.loads(line)["id"] for line in lines}) == 60
 
-    requests.clear()
+    # A log that 404s is left out of the index and fetched on the next collection.
     entries.insert(0, {"id": "new", "uploadtime": 2000, "private": 0, "password": None})
+    missing = True
+    assert fetch.collect(tmp_path, state, 0) == 0
+    missing = False
+    requests.clear()
     assert fetch.collect(tmp_path, state, 0) == 1
     # One search page and one log: the page is full, but its rest is known.
     assert len(requests) == 2

@@ -29,7 +29,7 @@ install)
 </dict>
 </plist>
 EOF
-  launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true
+  launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null && sleep 2 || true
   launchctl bootstrap "gui/$(id -u)" "$PLIST"
   echo "installed $PLIST, data in $DATA"
   ;;

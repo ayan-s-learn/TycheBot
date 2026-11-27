@@ -18,7 +18,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from fetch import flagged
+from fetch import flagged, read_index
 
 GAP_BANDS = [(-10_000, -300), (-300, -200), (-200, -100), (-100, 0), (0, 100), (100, 200), (200, 10_000)]
 GAP_FLOOR = 90 * 60  # snapshots further apart than this count as a gap
@@ -107,11 +107,10 @@ def load_games(data, bots):
     if not index.exists():
         return games, skipped
     seen = set()
-    for line in index.read_text().splitlines():
-        entry = json.loads(line)
+    for entry in read_index(index):
         path = data / "replays" / f"{entry['id']}.log.gz"
         if not path.exists():
-            skipped["no log"] += 1
+            skipped["private"] += 1
             continue
         players, winner, rated, start = parse_log(gzip.decompress(path.read_bytes()).decode())
         if rated != "":
@@ -177,6 +176,8 @@ def bot_snapshot_stats(snaps):
         for uid, row in b["rows"].items():
             cell = stats[uid][day(b["time"])]
             cell["elo"] = row["elo"]
+            cell["low"] = min(cell.get("low", row["elo"]), row["elo"])
+            cell["high"] = max(cell.get("high", row["elo"]), row["elo"])
             if uid in a["rows"]:
                 prev = a["rows"][uid]
                 games = (row["w"] + row["l"] + row["t"]) - (prev["w"] + prev["l"] + prev["t"])
@@ -187,7 +188,10 @@ def bot_snapshot_stats(snaps):
                     cell["after_gap"] += games
                 tracked[uid] += b["time"] - a["time"]
     for uid, row in snaps[0]["rows"].items():
-        stats[uid][day(snaps[0]["time"])].setdefault("elo", row["elo"])
+        cell = stats[uid][day(snaps[0]["time"])]
+        cell.setdefault("elo", row["elo"])
+        cell["low"] = min(cell.get("low", row["elo"]), row["elo"])
+        cell["high"] = max(cell.get("high", row["elo"]), row["elo"])
     return stats, tracked
 
 
@@ -198,10 +202,11 @@ def bots_section(snaps, stats, tracked):
         days = stats[uid]
         games = sum(c["games"] for c in days.values())
         wins = sum(c["wins"] + 0.5 * c["ties"] for c in days.values())
-        elos = [c["elo"] for c in days.values() if "elo" in c]
+        lows = [c["low"] for c in days.values() if "low" in c]
+        highs = [c["high"] for c in days.values() if "high" in c]
         on_board = sum(uid in s["board"] for s in snaps)
         per_day = f"{games / (tracked[uid] / 86400):.1f}" if tracked[uid] else "-"
-        rows.append((uid, f"{on_board}/{len(snaps)}", f"{min(elos):.0f}-{max(elos):.0f}", games, per_day,
+        rows.append((uid, f"{on_board}/{len(snaps)}", f"{min(lows):.0f}-{max(highs):.0f}", games, per_day,
                      pct(wins / games) if games else "-"))
     out.append(table(["bot", "in top 500 (snapshots)", "rating range", "rated games", "games/day", "score"], rows))
     out += ["", "Games and score come from the change in `w`, `l` and `t` between consecutive snapshots, from the board "
@@ -313,7 +318,7 @@ def main(data):
     out += coverage_section(snaps, stats, games)
     skipped_note = ", ".join(f"{k}: {v}" for k, v in sorted(skipped.items())) or "none"
     out += replay_section("Saved replays during the monitored days", window,
-                          f"Rated ladder replays of the bots above that started between the first and last snapshot. Replays left out: {skipped_note}.")
+                          f"Rated ladder replays of the bots above that started between the first and last snapshot. Left out of the whole index: {skipped_note}.")
     out += replay_section("Saved replays since opt-in matching began", since,
                           f"Every rated ladder replay the search returned for these bots that started on or after {day(POLICY_START)}, "
                           "including those before monitoring began.")
