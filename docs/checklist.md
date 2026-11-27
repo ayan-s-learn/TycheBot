@@ -10,11 +10,13 @@ Phase 1 exit ([plan.md](plan.md), Phases).
 
 ## Next replan
 
-When any of T10, T11, T14, T16, T17, T18 or T19 has a `Reviewed:` line or stops on a stop condition (workflow.md, Task session). Also when T10 pushes its layer as its first milestone (T10, Brief), which v0-lite takes as it stands. Once T11's learner interface and T16's tensors are in, brief the batch env. Once T10's layer, T11, T14, T16, T17 and T19 are in, brief the v0-lite run (Later in Phase 1, For the v0-lite brief).
+When any of T10, T11, T14, T15, T16, T17, T18 or T19 has a `Reviewed:` line or stops on a stop condition (workflow.md, Task session). Also when T10 pushes its layer as its first milestone (T10, Brief), which v0-lite takes as it stands. Once T11's learner interface and T16's tensors are in, brief the batch env. Once T10's layer, T11, T14, T16, T17 and T19 are in, brief the v0-lite run (Later in Phase 1, For the v0-lite brief).
 
 ## Needs you
 
-Nothing open. Answered 2026-11-27: T12's usage-matched selection is accepted (decisions.md, D4); Pokémon Champions content is out of scope, since the bot plays only `gen9nationaldex` as the pin defines it; the ~$5 rented benchmark is approved (T18).
+- **T18's provider account:** when you want T18 to run, set up the account and payment for a rented box and give the session access from your Mac (T18, Limits).
+
+Answered 2026-11-27: T12's usage-matched selection is accepted (decisions.md, D4); Pokémon Champions content is out of scope, since the bot plays only `gen9nationaldex` as the pin defines it; the ~$5 rented benchmark is approved (T18).
 
 ## Active
 
@@ -37,6 +39,7 @@ All seven can start now, each in its own session (`/do-task T16` and so on). The
 Briefed once their inputs exist (plan.md, Phase 1):
 
 - **The Python batch env,** joining T09's transport and T16's tensors to T11's learner interface. It logs training's `[Invalid choice]` rate and decisions per game, since self-play game lengths are unmeasured and set games/day. The 1M-request fuzz is at Phase 2's online gate.
+- **Joining the parts,** in the batch env's brief or v0-lite's: wire T17's resampling into `drawGame` (`worker/sim/`, after T14 merges), and swap `env.ts` to T10's layer. Then rerun T16's leak test and T14's mask check on the result.
 - **The v0-lite run** (plan.md, Phase 1), last. It needs T10's layer as it stands, T11, T14, T16, T17, T19 and the batch env. T14's mask check and T16's leak test must pass on that observation. Its brief adapts max-damage to record version 2.
 - **For the v0-lite brief** (raised by the strategic review of PR #12, 2026-11-27):
   - Set the bar from T16's 3-hour calibration run and T14's skeleton-against-max-damage result, not only plan.md's default of 60%. Also require the win rate against max-damage to rise over checkpoints, and report it on the held-out teams.
@@ -54,7 +57,7 @@ Raised by the strategic review of PR #8 (2026-11-26), not yet planned:
 
 - D4: grow the Phase 2 pool toward 200–300 teams, sized from T12's count of what the sources yield. mikumiku trained on ~1,260. T12 counted 650 distinct teams that validate as OU from the NatDex tour dumps and sample teams: 191 first posted in 2026, 147 since April, 97 of unknown date (T12, Result).
 - D2: restate the gate so the Rust engine comes only after cheaper levers (the 68-calc set, fewer PPO epochs, a calc fork, a modest budget increase), and recalibrate it after the trial.
-- Phase 2's experiments: ablate the calcs (288 against 68 against none) ahead of the token A/B, since mikumiku reached #1 with no calcs and they cost ~68% of a decision at 12 processes in T09's skeleton (0.74 of 1.09 ms, plan.md, Compute), before the sim's slowdown with calcs between its steps (up to ~0.10 ms, T02 and T06). Consider running the token A/B rented.
+- Phase 2's experiments: ablate the calcs (288 against 68 against none) ahead of the token A/B, since mikumiku reached #1 with no calcs and they cost ~68% of a decision at 12 processes in T09's skeleton (0.74 of 1.09 ms, plan.md, Compute). Consider running the token A/B rented.
 - Play-time search cost on Showdown (`sim/state.ts` serialize and deserialize per rollout), D2's second trigger. A microbenchmark fits in Phase 1's slack.
 - D9's open question on "held" (decisions.md, D9).
 - Whether to register a bot account early and play ~100 rated games with a poke-env heuristic player, to measure queue times and the client before the online gate. Your call.

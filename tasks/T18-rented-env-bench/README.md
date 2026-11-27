@@ -21,13 +21,13 @@
   - The box is terminated, and its total cost is recorded from the provider's billing.
 - **May change:** `tasks/T18-rented-env-bench/` only.
 - **Limits:**
-  - Spend: aim for ≤$5, and stop at $8 total.
+  - Spend: aim for ≤$5, and stop at $6 total (the user approved ~$5).
   - The user creates the account and payment, and gives the session access to the box. Run from the user's Mac.
   - No credentials, account details or hostnames in the repo, which is public.
   - One session.
   - The shared timing lock is for this Mac's runs; the box needs no lock, but run nothing else on it.
 - **Stop and report if:**
-  - the spend would pass $8;
+  - the spend would pass $6;
   - setup fails on the box in a way that needs changing project code;
   - the env-only figure alone exceeds ~$4 per million games, half the gate, at the best count.
 

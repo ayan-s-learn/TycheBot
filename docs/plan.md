@@ -54,7 +54,7 @@ Training runs on Showdown's simulator through the first scale-up. A Rust engine 
   - Field: weather, terrain, per-side hazards and screens, Trick Room, turn.
   - 6 own mons: species, ability, item and moves, plus stats, HP, status, boosts and volatiles.
   - 6 opposing mons: species from preview (with `-*` formes unresolved), revealed attributes, an "unknown" embedding otherwise. Their moves are D7's prior-set moves, each flagged revealed or assumed.
-    - Each also carries the prior's confidence: the share of its species' library weight, among sets consistent with what has been revealed, that the prior set's combination holds (added 2026-11-27; T16). The first library set matches only 21% of training-team mons' item, ability and moves.
+    - Each also carries the prior's confidence: the share of its species' library weight, among sets consistent with what has been revealed, that the prior set's combination holds (added 2026-11-27; T16). The first library set matches only 21% of training-team mons' item, ability and moves (51 of 240; planning session's check, 2026-11-27).
     - Evidence that outlasts the event window: the speed order seen against each of our mons, and the largest damage seen relative to the calc.
   - The active mon's 4 moves, which the action head reads.
   - The last 16 events.

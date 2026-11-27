@@ -23,6 +23,7 @@
     - The parameter count is within 10% of 5M at the v0 size.
     - A checkpoint saves and loads with its versions.
   - Throughput on MPS at 33 tokens, on synthetic batches, under the timing lock (3 runs): inference and training decisions/s at T07's fastest minibatch, against T07's stand-in figures (plan.md, Compute). A gap over 15% either way is explained.
+  - If T16 has merged, the net runs forward and backward on real version 2 tensors. If not, Result says so, and the next replan assigns it.
   - `uv run pytest` passes.
 - **May change:** `tyche/net/`, `docs/areas/net.md`, `tasks/T19-net-v0/`.
 - **Limits:** up to two sessions, no paid services. Take the timed runs on the user's Mac, under the timing lock (AGENTS.md, Conventions: Timed runs).

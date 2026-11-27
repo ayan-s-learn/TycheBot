@@ -28,7 +28,7 @@
   - **`tyche/eval/`, the eval runner.** It plays agent A against agent B in duplicate pairs (plan.md, Evaluation: Pairings).
     - A pair is two games with the same battle seed and the same team in each seat, with the agents swapped between seats. So each agent plays both teams and both seats, and the two games differ only in which agent holds which seat.
     - The game list is fixed by (seed, worker, game) before games start, as T09's eval does, so a rerun plays the same games.
-    - It reports the win rate with a 95% interval, by seat, and the pair outcomes (both won, split, both lost). It also reports ties, cut-off games, mean turns, and the workers' `[Invalid choice]` and `[Unavailable choice]` counts.
+    - It reports the win rate with a 95% interval, by seat, and the pair outcomes (A won both, split, A lost both). It also reports ties, cut-off games, mean turns, and the workers' `[Invalid choice]` and `[Unavailable choice]` counts.
     - The output is a JSON file whose format you document. The SPRT comes later (checklist, Later in Phase 1); keep the per-pair outcomes in the output, so it can read them.
   - **The worker support duplicate games need:** a game schedule passed through `main.ts`'s config to `EnvConfig.games`. Record version 1 is unchanged.
   - **The sampled mask check, as a rerunnable command.** It draws ≥10k requests from random games and ≥10k from games T09's skeleton policy plays.
@@ -50,7 +50,7 @@
   - The four eval results are in Result, with their commands in Outputs, and a rerun gives identical game lists.
   - Tests (AGENTS.md, Conventions: Tests) and `tsc -p tsconfig.json` pass.
 - **May change:** `tyche/baselines/`, `tyche/eval/`, `worker/eval/`, `worker/sim/`, `worker/skeleton/main.ts`, `worker/skeleton/mask.ts` and `mask.test.ts` (fixes the check finds), `docs/areas/eval.md`, `tasks/T14-eval-baselines/`.
-  - T16 owns `worker/skeleton/env.ts`, `record.ts`, `vocab.ts`, `drive.ts`, `worker/calc/` and `tyche/transport/`. Use them by import; changes you need there go under For integration.
+  - T16 owns `worker/skeleton/env.ts`, `record.ts`, `vocab.ts`, `drive.ts`, `worker/calc/` and `tyche/transport/`. Use them by import; changes you need there go under For integration. T16 keeps `Env`'s config (`games`), `collect`, `encode`, `apply`, `slots`, `stats`, `decisions` and `counts`, and `drive.ts`'s `step` and `randomLegal`, working for you.
   - A mask fix that needs the queued-switch tracking in `env.ts` changed is one of those. Say so in Progress early, since T16 edits `env.ts` in parallel.
 - **Limits:** up to two sessions, no paid services. No timed runs are needed.
 - **Stop and report if:**

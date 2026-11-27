@@ -8,7 +8,7 @@
 - **Spec:** T13's Brief, with this brief taking precedence. T13 closed without its acceptance checks, which are this task's.
 - **May change:** `tasks/T15-ladder-writeup/`. Fixes to T13's scripts are proposed under For integration, or made in this folder as copies of both scripts (`summary.py` imports from `fetch.py`).
 - **Limits:**
-  - One session, on the user's Mac, from 2026-12-10 22:52 UTC.
+  - One session, on the user's Mac, from 2026-12-10 22:52 UTC (T13's proposal: 14 days after its job's first hourly run).
   - Commit only aggregates and registered bots' names.
   - When the snapshots it needs are in, remove the job (`tasks/T13-ladder-monitor/job.sh uninstall`), which is persistent configuration. Then run a last collection by hand (`uv run --no-project ~/.tychebot/t13-ladder-monitor/bin/fetch.py ~/.tychebot/t13-ladder-monitor --collect`), never both at once.
   - Sleep gaps are expected and only need listing; `runs.jsonl` tells a dead job from sleep.
