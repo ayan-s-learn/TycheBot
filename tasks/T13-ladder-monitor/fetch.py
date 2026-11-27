@@ -1,17 +1,25 @@
+# /// script
+# requires-python = ">=3.14"
+# ///
 """Hourly ladder snapshot, plus a daily collection of registered bots' replays.
 
-uv run --no-project tasks/T13-ladder-monitor/fetch.py <data dir>
+uv run --no-project tasks/T13-ladder-monitor/fetch.py <data dir> [--collect]
 
-Each run snapshots both gen9nationaldex boards. If the last replay collection was
->= 23 hours ago, it also collects the new saved replays (search entries and logs)
-of every registered bot seen in the bots-included top 500 so far. Raw data holds
-other players' names, so the data dir stays out of git.
+Each run snapshots both gen9nationaldex boards and the public profile of every
+registered bot seen so far, so a bot that drops out of the top 500 is still tracked.
+If the last replay collection was >= 23 hours ago, or with --collect, it also
+collects the bots' new saved replays (search entries and logs). An account counts
+as a registered bot once two snapshots in a row show it on the bots-included board
+but not the default one. Raw data holds other players' names, so the data dir
+stays out of git. Don't run it by hand while the job runs: two runs at once
+break the request rate.
 
 Data dir layout:
-  snapshots/<UTC time>.json.gz  {"time", "default", "bots"}: both boards as served
+  snapshots/<UTC time>.json.gz  {"time", "default", "bots", "profiles"}: both boards as
+                                served, and each bot's gen9nationaldex entry from its profile
   replays/<id>.log.gz           replay logs as served
   replays/index.jsonl           search entries, one per line, with "bot" and "fetched"
-  state.json                    {"bots_seen", "backfilled", "last_collection"}
+  state.json                    {"bots_seen", "flagged", "backfilled", "last_collection"}
   runs.jsonl                    one line per run: time, what it did, any error
 """
 
@@ -26,6 +34,7 @@ import urllib.request
 from pathlib import Path
 
 LADDER = "https://pokemonshowdown.com/ladder/gen9nationaldex.json"
+PROFILE = "https://pokemonshowdown.com/users"
 SEARCH = "https://replay.pokemonshowdown.com/search.json"
 REPLAY = "https://replay.pokemonshowdown.com"
 FORMAT = "gen9nationaldex"
@@ -67,39 +76,49 @@ def get(url, as_json=True):
         except json.JSONDecodeError:
             # A challenge or login page in place of JSON.
             raise Blocked(f"non-JSON body on {url}: {body[:120]!r}")
+    if isinstance(error, urllib.error.HTTPError) and error.code == 429:
+        raise Blocked(f"429 after retries on {url}")
     raise RuntimeError(f"giving up on {url}: {error}")
 
 
-def registered_bots(default, bots):
+def flagged(default, bots):
     """Accounts on the bots-included board that the default board hides.
 
-    A player at the bottom of the bots-included board can be missing from the
-    default one only if it is a bot, unless it rated below the default board's cutoff.
+    A human can show up here once: the boards are fetched seconds apart, and one
+    who climbs past the default board's cutoff in between is on the second only.
     """
     shown = {row["userid"] for row in default["toplist"]}
-    cutoff = min(row["elo"] for row in default["toplist"])
-    return [r["userid"] for r in bots["toplist"] if r["userid"] not in shown and r["elo"] >= cutoff]
+    return [r["userid"] for r in bots["toplist"] if r["userid"] not in shown]
 
 
-def snapshot(data, now):
+def write_atomic(path, data):
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_bytes(data)
+    tmp.rename(path)
+
+
+def snapshot(data, bots_seen, now):
     default = get(LADDER)
     bots = get(LADDER + "?includebots")
     for board in (default, bots):
         if not board or len(board.get("toplist", [])) == 0:
             raise RuntimeError("empty board")
+    profiles = {}
+    for bot in bots_seen:
+        profile = get(f"{PROFILE}/{bot}.json")
+        profiles[bot] = ((profile or {}).get("ratings") or {}).get(FORMAT)
     out = data / "snapshots" / time.strftime("%Y%m%dT%H%M%SZ.json.gz", time.gmtime(now))
     out.parent.mkdir(parents=True, exist_ok=True)
-    tmp = out.with_suffix(".tmp")
-    tmp.write_bytes(gzip.compress(json.dumps({"time": now, "default": default, "bots": bots}).encode()))
-    tmp.rename(out)
-    return registered_bots(default, bots)
+    body = {"time": now, "default": default, "bots": bots, "profiles": profiles}
+    write_atomic(out, gzip.compress(json.dumps(body).encode()))
+    return flagged(default, bots)
 
 
 def collect(data, state, now):
     """New search entries and logs for each bot seen. Returns the number of new logs.
 
-    A bot's first walk pages back through all its saved replays. After that, a page
-    with nothing new ends the walk, since the search lists newest first.
+    A bot's first walk pages back through all its saved replays. After that, the walk
+    ends at the first page holding a replay already collected.
     """
     replays = data / "replays"
     replays.mkdir(parents=True, exist_ok=True)
@@ -119,15 +138,23 @@ def collect(data, state, now):
             for entry in fresh:
                 log = None
                 if not (entry.get("password") or entry.get("private")):
-                    log = get(f"{REPLAY}/{entry['id']}.log", as_json=False)
+                    try:
+                        log = get(f"{REPLAY}/{entry['id']}.log", as_json=False)
+                    except Blocked:
+                        raise
+                    except Exception as e:
+                        # Left out of the index, so the next collection retries it.
+                        print(f"skipping {entry['id']}: {e}", flush=True)
+                        continue
                 if log is not None:
                     (replays / f"{entry['id']}.log.gz").write_bytes(gzip.compress(log))
                     new += 1
                 with index.open("a") as f:
                     f.write(json.dumps({**entry, "bot": bot, "fetched": now, "log": log is not None}) + "\n")
                 known.add(entry["id"])
-            # A 51st entry means there is another page.
-            if len(page) <= 50 or (not fresh and bot in state["backfilled"]):
+            # A 51st entry means there is another page. Once a bot is backfilled, a known
+            # entry means the older ones are known too, since the search lists newest first.
+            if len(page) <= 50 or (len(fresh) < len(page) and bot in state["backfilled"]):
                 break
             # `before` is exclusive; +1 keeps uploads that share the last timestamp.
             before = page[-1]["uploadtime"] + 1
@@ -138,24 +165,27 @@ def collect(data, state, now):
     return new
 
 
-def main(data):
+def main(data, force_collect=False):
     data.mkdir(parents=True, exist_ok=True)
     now = int(time.time())
     state_path = data / "state.json"
-    state = json.loads(state_path.read_text()) if state_path.exists() else {"bots_seen": [], "backfilled": [], "last_collection": 0}
+    state = {"bots_seen": [], "flagged": [], "backfilled": [], "last_collection": 0}
+    if state_path.exists():
+        state |= json.loads(state_path.read_text())
     run = {"time": now}
     try:
-        bots = snapshot(data, now)
-        run["bots"] = bots
-        state["bots_seen"] = sorted(set(state["bots_seen"]) | set(bots))
-        if now - state["last_collection"] >= COLLECT_EVERY_S:
+        flags = snapshot(data, state["bots_seen"], now)
+        run["flagged"] = flags
+        state["bots_seen"] = sorted(set(state["bots_seen"]) | (set(flags) & set(state["flagged"])))
+        state["flagged"] = flags
+        if force_collect or now - state["last_collection"] >= COLLECT_EVERY_S:
             run["new_replays"] = collect(data, state, now)
             state["last_collection"] = now
     except Exception as e:
         run["error"] = f"{type(e).__name__}: {e}"
         run["blocked"] = isinstance(e, Blocked)
         traceback.print_exc()
-    state_path.write_text(json.dumps(state))
+    write_atomic(state_path, json.dumps(state).encode())
     run["seconds"] = int(time.time()) - now
     with (data / "runs.jsonl").open("a") as f:
         f.write(json.dumps(run) + "\n")
@@ -164,4 +194,4 @@ def main(data):
 
 
 if __name__ == "__main__":
-    sys.exit(main(Path(sys.argv[1]).expanduser().resolve()))
+    sys.exit(main(Path(sys.argv[1]).expanduser().resolve(), "--collect" in sys.argv[2:]))

@@ -1,3 +1,6 @@
+# /// script
+# requires-python = ">=3.14"
+# ///
 """Result's tables from fetch.py's data dir, as Markdown on stdout.
 
 uv run --no-project tasks/T13-ladder-monitor/summary.py <data dir>
@@ -14,6 +17,8 @@ import statistics
 import sys
 from collections import defaultdict
 from pathlib import Path
+
+from fetch import flagged
 
 GAP_BANDS = [(-10_000, -300), (-300, -200), (-200, -100), (-100, 0), (0, 100), (100, 200), (200, 10_000)]
 GAP_FLOOR = 90 * 60  # snapshots further apart than this count as a gap
@@ -44,19 +49,34 @@ def band(rating, width=100):
 
 
 def load_snapshots(data):
+    """Snapshots by time, with each registered bot's row: its board row while it is in
+    the top 500, else its profile entry (which has no ties, so they carry over)."""
     snaps = []
-    for path in sorted((data / "snapshots").glob("*.json.gz")):
+    for path in (data / "snapshots").glob("*.json.gz"):
         s = json.loads(gzip.decompress(path.read_bytes()))
-        default, bots = s["default"]["toplist"], s["bots"]["toplist"]
-        shown = {r["userid"] for r in default}
-        cutoff = min(r["elo"] for r in default)
+        default = s["default"]["toplist"]
+        flags = set(flagged(s["default"], s["bots"]))
         snaps.append({
-            "time": s["time"],
-            "top1": default[0]["elo"],
-            "top10": default[9]["elo"],
-            "bots": {r["userid"]: r for r in bots if r["userid"] not in shown and r["elo"] >= cutoff},
+            "time": s["time"], "top1": default[0]["elo"], "top10": default[9]["elo"],
+            "board": {r["userid"]: r for r in s["bots"]["toplist"] if r["userid"] in flags},
+            "profiles": s.get("profiles", {}),
         })
-    return sorted(snaps, key=lambda s: s["time"])
+    snaps.sort(key=lambda s: s["time"])
+    # As in fetch.py: a bot once flagged in two snapshots in a row.
+    bots = set().union(*(set(a["board"]) & set(b["board"]) for a, b in zip(snaps, snaps[1:])))
+    ties = {}
+    for snap in snaps:
+        snap["rows"] = {}
+        for uid in bots:
+            if uid in snap["board"]:
+                row = snap["board"][uid]
+                ties[uid] = row["t"]
+            elif snap["profiles"].get(uid):
+                row = {**snap["profiles"][uid], "t": ties.get(uid, 0)}
+            else:
+                continue
+            snap["rows"][uid] = row
+    return snaps, bots
 
 
 def parse_log(text):
@@ -148,43 +168,69 @@ def snapshot_section(snaps):
 
 
 def bot_snapshot_stats(snaps):
-    """Per bot and day: last rating and rank, and games and wins from w/l/t deltas."""
-    stats = defaultdict(lambda: defaultdict(lambda: {"games": 0, "wins": 0, "ties": 0}))
+    """Per bot and day: last rating, and games, wins and ties from w/l/t deltas,
+    credited to the day of the later snapshot. "after_gap" is the part credited
+    across a gap, and "tracked" the seconds covered by consecutive rows."""
+    stats = defaultdict(lambda: defaultdict(lambda: {"games": 0, "wins": 0, "ties": 0, "after_gap": 0}))
+    tracked = defaultdict(int)
     for a, b in zip(snaps, snaps[1:]):
-        for uid, row in b["bots"].items():
+        for uid, row in b["rows"].items():
             cell = stats[uid][day(b["time"])]
             cell["elo"] = row["elo"]
-            if uid in a["bots"]:
-                prev = a["bots"][uid]
-                cell["games"] += (row["w"] + row["l"] + row["t"]) - (prev["w"] + prev["l"] + prev["t"])
+            if uid in a["rows"]:
+                prev = a["rows"][uid]
+                games = (row["w"] + row["l"] + row["t"]) - (prev["w"] + prev["l"] + prev["t"])
+                cell["games"] += games
                 cell["wins"] += row["w"] - prev["w"]
                 cell["ties"] += row["t"] - prev["t"]
-    for uid, row in snaps[0]["bots"].items():
+                if b["time"] - a["time"] > GAP_FLOOR:
+                    cell["after_gap"] += games
+                tracked[uid] += b["time"] - a["time"]
+    for uid, row in snaps[0]["rows"].items():
         stats[uid][day(snaps[0]["time"])].setdefault("elo", row["elo"])
-    return stats
+    return stats, tracked
 
 
-def bots_section(snaps, stats):
-    out = ["## Registered bots in the bots-included top 500", ""]
-    present = defaultdict(int)
-    for s in snaps:
-        for uid in s["bots"]:
-            present[uid] += 1
+def bots_section(snaps, stats, tracked):
+    out = ["## Registered bots", ""]
     rows = []
     for uid in sorted(stats):
         days = stats[uid]
         games = sum(c["games"] for c in days.values())
         wins = sum(c["wins"] + 0.5 * c["ties"] for c in days.values())
         elos = [c["elo"] for c in days.values() if "elo" in c]
-        rows.append((uid, f"{present[uid]}/{len(snaps)}", f"{min(elos):.0f}-{max(elos):.0f}", games,
-                     f"{games / max(1, len(days)):.1f}", pct(wins / games) if games else "-"))
+        on_board = sum(uid in s["board"] for s in snaps)
+        per_day = f"{games / (tracked[uid] / 86400):.1f}" if tracked[uid] else "-"
+        rows.append((uid, f"{on_board}/{len(snaps)}", f"{min(elos):.0f}-{max(elos):.0f}", games, per_day,
+                     pct(wins / games) if games else "-"))
     out.append(table(["bot", "in top 500 (snapshots)", "rating range", "rated games", "games/day", "score"], rows))
-    out += ["", "Games and score come from the change in `w`, `l` and `t` between consecutive snapshots that both show the bot. A tie scores half.", ""]
+    out += ["", "Games and score come from the change in `w`, `l` and `t` between consecutive snapshots, from the board "
+            "while the bot is in the top 500 and from its profile otherwise. A tie scores half. Games per day divide by "
+            "the time those snapshot pairs cover.", ""]
     for uid in sorted(stats):
         out += [f"### {uid}, by day (UTC)", ""]
-        out.append(table(["day", "last rating", "games", "wins", "ties"],
-                         [(d, f"{c['elo']:.0f}" if "elo" in c else "-", c["games"], c["wins"], c["ties"]) for d, c in sorted(stats[uid].items())]))
-        out.append("")
+        out.append(table(["day", "last rating", "games", "wins", "ties", "games across a gap"],
+                         [(d, f"{c['elo']:.0f}" if "elo" in c else "-", c["games"], c["wins"], c["ties"], c["after_gap"])
+                          for d, c in sorted(stats[uid].items())]))
+        out += ["", f"Games across a gap were played during a gap over {GAP_FLOOR // 60} minutes that ended that day, "
+                "possibly on an earlier day.", ""]
+    return out
+
+
+def d9_section(snaps, sets):
+    """The score that holds #10's and #1's current rating against the opponents met."""
+    out = ["## Score needed to hold #10 and #1 against these opponents", "",
+           "Mean Elo expectation of a player rated at the last snapshot's #10 or #1 against each opponent rating seen. "
+           "Holding a rating takes scoring this.", ""]
+    rows = []
+    for name, games in sets:
+        if not games:
+            continue
+        for rank, rating in (("#10", snaps[-1]["top10"]), ("#1", snaps[-1]["top1"])):
+            need = sum(expected(rating, g["opp_rating"]) for g in games) / len(games)
+            rows.append((name, rank, f"{rating:.0f}", len(games), pct(need)))
+    out.append(table(["games", "rank", "rating", "n", "score needed"], rows))
+    out.append("")
     return out
 
 
@@ -243,7 +289,7 @@ def coverage_section(snaps, stats, games):
         snap_games = sum(c["games"] for c in stats[uid].values())
         snap_score = sum(c["wins"] + 0.5 * c["ties"] for c in stats[uid].values())
         # Games the snapshots can see: after the first snapshot that shows the bot.
-        first = next(s["time"] for s in snaps if uid in s["bots"])
+        first = next(s["time"] for s in snaps if uid in s["rows"])
         gs = [g for g in games if g["bot"] == uid and g["start"] >= first and g["start"] <= snaps[-1]["time"]]
         rows.append((uid, snap_games, len(gs), pct(len(gs) / snap_games) if snap_games else "-",
                      pct(snap_score / snap_games) if snap_games else "-", pct(sum(g["score"] for g in gs) / len(gs)) if gs else "-"))
@@ -253,24 +299,25 @@ def coverage_section(snaps, stats, games):
 
 
 def main(data):
-    snaps = load_snapshots(data)
+    snaps, bots = load_snapshots(data)
     if not snaps:
         sys.exit("no snapshots")
-    stats = bot_snapshot_stats(snaps)
-    bots = set(stats)
+    stats, tracked = bot_snapshot_stats(snaps)
     games, skipped = load_games(data, bots)
     start, end = snaps[0]["time"], snaps[-1]["time"]
     window = [g for g in games if start <= g["start"] <= end]
+    since = [g for g in games if g["start"] >= POLICY_START]
     out = ["# T13 ladder-pool summary", "", f"Generated from {data.name}: {stamp(start)} to {stamp(end)} UTC.", ""]
     out += snapshot_section(snaps)
-    out += bots_section(snaps, stats)
+    out += bots_section(snaps, stats, tracked)
     out += coverage_section(snaps, stats, games)
     skipped_note = ", ".join(f"{k}: {v}" for k, v in sorted(skipped.items())) or "none"
     out += replay_section("Saved replays during the monitored days", window,
                           f"Rated ladder replays of the bots above that started between the first and last snapshot. Replays left out: {skipped_note}.")
-    out += replay_section("Saved replays since opt-in matching began", [g for g in games if g["start"] >= POLICY_START],
+    out += replay_section("Saved replays since opt-in matching began", since,
                           f"Every rated ladder replay the search returned for these bots that started on or after {day(POLICY_START)}, "
                           "including those before monitoring began.")
+    out += d9_section(snaps, [("monitored days", window), ("since opt-in matching", since)])
     print("\n".join(out))
 
 
