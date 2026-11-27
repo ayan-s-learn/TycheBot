@@ -31,6 +31,21 @@
 ## Progress
 
 ```text
+2026-11-27 (2)
+State: done (the setup half, as in the entry below)
+Verified: review pass 1 (Sonnet, high) fixes are in at cd3efbd. fetch.py also snapshots each
+  bot's public profile, so a bot that drops out of the top 500 is still tracked (imjustpixel2 was
+  17 points above the cutoff); an account counts as a bot only after two flags in a row; a
+  persistent 429 counts as blocked; one failed log no longer aborts a collection; state.json is
+  written atomically; `--collect` forces a collection. summary.py gains the D9 table, games/day
+  over covered time, and games credited across gaps. 5 tests pass. The job was reinstalled
+  2026-11-27 04:49 UTC; its run fetched both profiles and exited 0, and the installed copy
+  matches the committed fetch.py.
+Pending: review pass 2.
+Next: review pass 2, then the planning session merges.
+```
+
+```text
 2026-11-27
 State: done (the setup half; the user agreed on 2026-11-27 to split the write-up into its own
   task, proposed under For integration, so the acceptance checks move there)
@@ -72,15 +87,20 @@ Setup only; the tables and the D9 check are the write-up task's. What the first 
 - **Endpoints:** both boards, the replay search and replay logs answer to a generic User-Agent
   with no login or challenge. Each board lists 500 entries. A missing replay log returns 404.
 - **Registered bots:** two in the bots-included top 500, guoguo10000 (#117, 1717) and imjustpixel2
-  (#249, 1672). A bot rated below the default board's lowest `elo` can't be told from a human
-  pushed off that board, so it is missed (`fetch.registered_bots`).
-- **Saved replays are a small sample.** The search returned 646 replays for the two, back to
-  2026-09-21, but only 29 were uploaded since opt-in matching began on 2026-10-20 (guoguo10000 6
+  (#248, 1672). By 2026-11-27 imjustpixel2 was at 1639, 17 points above the board's 500th, so
+  `fetch.py` also reads each bot's profile (`pokemonshowdown.com/users/<id>.json`, which gives
+  `elo`, `w` and `l` but not `t`) and keeps tracking a bot off the board.
+- **False flags:** the boards are fetched seconds apart, so a human who climbs past the default
+  board's cutoff in between shows up as a bot once. An account counts as a bot only after two
+  snapshots in a row flag it, in both scripts.
+- **Saved replays are a small sample.** The search returned 646 replays for the two, guoguo10000's
+  back to 2026-09-23 and imjustpixel2's to 2023-12-23, but only 29 were uploaded since opt-in matching began on 2026-10-20 (guoguo10000 6
   of 42, imjustpixel2 23 of 604), all rated ladder games. `summary.py` leaves games before
   2026-10-20 out of its history tables. In those 29 games the opponents' median was 1571 (range
   1393–1752). The boards' lifetime `w`+`l` totals, 337 for guoguo10000 and 4,222 for
   imjustpixel2, suggest far more games than replays; the write-up measures the share over the
-  monitored days.
+  monitored days. Against those 29 games' opponents, holding the 2026-11-27 #10 (1863) takes an
+  83.7% score and holding #1 (1929) 88.1%, inside D9's ~77–86% and ~85–91%.
 - **Sleep gaps:** launchd runs a missed interval once on wake, and this Mac slept ~60 of the 161
   hours before 2026-11-26 (`pmset -g log`). The user accepted the gaps. Games per day still add
   up across a gap, since they come from `w`/`l`/`t` deltas.
@@ -94,7 +114,9 @@ Setup only; the tables and the D9 check are the write-up task's. What the first 
   `install` puts in `<data dir>/bin/`, so it doesn't depend on any checkout. Rerun `install` to
   pick up an edit to `fetch.py`. Its output goes to `<data dir>/job.log`, and one line per run to
   `<data dir>/runs.jsonl`, with `"blocked": true` on a login wall or a block.
-- One fetch by hand: `uv run --no-project tasks/T13-ladder-monitor/fetch.py <data dir>`.
+- One fetch by hand: `uv run --no-project tasks/T13-ladder-monitor/fetch.py <data dir> [--collect]`,
+  where `--collect` forces a replay collection. Not while the job is running a collection: two
+  runs at once break the one-request-per-second limit.
 - Tables, from whatever has been collected so far:
   `uv run --no-project tasks/T13-ladder-monitor/summary.py <data dir>`.
 
@@ -125,9 +147,15 @@ Setup only; the tables and the D9 check are the write-up task's. What the first 
      integration.
    - **May change:** `tasks/T<NN>-ladder-writeup/`. Fixes to T13's scripts are proposed under For
      integration, or made in this folder as copies.
+   - **Spec:** T13's Brief, with this brief taking precedence. T13 closes without its acceptance
+     checks, which are this task's.
    - **Limits:** one session, from 2026-12-10 22:52 UTC. Commit only aggregates and registered
-     bots' names. Remove the job at the end (`tasks/T13-ladder-monitor/job.sh uninstall`), which
-     is persistent configuration, after the snapshots it needs are in.
+     bots' names. When the snapshots it needs are in, run a last collection
+     (`uv run --no-project ~/.tychebot/t13-ladder-monitor/bin/fetch.py ~/.tychebot/t13-ladder-monitor --collect`),
+     then remove the job (`tasks/T13-ladder-monitor/job.sh uninstall`), which is persistent
+     configuration. Sleep gaps are expected and only need listing.
+   - **If few replays:** with under 30 saved replays in the monitored days, report the snapshot
+     tables and the since-opt-in replay tables, labelled as such, rather than stopping.
    - **Stop and report if,** checked first at session start:
      - `runs.jsonl` shows `"blocked": true`, or an endpoint needs a login;
      - fewer than two registered bots played rated games in the first week (to 2026-12-03).
