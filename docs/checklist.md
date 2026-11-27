@@ -10,7 +10,7 @@ Phase 1 exit ([plan.md](plan.md), Phases).
 
 ## Next replan
 
-When any of T10, T11, T14, T16, T17 or T18 has a `Reviewed:` line or stops on a stop condition (workflow.md, Task session). Also when T16 pushes its record version 2 and tensor layout (Progress, `Verified`): that is the input the 5M net's brief needs (Later in Phase 1). Once T10's layer, T11, T14 and T16 are in, brief the batch env and the v0-lite run.
+When any of T10, T11, T14, T16, T17, T18 or T19 has a `Reviewed:` line or stops on a stop condition (workflow.md, Task session). Also when T10 pushes its layer as its first milestone (T10, Brief), which v0-lite takes as it stands. Once T11's learner interface and T16's tensors are in, brief the batch env. Once T10's layer, T11, T14, T16, T17 and T19 are in, brief the v0-lite run (Later in Phase 1, For the v0-lite brief).
 
 ## Needs you
 
@@ -22,23 +22,28 @@ Nothing open. Answered 2026-11-27: T12's usage-matched selection is accepted (de
 
 ## Ready
 
-All six can start now, each in its own session (`/do-task T16` and so on). Their May change paths are disjoint. T14 and T16 both work around `worker/skeleton/`, split by file: T16 has `env.ts`, `record.ts`, `vocab.ts` and `drive.ts`, and T14 has `main.ts` and `mask.ts`.
+All seven can start now, each in its own session (`/do-task T16` and so on). Their May change paths are disjoint. T14 and T16 both work around `worker/skeleton/`, split by file: T16 has `env.ts`, `record.ts`, `vocab.ts` and `drive.ts`, and T14 has `main.ts` and `mask.ts`. T16 follows T14's game-schedule config for its own entry point.
 
-- T16: observation, first cut (record version 2, calcs on T12's prior, the hidden-content leak test, the builder's cost). [Brief](../tasks/T16-observation/README.md). Start it first: it is v0-lite's longest prerequisite. Its timed runs need your Mac.
-- T10: tracker fix layer and ground truth. [Brief](../tasks/T10-tracker-layer/README.md). T16 builds on the raw client meanwhile and swaps to this layer by import.
+- T16: observation, first cut (record version 2, calcs on T12's prior, the leak test, the builder's cost, a 3-hour small-net calibration run). [Brief](../tasks/T16-observation/README.md). Start it first: it is v0-lite's longest prerequisite. Its timed runs need your Mac.
+- T19: the 5M net, on T07's 33-token format, which T16's tensorizer emits. [Brief](../tasks/T19-net-v0/README.md). Policy, value and lead heads; the aux heads wait for a labels design. Timed runs on your Mac.
+- T10: tracker fix layer and ground truth. [Brief](../tasks/T10-tracker-layer/README.md). Its first milestone is the layer itself; T16 builds on the raw client meanwhile and swaps to the layer by import.
+- T11: PPO learner, toy checks, and the learner's rate on MPS measured, replacing T07's estimate. [Brief](../tasks/T11-learner/README.md).
 - T14: baselines, eval runner and sampled mask check. [Brief](../tasks/T14-eval-baselines/README.md).
-- T11: PPO learner and toy checks. [Brief](../tasks/T11-learner/README.md).
-- T17: D4's set resampling. [Brief](../tasks/T17-set-resampling/README.md). Small, and not a v0-lite prerequisite.
-- T18: rented env benchmark, ≤$5. [Brief](../tasks/T18-rented-env-bench/README.md). It needs you to set up the provider account and payment, and runs from your Mac.
+- T17: D4's set resampling. [Brief](../tasks/T17-set-resampling/README.md). Small. A v0-lite prerequisite: without it Team Preview identifies each of the 40 training teams, and the net can memorize their sets instead of reading the prior.
+- T18: rented env and learner benchmark, ≤$5. [Brief](../tasks/T18-rented-env-bench/README.md). It needs you to set up the provider account and payment, and runs from your Mac.
 
 ## Later in Phase 1
 
 Briefed once their inputs exist (plan.md, Phase 1):
 
-- **The 5M net** (plan.md, Network v0: Size, Moves inside mon tokens, Action head, Other heads) on T16's tensors. Briefed once T16 has pushed its record version 2 and tensor layout (Next replan). T07's stand-in (`tasks/T07-mps-throughput/tokens/`) is the start.
-- **The Python batch env,** joining T09's transport and T16's tensors to T11's learner interface, with training's `[Invalid choice]` rate logged. The 1M-request fuzz is at Phase 2's online gate.
-- **The v0-lite run** (plan.md, Phase 1), last. It needs T10's layer as it stands, T11, T14, T16, the 5M net and the batch env. T14's mask check and T16's leak test must pass on that observation. Its brief adapts max-damage to record version 2 and wires in T17's resampling if it has merged.
-- The full observation: the evidence features, D7's 1760 fallback for species without library sets, and the second leak test (player against spectator stream). After T16 and T10.
+- **The Python batch env,** joining T09's transport and T16's tensors to T11's learner interface. It logs training's `[Invalid choice]` rate and decisions per game, since self-play game lengths are unmeasured and set games/day. The 1M-request fuzz is at Phase 2's online gate.
+- **The v0-lite run** (plan.md, Phase 1), last. It needs T10's layer as it stands, T11, T14, T16, T17, T19 and the batch env. T14's mask check and T16's leak test must pass on that observation. Its brief adapts max-damage to record version 2.
+- **For the v0-lite brief** (raised by the strategic review of PR #12, 2026-11-27):
+  - Set the bar from T16's 3-hour calibration run and T14's skeleton-against-max-damage result, not only plan.md's default of 60%. Also require the win rate against max-damage to rise over checkpoints, and report it on the held-out teams.
+  - Pre-register diagnostics before the run: value explained variance, entropy, KL and clip fraction, self-play turns per game, the cap-hit rate, and win rates against random and earlier snapshots. Pre-register one fallback rerun (for example, faint-differential reward shaping, or weaker regularization), so that a miss is read before Phase 1 goes back to planning.
+  - Set D10's KL and entropy coefficients by a short sweep on NatDex with the small net. T11's toy-tuned ones are provisional.
+- The full observation: the evidence features, D7's 1760 fallback for species without library sets, the second leak test (player against spectator stream), and D7's option of expected damage over the top few consistent combinations. After T16 and T10.
+- The aux heads and their training labels: what labels the env emits, and how that channel stays out of the observation.
 - The SPRT for the eval runner (plan.md, Evaluation: Tests), before Phase 2's comparisons. It reads T14's per-pair outcomes.
 - Max-damage games in T10's ground-truth check, after T14.
 - Moving T10's copy of the recorder onto `worker/sim/`.

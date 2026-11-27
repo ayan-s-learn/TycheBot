@@ -26,8 +26,10 @@
   - Truncation: on a toy env with a cap, the value at capped steps matches the analytic value within a tolerance you state, and treating the cap as terminal misses it by at least 5× that tolerance.
   - A test feeds the learner decisions from a policy one update older than the current one and checks the PPO ratio uses their stored log-probs.
   - The toy results rerun on a clean checkout and pass the same bars.
+  - **The learner's rate on MPS, measured.** Run this PPO loop with T07's 5M stand-in at 33 tokens (`tasks/T07-mps-throughput/tokens/net.py`) on synthetic batches: inference for every decision, the update at 3 epochs, under bf16. Take 3 runs under the timing lock. Report decisions/s end to end, against T07's ~1,900 estimate, which D7's revisit trigger and D10's switch rest on. Result proposes the replacement figure for plan.md, Compute, under For integration.
+  - Result states that the KL and entropy coefficients it proposes are provisional for NatDex. The toys' answers are mixed or uniform, which favours strong regularization, while most NatDex decisions should be near-deterministic. v0-lite's brief sets them for NatDex.
 - **May change:** `tyche/learner/`, `tyche/toy/`, `docs/areas/learner.md`, `tasks/T11-learner/`.
-- **Limits:** up to three sessions, no paid services. Take any timings as in AGENTS.md, Conventions (Timed runs).
+- **Limits:** up to three sessions, no paid services, with at most one of them on Kuhn poker. Take the timed runs on the user's Mac, as in AGENTS.md, Conventions (Timed runs).
 - **Stop and report if:**
   - PPO with D10's KL term doesn't end near uniform on rock-paper-scissors.
 

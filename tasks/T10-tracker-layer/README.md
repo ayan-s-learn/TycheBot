@@ -23,6 +23,7 @@
     - Illusion breaking, fainting in disguise, and the player's own;
     - Mega Evolution and Z-Moves; Regenerator; Gastro Acid; Yawn; type changes; `-*` formes.
   - `docs/areas/observation-builder.md`: what the layer fixes, the harness commands, the mismatch classes left and why, and gotchas. Propose the AGENTS.md Areas row under For integration.
+- **First milestone:** push the layer itself, merge-ready, with the fixes it carries and their tests, as soon as it stands. Note it in Progress, and say there which fixes are in. v0-lite takes the layer as it stands (plan.md, Phase 1). The ground-truth counts and the full scenario suite follow, and are what this task's acceptance checks cover.
 - **Acceptance checks:**
   - On ≥10k random-player games from new seeds (not T08's 0–499), on the fields listed above, every mismatch class is listed with its cause (a tracker bug, unsupported content, or information the player isn't shown) and a count. Under 0.5% of all decisions in those games have a tracker-bug or unsupported-content mismatch (plan.md, Phase 1 exit). For each class tied to one mechanic (a move, ability, item or condition), also give the share of the decisions where that mechanic is present, so that a rare mechanic that is always wrong stands out. "No mismatch beyond information the player isn't shown" is the bar at Phase 2's online gate, not this task's. Max-damage games join the check once T14's baseline is merged.
   - The scenario suite passes as tests (AGENTS.md, Conventions: Tests).
