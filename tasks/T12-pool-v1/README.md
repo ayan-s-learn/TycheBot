@@ -39,9 +39,8 @@ Verified: all acceptance checks (acceptance.sh) at Showdown 29f2d99, Node 24.22.
   species.
 Pending: none
 Next: the user reviews (workflow.md, Task session step 7); then a planning session merges.
-Branch: claude/task-t12-a4ia8b. This cloud session can't push: git push and the GitHub API both return 403
-  ("Resource not accessible by integration"), so the commits are local until the user pushes them. Per the
-  environment, the branch is claude/task-t12-a4ia8b, not task/T12-*.
+Branch: claude/task-t12-a4ia8b, not task/T12-*: this cloud session may push only to that branch. It was
+  pushed once the user relinked GitHub (pushes had returned 403 until then).
 ```
 
 ```text
