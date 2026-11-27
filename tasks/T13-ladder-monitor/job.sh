@@ -11,7 +11,9 @@ UV="$(command -v uv)"
 
 case "${1:-}" in
 install)
-  mkdir -p "$DATA"
+  # The agent runs a copy, so no checkout has to stay and branch edits can't change it mid-run.
+  mkdir -p "$DATA/bin"
+  cp "$TASK/fetch.py" "$DATA/bin/fetch.py"
   cat > "$PLIST" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -19,7 +21,7 @@ install)
 <dict>
   <key>Label</key><string>$LABEL</string>
   <key>ProgramArguments</key>
-  <array><string>$UV</string><string>run</string><string>--no-project</string><string>$TASK/fetch.py</string><string>$DATA</string></array>
+  <array><string>$UV</string><string>run</string><string>--no-project</string><string>$DATA/bin/fetch.py</string><string>$DATA</string></array>
   <key>StartInterval</key><integer>3600</integer>
   <key>RunAtLoad</key><true/>
   <key>StandardOutPath</key><string>$DATA/job.log</string>
@@ -27,6 +29,7 @@ install)
 </dict>
 </plist>
 EOF
+  launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true
   launchctl bootstrap "gui/$(id -u)" "$PLIST"
   echo "installed $PLIST, data in $DATA"
   ;;
