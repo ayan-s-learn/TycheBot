@@ -108,6 +108,8 @@ def snapshot(data, bots_seen, now):
         # A renamed or deleted bot must not cost the board snapshot.
         try:
             profile = get(f"{PROFILE}/{bot}.json")
+        except Blocked:
+            raise
         except Exception as e:
             print(f"no profile for {bot}: {e}", flush=True)
             profile = None
@@ -142,6 +144,10 @@ def collect(data, state, now):
     known = set()
     if index.exists():
         known = {entry["id"] for entry in read_index(index)}
+        if not index.read_bytes().endswith(b"\n"):
+            # End a line cut short by a killed run, so the next entry starts its own.
+            with index.open("a") as f:
+                f.write("\n")
     new = 0
     for bot in state["bots_seen"]:
         before = None

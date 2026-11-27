@@ -40,8 +40,8 @@ Verified: review pass 2 (Sonnet, high) fixes are in: a failed profile no longer 
   exited 0.
 Pending: nothing here.
 Next: a planning session merges and briefs the write-up task.
-Reviewed: user, passes 1 and 2 (2026-11-27), fixes in cd3efbd, 5831cbb and the commit adding
-  this entry
+Reviewed: user, passes 1 and 2 (2026-11-27), fixes in cd3efbd, 5831cbb, d576127, and a delta
+  pass's fix (profile errors re-raise Blocked; a cut-short index line is ended) in the next commit
 ```
 
 ```text
