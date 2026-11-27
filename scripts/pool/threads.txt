@@ -1,0 +1,15 @@
+# Smogon forum threads whose pokepast.es links T12 snapshots, one URL per line (fetched 2026-11-27).
+# Dump threads of NatDex team tournaments (all tiers they featured), the sample-team thread and Teams of the Week.
+https://www.smogon.com/forums/threads/ndfl-iv-sets-team-dump-thread.3791328/
+https://www.smogon.com/forums/threads/ndpl-vii-sets-teams-dump-thread.3790014/
+https://www.smogon.com/forums/threads/ndwc-vi-set-team-dump-thread.3781502/
+https://www.smogon.com/forums/threads/ndcl-i-set-team-dump-thread.3777854/
+https://www.smogon.com/forums/threads/national-dex-ou-teams-of-the-week.3773819/
+https://www.smogon.com/forums/threads/ndfl-iii-set-team-dump-thread.3773344/
+https://www.smogon.com/forums/threads/ndpl-vi-set-team-dump-thread.3772676/
+https://www.smogon.com/forums/threads/ndwc-v-sets-team-dump-thread.3764748/
+https://www.smogon.com/forums/threads/ndbd-i-team-set-dump.3759973/
+https://www.smogon.com/forums/threads/ndfl-ii-set-team-dump-thread.3754457/
+https://www.smogon.com/forums/threads/ndpl-v-set-team-dump-thread.3753502/
+https://www.smogon.com/forums/threads/ndwc-iv-set-team-dump-thread.3742566/
+https://www.smogon.com/forums/threads/national-dex-sample-teams.3714863/
