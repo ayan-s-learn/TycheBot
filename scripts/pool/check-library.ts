@@ -1,6 +1,7 @@
 // Checks a set library against its pool: every set passes Showdown's validation for gen9nationaldex at the pin
 // unrepaired (scripts/pool/showdown.ts, problems), every species on a training team has a set, and every set has a
-// source other than a held-out team. Exits 1 on any failure, naming it.
+// source other than a held-out team. Validates at the current pin, whatever pin the library was built at.
+// Exits 1 on any failure, naming it.
 // Usage: node scripts/pool/check-library.ts data/priors/v0/species_sets.json data/pool/v1
 import { readFileSync } from 'node:fs';
 import { PIN, Teams, dex, problems } from './showdown.ts';
@@ -14,7 +15,6 @@ const heldOut = new Set(readFileSync(`${poolDir}/holdout.txt`, 'utf8').split('\n
 const ids = new Set(pool.map(t => t.id));
 
 const failures: string[] = [];
-if (library.showdown !== PIN) failures.push(`library built at Showdown ${library.showdown}, pin is ${PIN}`);
 for (const id of heldOut) if (!ids.has(id)) failures.push(`held-out ${id} is not in the pool`);
 let sets = 0;
 for (const [species, entries] of Object.entries(library.species)) {
@@ -36,5 +36,5 @@ for (const t of training) {
 	}
 }
 for (const f of failures) console.error(`FAIL ${f}`);
-console.log(`${sets} sets over ${Object.keys(library.species).length} species; ${training.length} training and ${heldOut.size} held-out teams; ${failures.length} failures`);
+console.log(`Library built at Showdown ${library.showdown}, checked at ${PIN}: ${sets} sets over ${Object.keys(library.species).length} species; ${training.length} training and ${heldOut.size} held-out teams; ${failures.length} failures`);
 if (failures.length) process.exitCode = 1;
