@@ -31,6 +31,23 @@
 ## Progress
 
 ```text
+2026-11-26 (2)
+State: waiting_for_job (`tasks/T13-ladder-monitor/job.sh status`; runs.jsonl in the data dir)
+Verified: both boards, the replay search and replay logs answer without a login (2026-11-26).
+  fetch.py's first run snapshotted both boards and backfilled 646 saved replays of the two
+  registered bots, guoguo10000 and imjustpixel2, in 14 minutes. The user approved the launchd
+  agent on 2026-11-26; it is installed and its first run exited 0. The 3 tests pass
+  (`uv run --no-project --with pytest==9.2.0 pytest -p no:cacheprovider tasks/T13-ladder-monitor`).
+Pending: >=14 days of snapshots (until at least 2026-12-10 22:52 UTC); the rest of the
+  acceptance checks; Result.
+Next: after 2026-12-10, run summary.py on the data dir, check runs.jsonl for errors and
+  `"blocked": true`, then write Result and For integration and remove the job
+  (`job.sh uninstall`). Check the first week (to 2026-12-03) for the stop condition on
+  fewer than two bots playing rated games.
+Handoff: open
+```
+
+```text
 2026-11-26
 State: active
 Verified: nothing yet
@@ -42,5 +59,15 @@ Next: probe the ladder and replay search endpoints, then write the fetcher and t
 ## Result
 
 ## Outputs
+
+- Data dir, outside the repo since it holds other players' names: `~/.tychebot/t13-ladder-monitor/`.
+  Layout in `fetch.py`'s docstring. Stdlib only, Python 3.14.
+- Job: `tasks/T13-ladder-monitor/job.sh install | status | uninstall` (launchd agent
+  `local.tychebot.t13-ladder-monitor`, hourly, running `fetch.py` from this checkout). Installed
+  2026-11-26 from the worktree `.claude/worktrees/T13-ladder-monitor`, so that worktree must stay
+  until the job is removed. launchd runs a missed interval once on wake, so the Mac's sleep leaves
+  gaps: it slept ~60 of the 161 hours before 2026-11-26 (`pmset -g log`).
+- One fetch by hand: `uv run --no-project tasks/T13-ladder-monitor/fetch.py <data dir>`.
+- Tables: `uv run --no-project tasks/T13-ladder-monitor/summary.py <data dir>`.
 
 ## For integration
