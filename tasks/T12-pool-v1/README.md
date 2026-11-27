@@ -30,6 +30,37 @@
 ## Progress
 
 ```text
+2026-11-27 (final)
+State: done
+Verified: acceptance.sh passes at a8ae502 (evidence/acceptance.log): type check, validate-pool 50/50,
+  check-library 1063 sets with 0 failures, rebuild byte-identical. smoke-battles.ts: 200/200 pool games and
+  788/788 library games, 0 errors (evidence/smoke-battles.log). Showdown's validate-team CLI accepts all 50.
+  All 1063 weights match an independent recomputation.
+Pending: the user's PR review; then a planning session merges (For integration).
+Next: none for this task.
+Reviewed: passes 1 and 2 (2026-11-27; Opus agents at high and medium effort), fixes in 6a5d411 and a8ae502.
+  The user's own review of PR #11 isn't recorded here.
+```
+
+```text
+2026-11-27 (review pass 2)
+State: done
+Verified: pass 2 (an Opus agent at medium effort, told not to trust earlier checks or pass 1) found nothing
+  blocking. It reproduced the numbers, the weights in Node and a byte-identical rebuild under another locale and
+  time zone. Its fixes:
+  - Count: a paste is dated by its earliest dating post, not its earliest post (unknown 124 -> 97).
+  - Library: sorted by combination weight, so D7's first consistent set comes from the likeliest combination;
+    stray hpType dropped (1064 -> 1063).
+  - Ability rewrite: tied to the forme the set's item makes.
+  - smoke-battles.ts: a per-game timeout and a --library mode.
+  - fetch.sh: blank lines skipped and partial downloads removed.
+  - Docs: the Greninja-Bond key, and the D7 wording under For integration.
+  Pool teams and holdout unchanged.
+Pending: none.
+Next: see the final entry.
+```
+
+```text
 2026-11-27 (review pass 1)
 State: done
 Verified: pass 1 (an Opus agent at high effort, told not to trust earlier checks) found nothing blocking and
