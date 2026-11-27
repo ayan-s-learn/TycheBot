@@ -29,6 +29,15 @@
 
 ## Progress
 
+```text
+2026-11-27
+State: active
+Verified: nothing yet
+Pending: all acceptance checks
+Next: snapshot the sources into evidence/ (sample teams, analysis sets, Oct 2026 1760 chaos stats, tour pastes), then build v1.
+Branch: claude/task-t12-a4ia8b (this cloud session may push only to that branch, not task/T12-*)
+```
+
 ## Result
 
 ## Outputs
