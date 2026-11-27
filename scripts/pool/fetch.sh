@@ -13,7 +13,7 @@ mkdir -p "$ev/threads" "$cache"
 get() { # url file: fetches unless the file exists, and returns curl's status
   [ -s "$2" ] && return 0
   local status=0
-  curl -sSf --retry 3 --max-time 60 -o "$2.tmp" "$1" && mv "$2.tmp" "$2" || status=$?
+  curl -sSf --retry 3 --max-time 60 -o "$2.tmp" "$1" && mv "$2.tmp" "$2" || { status=$?; rm -f "$2.tmp"; }
   sleep "${PAUSE:-1}"
   return "$status"
 }
@@ -24,7 +24,7 @@ if [ ! -s "$chaos.gz" ]; then
   get "https://www.smogon.com/stats/$MONTH/chaos/gen9nationaldex-1760.json" "$chaos"
   gzip -n -9 "$chaos"
 fi
-grep -v '^#' scripts/pool/threads.txt | while read -r url; do
+grep -Ev '^(#|[[:space:]]*$)' scripts/pool/threads.txt | while read -r url; do
   slug=$(basename "$url"); dir="$ev/threads/$slug"; mkdir -p "$dir"
   if [ ! -s "$dir/page-1.html.gz" ]; then get "$url" "$dir/page-1.html"; gzip -n -9 "$dir/page-1.html"; fi
   id=${slug##*.}

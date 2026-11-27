@@ -26,20 +26,6 @@
 		],
 		"Alomomola": [
 			{
-				"set": "Alomomola||RockyHelmet|Regenerator|FlipTurn,Protect,Toxic,Wish|Impish|240,,252,,16,|||||",
-				"weight": 0.0306851,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Alomomola",
-				"sources": [
-					"pool:pokepaste-9a3ce373e60936f0"
-				]
-			},
-			{
 				"set": "Alomomola||HeavyDutyBoots|Regenerator|FlipTurn,Protect,Toxic,Wish|Relaxed|8,,252,,248,||,,,,,0|||",
 				"weight": 0.0197939,
 				"tags": {
@@ -65,6 +51,20 @@
 				"statsSpecies": "Alomomola",
 				"sources": [
 					"analysis:Defensive"
+				]
+			},
+			{
+				"set": "Alomomola||RockyHelmet|Regenerator|FlipTurn,Protect,Toxic,Wish|Impish|240,,252,,16,|||||",
+				"weight": 0.0306851,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Alomomola",
+				"sources": [
+					"pool:pokepaste-9a3ce373e60936f0"
 				]
 			},
 			{
@@ -1580,20 +1580,6 @@
 				]
 			},
 			{
-				"set": "Cinderace||HeavyDutyBoots|Blaze|PyroBall,SuckerPunch,Uturn,WillOWisp|Jolly|,252,,,4,252|||||",
-				"weight": 0.0403745,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Cinderace",
-				"sources": [
-					"pool:pokepaste-0c4a50c0701c4e41"
-				]
-			},
-			{
 				"set": "Cinderace||HeavyDutyBoots|Libero|CourtChange,PyroBall,SuckerPunch,Uturn|Jolly|,252,,,4,252|||||",
 				"weight": 0.0255057,
 				"tags": {
@@ -1647,6 +1633,20 @@
 				"statsSpecies": "Cinderace",
 				"sources": [
 					"analysis:Pivot"
+				]
+			},
+			{
+				"set": "Cinderace||HeavyDutyBoots|Blaze|PyroBall,SuckerPunch,Uturn,WillOWisp|Jolly|,252,,,4,252|||||",
+				"weight": 0.0403745,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Cinderace",
+				"sources": [
+					"pool:pokepaste-0c4a50c0701c4e41"
 				]
 			},
 			{
@@ -2160,20 +2160,6 @@
 		],
 		"Corviknight": [
 			{
-				"set": "Corviknight||Leftovers|Pressure|BraveBird,Defog,IronDefense,Roost|Bold|248,,124,,136,|||||",
-				"weight": 0.0443051,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Corviknight",
-				"sources": [
-					"pool:pokepaste-b3892a0730acd598"
-				]
-			},
-			{
 				"set": "Corviknight||RockyHelmet|Pressure|BraveBird,Defog,Roost,Uturn|Careful|248,,204,,56,|||||",
 				"weight": 0.0146757,
 				"tags": {
@@ -2227,6 +2213,20 @@
 				"statsSpecies": "Corviknight",
 				"sources": [
 					"analysis:Defensive"
+				]
+			},
+			{
+				"set": "Corviknight||Leftovers|Pressure|BraveBird,Defog,IronDefense,Roost|Bold|248,,124,,136,|||||",
+				"weight": 0.0443051,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Corviknight",
+				"sources": [
+					"pool:pokepaste-b3892a0730acd598"
 				]
 			},
 			{
@@ -2429,34 +2429,6 @@
 		],
 		"Cresselia": [
 			{
-				"set": "Cresselia||RockyHelmet|Levitate|LunarDance,Moonblast,Moonlight,ThunderWave|Bold|252,,252,,4,||,0,,,,|||",
-				"weight": 0.0282431,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Cresselia",
-				"sources": [
-					"analysis:Defensive Utility"
-				]
-			},
-			{
-				"set": "Cresselia||ChoiceScarf|Levitate|IceBeam,LunarDance,ThunderWave,Trick|Timid|248,,,,8,252||,0,,,,|||",
-				"weight": 0.0171993,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Cresselia",
-				"sources": [
-					"pool:pokepaste-aee83d5601045fe9"
-				]
-			},
-			{
 				"set": "Cresselia||RockyHelmet|Levitate|IceBeam,LunarDance,Moonlight,ThunderWave|Bold|248,,112,64,,84||,0,,,,|||",
 				"weight": 0.0169405,
 				"tags": {
@@ -2482,6 +2454,34 @@
 				"statsSpecies": "Cresselia",
 				"sources": [
 					"analysis:Defensive Utility"
+				]
+			},
+			{
+				"set": "Cresselia||RockyHelmet|Levitate|LunarDance,Moonblast,Moonlight,ThunderWave|Bold|252,,252,,4,||,0,,,,|||",
+				"weight": 0.0282431,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Cresselia",
+				"sources": [
+					"analysis:Defensive Utility"
+				]
+			},
+			{
+				"set": "Cresselia||ChoiceScarf|Levitate|IceBeam,LunarDance,ThunderWave,Trick|Timid|248,,,,8,252||,0,,,,|||",
+				"weight": 0.0171993,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Cresselia",
+				"sources": [
+					"pool:pokepaste-aee83d5601045fe9"
 				]
 			},
 			{
@@ -2514,34 +2514,6 @@
 			}
 		],
 		"Diancie": [
-			{
-				"set": "Diancie||Diancite|ClearBody|DiamondStorm,Moonblast,MysticalFire,StealthRock|Hasty|,28,,228,,252|||||",
-				"weight": 0.0799454,
-				"tags": {
-					"mega": true,
-					"z": false,
-					"rocks": true,
-					"removal": false
-				},
-				"statsSpecies": "Diancie-Mega",
-				"sources": [
-					"pool:pokepaste-6de25b757beaa6a5"
-				]
-			},
-			{
-				"set": "Diancie||Diancite|ClearBody|DiamondStorm,Moonblast,MysticalFire,StealthRock|Naive|,28,,228,,252|||||",
-				"weight": 0.0799454,
-				"tags": {
-					"mega": true,
-					"z": false,
-					"rocks": true,
-					"removal": false
-				},
-				"statsSpecies": "Diancie-Mega",
-				"sources": [
-					"pool:pokepaste-ccad42a71e6c5f8b"
-				]
-			},
 			{
 				"set": "Diancie||Diancite|ClearBody|DiamondStorm,EarthPower,Moonblast,MysticalFire|Hasty|,,,252,4,252|||||",
 				"weight": 0.0431433,
@@ -2601,8 +2573,8 @@
 				]
 			},
 			{
-				"set": "Diancie||Diancite|ClearBody|Endeavor,Moonblast,StealthRock,Substitute|Timid|240,,16,,,252||,0,,,,|||",
-				"weight": 0.0375118,
+				"set": "Diancie||Diancite|ClearBody|DiamondStorm,Moonblast,MysticalFire,StealthRock|Hasty|,28,,228,,252|||||",
+				"weight": 0.0799454,
 				"tags": {
 					"mega": true,
 					"z": false,
@@ -2611,21 +2583,21 @@
 				},
 				"statsSpecies": "Diancie-Mega",
 				"sources": [
-					"analysis:Lead"
+					"pool:pokepaste-6de25b757beaa6a5"
 				]
 			},
 			{
-				"set": "Diancie||Diancite|ClearBody|DiamondStorm,Moonblast,MysticalFire,Spikes|Hasty|,28,,228,,252|||||",
-				"weight": 0.0313581,
+				"set": "Diancie||Diancite|ClearBody|DiamondStorm,Moonblast,MysticalFire,StealthRock|Naive|,28,,228,,252|||||",
+				"weight": 0.0799454,
 				"tags": {
 					"mega": true,
 					"z": false,
-					"rocks": false,
+					"rocks": true,
 					"removal": false
 				},
 				"statsSpecies": "Diancie-Mega",
 				"sources": [
-					"pool:pokepaste-9f41d056bf26b8ca"
+					"pool:pokepaste-ccad42a71e6c5f8b"
 				]
 			},
 			{
@@ -2685,8 +2657,8 @@
 				]
 			},
 			{
-				"set": "Diancie||Diancite|ClearBody|DiamondStorm,Endeavor,StealthRock,Substitute|Jolly|240,,16,,,252|||||",
-				"weight": 0.0238586,
+				"set": "Diancie||Diancite|ClearBody|Endeavor,Moonblast,StealthRock,Substitute|Timid|240,,16,,,252||,0,,,,|||",
+				"weight": 0.0375118,
 				"tags": {
 					"mega": true,
 					"z": false,
@@ -2695,7 +2667,21 @@
 				},
 				"statsSpecies": "Diancie-Mega",
 				"sources": [
-					"pool:pokepaste-1912894c8deb6379"
+					"analysis:Lead"
+				]
+			},
+			{
+				"set": "Diancie||Diancite|ClearBody|DiamondStorm,Moonblast,MysticalFire,Spikes|Hasty|,28,,228,,252|||||",
+				"weight": 0.0313581,
+				"tags": {
+					"mega": true,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Diancie-Mega",
+				"sources": [
+					"pool:pokepaste-9f41d056bf26b8ca"
 				]
 			},
 			{
@@ -2766,6 +2752,20 @@
 				"statsSpecies": "Diancie-Mega",
 				"sources": [
 					"analysis:Wallbreaker"
+				]
+			},
+			{
+				"set": "Diancie||Diancite|ClearBody|DiamondStorm,Endeavor,StealthRock,Substitute|Jolly|240,,16,,,252|||||",
+				"weight": 0.0238586,
+				"tags": {
+					"mega": true,
+					"z": false,
+					"rocks": true,
+					"removal": false
+				},
+				"statsSpecies": "Diancie-Mega",
+				"sources": [
+					"pool:pokepaste-1912894c8deb6379"
 				]
 			},
 			{
@@ -3188,6 +3188,34 @@
 				]
 			},
 			{
+				"set": "Ferrothorn||RockyHelmet|IronBarbs|KnockOff,LeechSeed,PowerWhip,StealthRock|Impish|252,,144,,112,|||||",
+				"weight": 0.0152325,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": false
+				},
+				"statsSpecies": "Ferrothorn",
+				"sources": [
+					"pool:pokepaste-f5dd7be8f202f5a2"
+				]
+			},
+			{
+				"set": "Ferrothorn||RockyHelmet|IronBarbs|KnockOff,LeechSeed,PowerWhip,StealthRock|Impish|252,,80,,176,|||||",
+				"weight": 0.0152325,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": false
+				},
+				"statsSpecies": "Ferrothorn",
+				"sources": [
+					"analysis:Defensive"
+				]
+			},
+			{
 				"set": "Ferrothorn||Leftovers|IronBarbs|BodyPress,LeechSeed,PowerWhip,Spikes|Impish|252,,80,,176,|||||",
 				"weight": 0.0261956,
 				"tags": {
@@ -3250,34 +3278,6 @@
 					"mega": false,
 					"z": false,
 					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Ferrothorn",
-				"sources": [
-					"analysis:Defensive"
-				]
-			},
-			{
-				"set": "Ferrothorn||RockyHelmet|IronBarbs|KnockOff,LeechSeed,PowerWhip,StealthRock|Impish|252,,144,,112,|||||",
-				"weight": 0.0152325,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": false
-				},
-				"statsSpecies": "Ferrothorn",
-				"sources": [
-					"pool:pokepaste-f5dd7be8f202f5a2"
-				]
-			},
-			{
-				"set": "Ferrothorn||RockyHelmet|IronBarbs|KnockOff,LeechSeed,PowerWhip,StealthRock|Impish|252,,80,,176,|||||",
-				"weight": 0.0152325,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
 					"removal": false
 				},
 				"statsSpecies": "Ferrothorn",
@@ -3647,48 +3647,6 @@
 		],
 		"Gholdengo": [
 			{
-				"set": "Gholdengo||GhostiumZ|GoodasGold|FocusBlast,MakeItRain,NastyPlot,ShadowBall|Timid|,,,252,4,252||,0,,,,|||",
-				"weight": 0.0228626,
-				"tags": {
-					"mega": false,
-					"z": true,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Gholdengo",
-				"sources": [
-					"analysis:Offensive Nasty Plot"
-				]
-			},
-			{
-				"set": "Gholdengo||AirBalloon|GoodasGold|FocusBlast,MakeItRain,NastyPlot,ShadowBall|Timid|,,,252,4,252||,0,,,,|||",
-				"weight": 0.016232,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Gholdengo",
-				"sources": [
-					"analysis:Offensive Nasty Plot"
-				]
-			},
-			{
-				"set": "Gholdengo||ChoiceScarf|GoodasGold|FocusBlast,MakeItRain,ShadowBall,Trick|Timid|,,,252,4,252||,0,,,,|||",
-				"weight": 0.012347,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Gholdengo",
-				"sources": [
-					"analysis:Choice Scarf"
-				]
-			},
-			{
 				"set": "Gholdengo||ChoiceScarf|GoodasGold|MakeItRain,Recover,ShadowBall,Trick|Timid|,,,252,4,252||,0,,,,|||",
 				"weight": 0.00806108,
 				"tags": {
@@ -3732,36 +3690,8 @@
 				]
 			},
 			{
-				"set": "Gholdengo||AirBalloon|GoodasGold|FocusBlast,NastyPlot,Recover,ShadowBall|Bold|252,,112,,84,60||,0,,,,|||",
-				"weight": 0.00795404,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Gholdengo",
-				"sources": [
-					"analysis:Bulky Nasty Plot"
-				]
-			},
-			{
-				"set": "Gholdengo||AirBalloon|GoodasGold|FocusBlast,NastyPlot,Recover,ShadowBall|Timid|,,,252,4,252||,0,,,,|||",
-				"weight": 0.00795404,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Gholdengo",
-				"sources": [
-					"analysis:Offensive Nasty Plot"
-				]
-			},
-			{
-				"set": "Gholdengo||GhostiumZ|GoodasGold|FocusBlast,Hex,Recover,ThunderWave|Bold|252,,112,,84,60||,0,,,,|||",
-				"weight": 0.00749073,
+				"set": "Gholdengo||GhostiumZ|GoodasGold|FocusBlast,MakeItRain,NastyPlot,ShadowBall|Timid|,,,252,4,252||,0,,,,|||",
+				"weight": 0.0228626,
 				"tags": {
 					"mega": false,
 					"z": true,
@@ -3770,7 +3700,7 @@
 				},
 				"statsSpecies": "Gholdengo",
 				"sources": [
-					"analysis:Thunder Wave + Hex"
+					"analysis:Offensive Nasty Plot"
 				]
 			},
 			{
@@ -3816,22 +3746,8 @@
 				]
 			},
 			{
-				"set": "Gholdengo||SteeliumZ|GoodasGold|MakeItRain,NastyPlot,Recover,ShadowBall|Modest|56,,,252,,200||,0,,,,|||",
-				"weight": 0.00622488,
-				"tags": {
-					"mega": false,
-					"z": true,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Gholdengo",
-				"sources": [
-					"pool:pokepaste-ff611df53bcda0fa"
-				]
-			},
-			{
-				"set": "Gholdengo||AirBalloon|GoodasGold|FocusBlast,Hex,Recover,ThunderWave|Bold|252,,112,,84,60||,0,,,,|||",
-				"weight": 0.00531828,
+				"set": "Gholdengo||AirBalloon|GoodasGold|FocusBlast,MakeItRain,NastyPlot,ShadowBall|Timid|,,,252,4,252||,0,,,,|||",
+				"weight": 0.016232,
 				"tags": {
 					"mega": false,
 					"z": false,
@@ -3840,7 +3756,49 @@
 				},
 				"statsSpecies": "Gholdengo",
 				"sources": [
-					"analysis:Thunder Wave + Hex"
+					"analysis:Offensive Nasty Plot"
+				]
+			},
+			{
+				"set": "Gholdengo||AirBalloon|GoodasGold|FocusBlast,NastyPlot,Recover,ShadowBall|Bold|252,,112,,84,60||,0,,,,|||",
+				"weight": 0.00795404,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Gholdengo",
+				"sources": [
+					"analysis:Bulky Nasty Plot"
+				]
+			},
+			{
+				"set": "Gholdengo||AirBalloon|GoodasGold|FocusBlast,NastyPlot,Recover,ShadowBall|Timid|,,,252,4,252||,0,,,,|||",
+				"weight": 0.00795404,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Gholdengo",
+				"sources": [
+					"analysis:Offensive Nasty Plot"
+				]
+			},
+			{
+				"set": "Gholdengo||ChoiceScarf|GoodasGold|FocusBlast,MakeItRain,ShadowBall,Trick|Timid|,,,252,4,252||,0,,,,|||",
+				"weight": 0.012347,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Gholdengo",
+				"sources": [
+					"analysis:Choice Scarf"
 				]
 			},
 			{
@@ -3869,6 +3827,48 @@
 				"statsSpecies": "Gholdengo",
 				"sources": [
 					"pool:pokepaste-49a480cfdf0983ef"
+				]
+			},
+			{
+				"set": "Gholdengo||GhostiumZ|GoodasGold|FocusBlast,Hex,Recover,ThunderWave|Bold|252,,112,,84,60||,0,,,,|||",
+				"weight": 0.00749073,
+				"tags": {
+					"mega": false,
+					"z": true,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Gholdengo",
+				"sources": [
+					"analysis:Thunder Wave + Hex"
+				]
+			},
+			{
+				"set": "Gholdengo||SteeliumZ|GoodasGold|MakeItRain,NastyPlot,Recover,ShadowBall|Modest|56,,,252,,200||,0,,,,|||",
+				"weight": 0.00622488,
+				"tags": {
+					"mega": false,
+					"z": true,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Gholdengo",
+				"sources": [
+					"pool:pokepaste-ff611df53bcda0fa"
+				]
+			},
+			{
+				"set": "Gholdengo||AirBalloon|GoodasGold|FocusBlast,Hex,Recover,ThunderWave|Bold|252,,112,,84,60||,0,,,,|||",
+				"weight": 0.00531828,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Gholdengo",
+				"sources": [
+					"analysis:Thunder Wave + Hex"
 				]
 			},
 			{
@@ -4030,34 +4030,6 @@
 				]
 			},
 			{
-				"set": "Gliscor||ToxicOrb|PoisonHeal|Earthquake,Protect,StealthRock,Toxic|Careful|244,,36,,228,|||||",
-				"weight": 0.0631248,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": false
-				},
-				"statsSpecies": "Gliscor",
-				"sources": [
-					"analysis:Utility"
-				]
-			},
-			{
-				"set": "Gliscor||ToxicOrb|PoisonHeal|Earthquake,KnockOff,Protect,Spikes|Careful|244,,36,,228,|||||",
-				"weight": 0.0521675,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Gliscor",
-				"sources": [
-					"analysis:Utility"
-				]
-			},
-			{
 				"set": "Gliscor||ToxicOrb|PoisonHeal|Earthquake,Protect,Spikes,Toxic|Careful|244,,36,,228,|||||",
 				"weight": 0.0492156,
 				"tags": {
@@ -4083,6 +4055,34 @@
 				"statsSpecies": "Gliscor",
 				"sources": [
 					"pool:pokepaste-a9a983a8316f273d"
+				]
+			},
+			{
+				"set": "Gliscor||ToxicOrb|PoisonHeal|Earthquake,Protect,StealthRock,Toxic|Careful|244,,36,,228,|||||",
+				"weight": 0.0631248,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": false
+				},
+				"statsSpecies": "Gliscor",
+				"sources": [
+					"analysis:Utility"
+				]
+			},
+			{
+				"set": "Gliscor||ToxicOrb|PoisonHeal|Earthquake,KnockOff,Protect,Spikes|Careful|244,,36,,228,|||||",
+				"weight": 0.0521675,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Gliscor",
+				"sources": [
+					"analysis:Utility"
 				]
 			},
 			{
@@ -4296,34 +4296,6 @@
 				]
 			},
 			{
-				"set": "Gliscor||ToxicOrb|PoisonHeal|Earthquake,Roost,Spikes,Uturn|Careful|244,,36,,228,|||||",
-				"weight": 0.000404193,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Gliscor",
-				"sources": [
-					"analysis:Utility"
-				]
-			},
-			{
-				"set": "Gliscor||ToxicOrb|PoisonHeal|Earthquake,Roost,StealthRock,Uturn|Careful|244,,36,,228,|||||",
-				"weight": 0.000259213,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": false
-				},
-				"statsSpecies": "Gliscor",
-				"sources": [
-					"analysis:Utility"
-				]
-			},
-			{
 				"set": "Gliscor||ToxicOrb|PoisonHeal|Earthquake,Facade,Roost,SwordsDance|Careful|244,,36,,168,60|||||",
 				"weight": 0.000210517,
 				"tags": {
@@ -4350,51 +4322,37 @@
 				"sources": [
 					"analysis:Swords Dance"
 				]
-			}
-		],
-		"Great Tusk": [
+			},
 			{
-				"set": "Great Tusk||BoosterEnergy|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StealthRock|Jolly|,252,,,4,252|||||",
-				"weight": 0.0614609,
+				"set": "Gliscor||ToxicOrb|PoisonHeal|Earthquake,Roost,Spikes,Uturn|Careful|244,,36,,228,|||||",
+				"weight": 0.000404193,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Gliscor",
+				"sources": [
+					"analysis:Utility"
+				]
+			},
+			{
+				"set": "Gliscor||ToxicOrb|PoisonHeal|Earthquake,Roost,StealthRock,Uturn|Careful|244,,36,,228,|||||",
+				"weight": 0.000259213,
 				"tags": {
 					"mega": false,
 					"z": false,
 					"rocks": true,
-					"removal": true
+					"removal": false
 				},
-				"statsSpecies": "Great Tusk",
+				"statsSpecies": "Gliscor",
 				"sources": [
-					"analysis:Offensive Utility"
+					"analysis:Utility"
 				]
-			},
-			{
-				"set": "Great Tusk||HeavyDutyBoots|Protosynthesis|CloseCombat,HeadlongRush,IceSpinner,RapidSpin|Jolly|,252,,,4,252|||||",
-				"weight": 0.0548214,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Great Tusk",
-				"sources": [
-					"analysis:Offensive Utility"
-				]
-			},
-			{
-				"set": "Great Tusk||RockyHelmet|Protosynthesis|CloseCombat,HeadlongRush,IceSpinner,RapidSpin|Jolly|,252,,,4,252|||||",
-				"weight": 0.0405469,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Great Tusk",
-				"sources": [
-					"analysis:Offensive Utility"
-				]
-			},
+			}
+		],
+		"Great Tusk": [
 			{
 				"set": "Great Tusk||BoosterEnergy|Protosynthesis|CloseCombat,HeadlongRush,IceSpinner,RapidSpin|Jolly|,252,,,4,252|||||",
 				"weight": 0.0328245,
@@ -4426,79 +4384,8 @@
 				]
 			},
 			{
-				"set": "Great Tusk||BoosterEnergy|Protosynthesis|BulkUp,HeadlongRush,IceSpinner,RapidSpin|Jolly|252,4,,,,252|||||",
-				"weight": 0.0222467,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Great Tusk",
-				"sources": [
-					"analysis:Bulk Up"
-				]
-			},
-			{
-				"set": "Great Tusk||BoosterEnergy|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StoneEdge|Jolly|,252,,,4,252|||||",
-				"weight": 0.0187893,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Great Tusk",
-				"sources": [
-					"pool:pokepaste-c74ecfb2c307c8be"
-				]
-			},
-			{
-				"set": "Great Tusk||IciumZ|Protosynthesis|CloseCombat,HeadlongRush,IceSpinner,RapidSpin|Jolly|,252,,,4,252|||||",
-				"weight": 0.0142394,
-				"tags": {
-					"mega": false,
-					"z": true,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Great Tusk",
-				"sources": [
-					"analysis:Offensive Utility"
-				]
-			},
-			{
-				"set": "Great Tusk||IciumZ|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StealthRock|Jolly|,252,,,4,252|||||",
-				"weight": 0.013331,
-				"tags": {
-					"mega": false,
-					"z": true,
-					"rocks": true,
-					"removal": true
-				},
-				"statsSpecies": "Great Tusk",
-				"sources": [
-					"analysis:Offensive Utility",
-					"pool:pokepaste-06031be9f3b44217"
-				]
-			},
-			{
-				"set": "Great Tusk||RockyHelmet|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StealthRock|Impish|252,,216,,,40|||||",
-				"weight": 0.0126534,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": true
-				},
-				"statsSpecies": "Great Tusk",
-				"sources": [
-					"analysis:Defensive"
-				]
-			},
-			{
-				"set": "Great Tusk||RockyHelmet|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StealthRock|Jolly|,252,,,4,252|||||",
-				"weight": 0.0126534,
+				"set": "Great Tusk||BoosterEnergy|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StealthRock|Jolly|,252,,,4,252|||||",
+				"weight": 0.0614609,
 				"tags": {
 					"mega": false,
 					"z": false,
@@ -4511,22 +4398,8 @@
 				]
 			},
 			{
-				"set": "Great Tusk||RockyHelmet|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StealthRock|Jolly|248,4,4,,,252|||||",
-				"weight": 0.0126534,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": true
-				},
-				"statsSpecies": "Great Tusk",
-				"sources": [
-					"pool:pokepaste-05337d4f430506a3"
-				]
-			},
-			{
-				"set": "Great Tusk||Leftovers|Protosynthesis|CloseCombat,HeadlongRush,IceSpinner,RapidSpin|Jolly|,252,,,4,252|||||",
-				"weight": 0.0108789,
+				"set": "Great Tusk||HeavyDutyBoots|Protosynthesis|CloseCombat,HeadlongRush,IceSpinner,RapidSpin|Jolly|,252,,,4,252|||||",
+				"weight": 0.0548214,
 				"tags": {
 					"mega": false,
 					"z": false,
@@ -4610,8 +4483,121 @@
 				]
 			},
 			{
-				"set": "Great Tusk||BoosterEnergy|Protosynthesis|HeadlongRush,IceSpinner,KnockOff,RapidSpin|Jolly|,252,,,4,252|||||",
-				"weight": 0.00648646,
+				"set": "Great Tusk||RockyHelmet|Protosynthesis|CloseCombat,HeadlongRush,IceSpinner,RapidSpin|Jolly|,252,,,4,252|||||",
+				"weight": 0.0405469,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"analysis:Offensive Utility"
+				]
+			},
+			{
+				"set": "Great Tusk||RockyHelmet|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StealthRock|Impish|252,,216,,,40|||||",
+				"weight": 0.0126534,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"analysis:Defensive"
+				]
+			},
+			{
+				"set": "Great Tusk||RockyHelmet|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StealthRock|Jolly|,252,,,4,252|||||",
+				"weight": 0.0126534,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"analysis:Offensive Utility"
+				]
+			},
+			{
+				"set": "Great Tusk||RockyHelmet|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StealthRock|Jolly|248,4,4,,,252|||||",
+				"weight": 0.0126534,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"pool:pokepaste-05337d4f430506a3"
+				]
+			},
+			{
+				"set": "Great Tusk||BoosterEnergy|Protosynthesis|BulkUp,HeadlongRush,IceSpinner,RapidSpin|Jolly|252,4,,,,252|||||",
+				"weight": 0.0222467,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"analysis:Bulk Up"
+				]
+			},
+			{
+				"set": "Great Tusk||BoosterEnergy|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StoneEdge|Jolly|,252,,,4,252|||||",
+				"weight": 0.0187893,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"pool:pokepaste-c74ecfb2c307c8be"
+				]
+			},
+			{
+				"set": "Great Tusk||IciumZ|Protosynthesis|CloseCombat,HeadlongRush,IceSpinner,RapidSpin|Jolly|,252,,,4,252|||||",
+				"weight": 0.0142394,
+				"tags": {
+					"mega": false,
+					"z": true,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"analysis:Offensive Utility"
+				]
+			},
+			{
+				"set": "Great Tusk||IciumZ|Protosynthesis|HeadlongRush,IceSpinner,RapidSpin,StealthRock|Jolly|,252,,,4,252|||||",
+				"weight": 0.013331,
+				"tags": {
+					"mega": false,
+					"z": true,
+					"rocks": true,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"analysis:Offensive Utility",
+					"pool:pokepaste-06031be9f3b44217"
+				]
+			},
+			{
+				"set": "Great Tusk||Leftovers|Protosynthesis|CloseCombat,HeadlongRush,IceSpinner,RapidSpin|Jolly|,252,,,4,252|||||",
+				"weight": 0.0108789,
 				"tags": {
 					"mega": false,
 					"z": false,
@@ -4652,31 +4638,17 @@
 				]
 			},
 			{
-				"set": "Great Tusk||HeavyDutyBoots|Protosynthesis|Earthquake,IceSpinner,RapidSpin,StealthRock|Impish|252,,216,,,40|||||",
-				"weight": 0.00498285,
+				"set": "Great Tusk||BoosterEnergy|Protosynthesis|HeadlongRush,IceSpinner,KnockOff,RapidSpin|Jolly|,252,,,4,252|||||",
+				"weight": 0.00648646,
 				"tags": {
 					"mega": false,
 					"z": false,
-					"rocks": true,
+					"rocks": false,
 					"removal": true
 				},
 				"statsSpecies": "Great Tusk",
 				"sources": [
-					"analysis:Defensive"
-				]
-			},
-			{
-				"set": "Great Tusk||RockyHelmet|Protosynthesis|Earthquake,IceSpinner,RapidSpin,StealthRock|Impish|252,,216,,,40|||||",
-				"weight": 0.00368541,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": true
-				},
-				"statsSpecies": "Great Tusk",
-				"sources": [
-					"analysis:Defensive"
+					"analysis:Offensive Utility"
 				]
 			},
 			{
@@ -4708,6 +4680,20 @@
 				]
 			},
 			{
+				"set": "Great Tusk||HeavyDutyBoots|Protosynthesis|Earthquake,IceSpinner,RapidSpin,StealthRock|Impish|252,,216,,,40|||||",
+				"weight": 0.00498285,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"analysis:Defensive"
+				]
+			},
+			{
 				"set": "Great Tusk||RockyHelmet|Protosynthesis|HeadlongRush,IceSpinner,KnockOff,RapidSpin|Impish|252,,216,,,40|||||",
 				"weight": 0.00200312,
 				"tags": {
@@ -4736,6 +4722,20 @@
 				]
 			},
 			{
+				"set": "Great Tusk||RockyHelmet|Protosynthesis|Earthquake,IceSpinner,RapidSpin,StealthRock|Impish|252,,216,,,40|||||",
+				"weight": 0.00368541,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"analysis:Defensive"
+				]
+			},
+			{
 				"set": "Great Tusk||IciumZ|Protosynthesis|HeadlongRush,IceSpinner,KnockOff,RapidSpin|Jolly|,252,,,4,252|||||",
 				"weight": 0.00140692,
 				"tags": {
@@ -4752,34 +4752,6 @@
 			{
 				"set": "Great Tusk||HeavyDutyBoots|Protosynthesis|BodyPress,HeadlongRush,IceSpinner,RapidSpin|Impish|252,,216,,,40|||||",
 				"weight": 0.00131728,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Great Tusk",
-				"sources": [
-					"analysis:Defensive"
-				]
-			},
-			{
-				"set": "Great Tusk||Leftovers|Protosynthesis|Earthquake,IceSpinner,RapidSpin,StealthRock|Impish|252,,216,,,40|||||",
-				"weight": 0.000988807,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": true
-				},
-				"statsSpecies": "Great Tusk",
-				"sources": [
-					"analysis:Defensive"
-				]
-			},
-			{
-				"set": "Great Tusk||RockyHelmet|Protosynthesis|BodyPress,HeadlongRush,IceSpinner,RapidSpin|Impish|252,,216,,,40|||||",
-				"weight": 0.000974285,
 				"tags": {
 					"mega": false,
 					"z": false,
@@ -4817,6 +4789,34 @@
 				"statsSpecies": "Great Tusk",
 				"sources": [
 					"analysis:Offensive Utility"
+				]
+			},
+			{
+				"set": "Great Tusk||Leftovers|Protosynthesis|Earthquake,IceSpinner,RapidSpin,StealthRock|Impish|252,,216,,,40|||||",
+				"weight": 0.000988807,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"analysis:Defensive"
+				]
+			},
+			{
+				"set": "Great Tusk||RockyHelmet|Protosynthesis|BodyPress,HeadlongRush,IceSpinner,RapidSpin|Impish|252,,216,,,40|||||",
+				"weight": 0.000974285,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Great Tusk",
+				"sources": [
+					"analysis:Defensive"
 				]
 			},
 			{
@@ -5208,20 +5208,6 @@
 				]
 			},
 			{
-				"set": "Heatran||Leftovers|FlashFire|EarthPower,MagmaStorm,Protect,Taunt|Calm|248,,,,220,40||,0,,,,|||",
-				"weight": 0.0097123,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Heatran",
-				"sources": [
-					"analysis:Specially Defensive"
-				]
-			},
-			{
 				"set": "Heatran||GrassiumZ|FlashFire|EarthPower,MagmaStorm,StealthRock,Toxic|Modest|,,,252,4,252||,0,,,,|||",
 				"weight": 0.00847482,
 				"tags": {
@@ -5275,6 +5261,20 @@
 				"statsSpecies": "Heatran",
 				"sources": [
 					"analysis:Offensive"
+				]
+			},
+			{
+				"set": "Heatran||Leftovers|FlashFire|EarthPower,MagmaStorm,Protect,Taunt|Calm|248,,,,220,40||,0,,,,|||",
+				"weight": 0.0097123,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Heatran",
+				"sources": [
+					"analysis:Specially Defensive"
 				]
 			},
 			{
@@ -5670,34 +5670,6 @@
 				]
 			},
 			{
-				"set": "Heatran||AirBalloon|FlameBody|EarthPower,HeavySlam,MagmaStorm,StealthRock|Bold|248,,28,,192,40|||||",
-				"weight": 0.000202404,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": false
-				},
-				"statsSpecies": "Heatran",
-				"sources": [
-					"pool:pokepaste-aee83d5601045fe9"
-				]
-			},
-			{
-				"set": "Heatran||Leftovers|FlashFire|HeavySlam,MagmaStorm,StealthRock,WillOWisp|Relaxed|248,,192,,68,|||||",
-				"weight": 0.000185126,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": false
-				},
-				"statsSpecies": "Heatran",
-				"sources": [
-					"pool:pokepaste-f504fdf2a232dd11"
-				]
-			},
-			{
 				"set": "Heatran||AirBalloon|FlashFire|EarthPower,HiddenPowerIce,MagmaStorm,Taunt|Modest|,,,252,4,252||,0,,,,|||",
 				"weight": 0.000175485,
 				"tags": {
@@ -5754,6 +5726,20 @@
 				]
 			},
 			{
+				"set": "Heatran||AirBalloon|FlameBody|EarthPower,HeavySlam,MagmaStorm,StealthRock|Bold|248,,28,,192,40|||||",
+				"weight": 0.000202404,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": false
+				},
+				"statsSpecies": "Heatran",
+				"sources": [
+					"pool:pokepaste-aee83d5601045fe9"
+				]
+			},
+			{
 				"set": "Heatran||FiriumZ|FlashFire|EarthPower,MagmaStorm,SolarBeam,StealthRock|Modest|,,,252,4,252||,0,,,,|||",
 				"weight": 0.00010065,
 				"tags": {
@@ -5779,6 +5765,20 @@
 				"statsSpecies": "Heatran",
 				"sources": [
 					"analysis:Offensive"
+				]
+			},
+			{
+				"set": "Heatran||Leftovers|FlashFire|HeavySlam,MagmaStorm,StealthRock,WillOWisp|Relaxed|248,,192,,68,|||||",
+				"weight": 0.000185126,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": false
+				},
+				"statsSpecies": "Heatran",
+				"sources": [
+					"pool:pokepaste-f504fdf2a232dd11"
 				]
 			},
 			{
@@ -5983,20 +5983,6 @@
 				]
 			},
 			{
-				"set": "Hoopa-Unbound||AssaultVest|Magician|DrainPunch,HyperspaceFury,KnockOff,PsychicNoise|Lonely|252,64,,120,56,16|||||",
-				"weight": 0.0048768,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Hoopa-Unbound",
-				"sources": [
-					"analysis:Assault Vest"
-				]
-			},
-			{
 				"set": "Hoopa-Unbound||ChoiceBand|Magician|DrainPunch,GunkShot,HyperspaceFury,ZenHeadbutt|Adamant|,252,,,4,252|||||",
 				"weight": 0.00298252,
 				"tags": {
@@ -6022,6 +6008,20 @@
 				"statsSpecies": "Hoopa-Unbound",
 				"sources": [
 					"analysis:Choice Band"
+				]
+			},
+			{
+				"set": "Hoopa-Unbound||AssaultVest|Magician|DrainPunch,HyperspaceFury,KnockOff,PsychicNoise|Lonely|252,64,,120,56,16|||||",
+				"weight": 0.0048768,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Hoopa-Unbound",
+				"sources": [
+					"analysis:Assault Vest"
 				]
 			},
 			{
@@ -6443,20 +6443,6 @@
 		],
 		"Iron Treads": [
 			{
-				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,KnockOff,RapidSpin,StealthRock|Jolly|252,,,,248,8|||||",
-				"weight": 0.0758684,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": true
-				},
-				"statsSpecies": "Iron Treads",
-				"sources": [
-					"analysis:Specially Defensive"
-				]
-			},
-			{
 				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,IceSpinner,RapidSpin,StealthRock|Jolly|,116,,,140,252|||||",
 				"weight": 0.0721642,
 				"tags": {
@@ -6496,62 +6482,6 @@
 				"statsSpecies": "Iron Treads",
 				"sources": [
 					"pool:pokepaste-d833dc56f886ece5"
-				]
-			},
-			{
-				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,IceSpinner,KnockOff,RapidSpin|Jolly|,252,,,4,252|||||",
-				"weight": 0.0283525,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Iron Treads",
-				"sources": [
-					"analysis:Offensive Utility"
-				]
-			},
-			{
-				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,IceSpinner,KnockOff,RapidSpin|Jolly|252,,,,248,8|||||",
-				"weight": 0.0283525,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Iron Treads",
-				"sources": [
-					"analysis:Specially Defensive"
-				]
-			},
-			{
-				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,RapidSpin,StealthRock,VoltSwitch|Jolly|252,,,,248,8|||||",
-				"weight": 0.0224417,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": true
-				},
-				"statsSpecies": "Iron Treads",
-				"sources": [
-					"analysis:Specially Defensive"
-				]
-			},
-			{
-				"set": "Iron Treads||ShucaBerry|QuarkDrive|Earthquake,IceSpinner,RapidSpin,StealthRock|Jolly|144,,,,252,112|||||",
-				"weight": 0.021233,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": true
-				},
-				"statsSpecies": "Iron Treads",
-				"sources": [
-					"pool:pokepaste-0402eec71d70382d"
 				]
 			},
 			{
@@ -6611,8 +6541,8 @@
 				]
 			},
 			{
-				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,RapidSpin,StealthRock,SupercellSlam|Jolly|,252,,,4,252|||||",
-				"weight": 0.0187425,
+				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,KnockOff,RapidSpin,StealthRock|Jolly|252,,,,248,8|||||",
+				"weight": 0.0758684,
 				"tags": {
 					"mega": false,
 					"z": false,
@@ -6621,12 +6551,26 @@
 				},
 				"statsSpecies": "Iron Treads",
 				"sources": [
-					"pool:pokepaste-0c4a50c0701c4e41"
+					"analysis:Specially Defensive"
 				]
 			},
 			{
-				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,IceSpinner,RapidSpin,VoltSwitch|Jolly|252,,,,248,8|||||",
-				"weight": 0.0167733,
+				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,IceSpinner,KnockOff,RapidSpin|Jolly|,252,,,4,252|||||",
+				"weight": 0.0283525,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Iron Treads",
+				"sources": [
+					"analysis:Offensive Utility"
+				]
+			},
+			{
+				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,IceSpinner,KnockOff,RapidSpin|Jolly|252,,,,248,8|||||",
+				"weight": 0.0283525,
 				"tags": {
 					"mega": false,
 					"z": false,
@@ -6664,6 +6608,62 @@
 				"statsSpecies": "Iron Treads",
 				"sources": [
 					"pool:pokepaste-f17866af59ae8cfa"
+				]
+			},
+			{
+				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,RapidSpin,StealthRock,VoltSwitch|Jolly|252,,,,248,8|||||",
+				"weight": 0.0224417,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": true
+				},
+				"statsSpecies": "Iron Treads",
+				"sources": [
+					"analysis:Specially Defensive"
+				]
+			},
+			{
+				"set": "Iron Treads||ShucaBerry|QuarkDrive|Earthquake,IceSpinner,RapidSpin,StealthRock|Jolly|144,,,,252,112|||||",
+				"weight": 0.021233,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": true
+				},
+				"statsSpecies": "Iron Treads",
+				"sources": [
+					"pool:pokepaste-0402eec71d70382d"
+				]
+			},
+			{
+				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,RapidSpin,StealthRock,SupercellSlam|Jolly|,252,,,4,252|||||",
+				"weight": 0.0187425,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": true
+				},
+				"statsSpecies": "Iron Treads",
+				"sources": [
+					"pool:pokepaste-0c4a50c0701c4e41"
+				]
+			},
+			{
+				"set": "Iron Treads||Leftovers|QuarkDrive|Earthquake,IceSpinner,RapidSpin,VoltSwitch|Jolly|252,,,,248,8|||||",
+				"weight": 0.0167733,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Iron Treads",
+				"sources": [
+					"analysis:Specially Defensive"
 				]
 			},
 			{
@@ -6706,34 +6706,6 @@
 				"statsSpecies": "Iron Treads",
 				"sources": [
 					"analysis:Offensive Utility"
-				]
-			},
-			{
-				"set": "Iron Treads||AssaultVest|QuarkDrive|Earthquake,RapidSpin,StealthRock,VoltSwitch|Jolly|252,,,,248,8|||||",
-				"weight": 0.00317066,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": true,
-					"removal": true
-				},
-				"statsSpecies": "Iron Treads",
-				"sources": [
-					"analysis:Specially Defensive"
-				]
-			},
-			{
-				"set": "Iron Treads||AssaultVest|QuarkDrive|Earthquake,IceSpinner,RapidSpin,VoltSwitch|Jolly|252,,,,248,8|||||",
-				"weight": 0.00236979,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Iron Treads",
-				"sources": [
-					"analysis:Specially Defensive"
 				]
 			},
 			{
@@ -6793,6 +6765,20 @@
 				]
 			},
 			{
+				"set": "Iron Treads||AssaultVest|QuarkDrive|Earthquake,RapidSpin,StealthRock,VoltSwitch|Jolly|252,,,,248,8|||||",
+				"weight": 0.00317066,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": true,
+					"removal": true
+				},
+				"statsSpecies": "Iron Treads",
+				"sources": [
+					"analysis:Specially Defensive"
+				]
+			},
+			{
 				"set": "Iron Treads||BoosterEnergy|QuarkDrive|EarthPower,IceSpinner,RapidSpin,StealthRock|Jolly|,,,252,4,252|||||",
 				"weight": 0.000625753,
 				"tags": {
@@ -6846,6 +6832,20 @@
 				"statsSpecies": "Iron Treads",
 				"sources": [
 					"analysis:Lead"
+				]
+			},
+			{
+				"set": "Iron Treads||AssaultVest|QuarkDrive|Earthquake,IceSpinner,RapidSpin,VoltSwitch|Jolly|252,,,,248,8|||||",
+				"weight": 0.00236979,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Iron Treads",
+				"sources": [
+					"analysis:Specially Defensive"
 				]
 			},
 			{
@@ -6977,34 +6977,6 @@
 				]
 			},
 			{
-				"set": "Iron Valiant||LifeOrb|QuarkDrive|CloseCombat,DestinyBond,KnockOff,Moonblast|Naive|,108,,148,,252|||||",
-				"weight": 0.00257429,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Iron Valiant",
-				"sources": [
-					"analysis:Mixed"
-				]
-			},
-			{
-				"set": "Iron Valiant||LifeOrb|QuarkDrive|CloseCombat,Encore,KnockOff,Moonblast|Naive|,108,,148,,252|||||",
-				"weight": 0.00201879,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Iron Valiant",
-				"sources": [
-					"analysis:Mixed"
-				]
-			},
-			{
 				"set": "Iron Valiant||ChoiceSpecs|QuarkDrive|FocusBlast,Moonblast,ShadowBall,Thunderbolt|Timid|,,4,252,,252||,0,,,,|||",
 				"weight": 0.00183701,
 				"tags": {
@@ -7030,6 +7002,34 @@
 				"statsSpecies": "Iron Valiant",
 				"sources": [
 					"analysis:Choice Specs"
+				]
+			},
+			{
+				"set": "Iron Valiant||LifeOrb|QuarkDrive|CloseCombat,DestinyBond,KnockOff,Moonblast|Naive|,108,,148,,252|||||",
+				"weight": 0.00257429,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Iron Valiant",
+				"sources": [
+					"analysis:Mixed"
+				]
+			},
+			{
+				"set": "Iron Valiant||LifeOrb|QuarkDrive|CloseCombat,Encore,KnockOff,Moonblast|Naive|,108,,148,,252|||||",
+				"weight": 0.00201879,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Iron Valiant",
+				"sources": [
+					"analysis:Mixed"
 				]
 			},
 			{
@@ -7362,63 +7362,6 @@
 				]
 			},
 			{
-				"set": "Kingambit||Leftovers|SupremeOverlord|IronHead,KnockOff,Pursuit,SuckerPunch|Adamant|172,252,,,,84|||||",
-				"weight": 0.0390133,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Kingambit",
-				"sources": [
-					"analysis:Offensive Utility"
-				]
-			},
-			{
-				"set": "Kingambit||Leftovers|SupremeOverlord|KnockOff,LowKick,Pursuit,SuckerPunch|Adamant|172,252,,,,84|||||",
-				"weight": 0.0289975,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Kingambit",
-				"sources": [
-					"analysis:Offensive Utility"
-				]
-			},
-			{
-				"set": "Kingambit||Leftovers|SupremeOverlord|KnockOff,LowKick,SuckerPunch,SwordsDance|Adamant|,252,,,4,252|||||",
-				"weight": 0.0243868,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Kingambit",
-				"sources": [
-					"analysis:Swords Dance",
-					"pool:pokepaste-f17866af59ae8cfa"
-				]
-			},
-			{
-				"set": "Kingambit||Leftovers|SupremeOverlord|KnockOff,LowKick,SuckerPunch,SwordsDance|Jolly|,252,,,4,252|||||",
-				"weight": 0.0243868,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Kingambit",
-				"sources": [
-					"analysis:Swords Dance"
-				]
-			},
-			{
 				"set": "Kingambit||Leftovers|SupremeOverlord|IronHead,KnockOff,SuckerPunch,SwordsDance|Adamant|,252,,,4,252|||||",
 				"weight": 0.0131241,
 				"tags": {
@@ -7486,6 +7429,63 @@
 				"statsSpecies": "Kingambit",
 				"sources": [
 					"analysis:Swords Dance"
+				]
+			},
+			{
+				"set": "Kingambit||Leftovers|SupremeOverlord|KnockOff,LowKick,SuckerPunch,SwordsDance|Adamant|,252,,,4,252|||||",
+				"weight": 0.0243868,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Kingambit",
+				"sources": [
+					"analysis:Swords Dance",
+					"pool:pokepaste-f17866af59ae8cfa"
+				]
+			},
+			{
+				"set": "Kingambit||Leftovers|SupremeOverlord|KnockOff,LowKick,SuckerPunch,SwordsDance|Jolly|,252,,,4,252|||||",
+				"weight": 0.0243868,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Kingambit",
+				"sources": [
+					"analysis:Swords Dance"
+				]
+			},
+			{
+				"set": "Kingambit||Leftovers|SupremeOverlord|IronHead,KnockOff,Pursuit,SuckerPunch|Adamant|172,252,,,,84|||||",
+				"weight": 0.0390133,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Kingambit",
+				"sources": [
+					"analysis:Offensive Utility"
+				]
+			},
+			{
+				"set": "Kingambit||Leftovers|SupremeOverlord|KnockOff,LowKick,Pursuit,SuckerPunch|Adamant|172,252,,,,84|||||",
+				"weight": 0.0289975,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Kingambit",
+				"sources": [
+					"analysis:Offensive Utility"
 				]
 			},
 			{
@@ -7932,20 +7932,6 @@
 				]
 			},
 			{
-				"set": "Landorus-Therian||ChoiceScarf|Intimidate|Earthquake,Explosion,StoneEdge,Uturn|Jolly|8,248,,,,252|||||",
-				"weight": 0.00739287,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Landorus-Therian",
-				"sources": [
-					"analysis:Choice Scarf"
-				]
-			},
-			{
 				"set": "Landorus-Therian||RockyHelmet|Intimidate|Earthquake,StealthRock,Taunt,Uturn|Jolly|248,,,,36,224|||||",
 				"weight": 0.00414491,
 				"tags": {
@@ -8030,6 +8016,20 @@
 				]
 			},
 			{
+				"set": "Landorus-Therian||ChoiceScarf|Intimidate|Earthquake,Explosion,StoneEdge,Uturn|Jolly|8,248,,,,252|||||",
+				"weight": 0.00739287,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Landorus-Therian",
+				"sources": [
+					"analysis:Choice Scarf"
+				]
+			},
+			{
 				"set": "Landorus-Therian||FlyiniumZ|Intimidate|Earthquake,StealthRock,StoneEdge,SwordsDance|Jolly|,252,,,4,252|||||",
 				"weight": 0.00334466,
 				"tags": {
@@ -8064,20 +8064,6 @@
 					"mega": false,
 					"z": true,
 					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Landorus-Therian",
-				"sources": [
-					"analysis:Swords Dance"
-				]
-			},
-			{
-				"set": "Landorus-Therian||RockiumZ|Intimidate|Earthquake,StealthRock,StoneEdge,SwordsDance|Jolly|,252,,,4,252|||||",
-				"weight": 0.000465908,
-				"tags": {
-					"mega": false,
-					"z": true,
-					"rocks": true,
 					"removal": false
 				},
 				"statsSpecies": "Landorus-Therian",
@@ -8153,6 +8139,20 @@
 				"statsSpecies": "Landorus-Therian",
 				"sources": [
 					"analysis:Defensive"
+				]
+			},
+			{
+				"set": "Landorus-Therian||RockiumZ|Intimidate|Earthquake,StealthRock,StoneEdge,SwordsDance|Jolly|,252,,,4,252|||||",
+				"weight": 0.000465908,
+				"tags": {
+					"mega": false,
+					"z": true,
+					"rocks": true,
+					"removal": false
+				},
+				"statsSpecies": "Landorus-Therian",
+				"sources": [
+					"analysis:Swords Dance"
 				]
 			},
 			{
@@ -8518,20 +8518,6 @@
 		],
 		"Medicham": [
 			{
-				"set": "Medicham||Medichamite|Telepathy|CloseCombat,FakeOut,FirePunch,ZenHeadbutt|Jolly|,252,4,,,252|||||",
-				"weight": 0.164808,
-				"tags": {
-					"mega": true,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Medicham-Mega",
-				"sources": [
-					"analysis:All-Out Attacker"
-				]
-			},
-			{
 				"set": "Medicham||Medichamite|PurePower|CloseCombat,FakeOut,IcePunch,ZenHeadbutt|Jolly|4,252,,,,252|||||",
 				"weight": 0.145591,
 				"tags": {
@@ -8548,6 +8534,20 @@
 			{
 				"set": "Medicham||Medichamite|Telepathy|CloseCombat,FakeOut,IcePunch,ZenHeadbutt|Jolly|,252,4,,,252|||||",
 				"weight": 0.145591,
+				"tags": {
+					"mega": true,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Medicham-Mega",
+				"sources": [
+					"analysis:All-Out Attacker"
+				]
+			},
+			{
+				"set": "Medicham||Medichamite|Telepathy|CloseCombat,FakeOut,FirePunch,ZenHeadbutt|Jolly|,252,4,,,252|||||",
+				"weight": 0.164808,
 				"tags": {
 					"mega": true,
 					"z": false,
@@ -8878,20 +8878,6 @@
 		],
 		"Moltres": [
 			{
-				"set": "Moltres||HeavyDutyBoots|FlameBody|BraveBird,MysticalFire,Roost,Uturn|Careful|244,,,,244,20|||||",
-				"weight": 0.0402969,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Moltres",
-				"sources": [
-					"pool:pokepaste-0ef919b6f1befb8b"
-				]
-			},
-			{
 				"set": "Moltres||HeavyDutyBoots|FlameBody|Flamethrower,Roost,Toxic,Uturn|Bold|252,,252,,4,|||||",
 				"weight": 0.0257504,
 				"tags": {
@@ -9001,6 +8987,20 @@
 				"statsSpecies": "Moltres",
 				"sources": [
 					"analysis:Defensive"
+				]
+			},
+			{
+				"set": "Moltres||HeavyDutyBoots|FlameBody|BraveBird,MysticalFire,Roost,Uturn|Careful|244,,,,244,20|||||",
+				"weight": 0.0402969,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Moltres",
+				"sources": [
+					"pool:pokepaste-0ef919b6f1befb8b"
 				]
 			},
 			{
@@ -9338,7 +9338,7 @@
 				]
 			},
 			{
-				"set": "Ogerpon-Wellspring||WellspringMask|WaterAbsorb|IvyCudgel,KnockOff,Taunt,Uturn|Jolly|,252,,,4,252|||||,Poison,,,,",
+				"set": "Ogerpon-Wellspring||WellspringMask|WaterAbsorb|IvyCudgel,KnockOff,Taunt,Uturn|Jolly|,252,,,4,252|||||",
 				"weight": 0.00593068,
 				"tags": {
 					"mega": false,
@@ -9426,20 +9426,6 @@
 				]
 			},
 			{
-				"set": "Pecharunt||DarkiniumZ|PoisonPuppeteer|MalignantChain,PartingShot,Recover,ShadowBall|Bold|248,,252,,8,||,0,,,,|||",
-				"weight": 0.0289754,
-				"tags": {
-					"mega": false,
-					"z": true,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Pecharunt",
-				"sources": [
-					"pool:pokepaste-0402eec71d70382d"
-				]
-			},
-			{
 				"set": "Pecharunt||HeavyDutyBoots|PoisonPuppeteer|Hex,MalignantChain,PartingShot,Recover|Bold|252,,252,,4,||,0,,,,|||",
 				"weight": 0.0203947,
 				"tags": {
@@ -9468,17 +9454,17 @@
 				]
 			},
 			{
-				"set": "Pecharunt||HeavyDutyBoots|PoisonPuppeteer|FoulPlay,Recover,ShadowBall,Toxic|Bold|252,,224,,,32||,0,,,,|||",
-				"weight": 0.0112438,
+				"set": "Pecharunt||DarkiniumZ|PoisonPuppeteer|MalignantChain,PartingShot,Recover,ShadowBall|Bold|248,,252,,8,||,0,,,,|||",
+				"weight": 0.0289754,
 				"tags": {
 					"mega": false,
-					"z": false,
+					"z": true,
 					"rocks": false,
 					"removal": false
 				},
 				"statsSpecies": "Pecharunt",
 				"sources": [
-					"pool:smogon-sample-24"
+					"pool:pokepaste-0402eec71d70382d"
 				]
 			},
 			{
@@ -9507,6 +9493,20 @@
 				"statsSpecies": "Pecharunt",
 				"sources": [
 					"pool:pokepaste-d2e01556944614d6"
+				]
+			},
+			{
+				"set": "Pecharunt||HeavyDutyBoots|PoisonPuppeteer|FoulPlay,Recover,ShadowBall,Toxic|Bold|252,,224,,,32||,0,,,,|||",
+				"weight": 0.0112438,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Pecharunt",
+				"sources": [
+					"pool:smogon-sample-24"
 				]
 			},
 			{
@@ -9796,62 +9796,6 @@
 				]
 			},
 			{
-				"set": "Raging Bolt||DragoniumZ|Protosynthesis|CalmMind,DracoMeteor,Thunderbolt,Thunderclap|Modest|,,,252,4,252||,20,,,,|||",
-				"weight": 0.016799,
-				"tags": {
-					"mega": false,
-					"z": true,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Raging Bolt",
-				"sources": [
-					"analysis:Calm Mind"
-				]
-			},
-			{
-				"set": "Raging Bolt||DragoniumZ|Protosynthesis|CalmMind,DracoMeteor,Thunderbolt,Thunderclap|Timid|,,,252,4,252||,20,,,,|||",
-				"weight": 0.016799,
-				"tags": {
-					"mega": false,
-					"z": true,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Raging Bolt",
-				"sources": [
-					"analysis:Calm Mind"
-				]
-			},
-			{
-				"set": "Raging Bolt||DragoniumZ|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,WeatherBall|Modest|,,,252,4,252||,20,,,,|||",
-				"weight": 0.010724,
-				"tags": {
-					"mega": false,
-					"z": true,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Raging Bolt",
-				"sources": [
-					"analysis:Calm Mind"
-				]
-			},
-			{
-				"set": "Raging Bolt||DragoniumZ|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,WeatherBall|Timid|,,,252,4,252||,20,,,,|||",
-				"weight": 0.010724,
-				"tags": {
-					"mega": false,
-					"z": true,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Raging Bolt",
-				"sources": [
-					"analysis:Calm Mind"
-				]
-			},
-			{
 				"set": "Raging Bolt||Leftovers|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,VoltSwitch|Modest|,,,252,4,252||,20,,,,|||",
 				"weight": 0.0095382,
 				"tags": {
@@ -9908,6 +9852,62 @@
 				]
 			},
 			{
+				"set": "Raging Bolt||DragoniumZ|Protosynthesis|CalmMind,DracoMeteor,Thunderbolt,Thunderclap|Modest|,,,252,4,252||,20,,,,|||",
+				"weight": 0.016799,
+				"tags": {
+					"mega": false,
+					"z": true,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Raging Bolt",
+				"sources": [
+					"analysis:Calm Mind"
+				]
+			},
+			{
+				"set": "Raging Bolt||DragoniumZ|Protosynthesis|CalmMind,DracoMeteor,Thunderbolt,Thunderclap|Timid|,,,252,4,252||,20,,,,|||",
+				"weight": 0.016799,
+				"tags": {
+					"mega": false,
+					"z": true,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Raging Bolt",
+				"sources": [
+					"analysis:Calm Mind"
+				]
+			},
+			{
+				"set": "Raging Bolt||DragoniumZ|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,WeatherBall|Modest|,,,252,4,252||,20,,,,|||",
+				"weight": 0.010724,
+				"tags": {
+					"mega": false,
+					"z": true,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Raging Bolt",
+				"sources": [
+					"analysis:Calm Mind"
+				]
+			},
+			{
+				"set": "Raging Bolt||DragoniumZ|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,WeatherBall|Timid|,,,252,4,252||,20,,,,|||",
+				"weight": 0.010724,
+				"tags": {
+					"mega": false,
+					"z": true,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Raging Bolt",
+				"sources": [
+					"analysis:Calm Mind"
+				]
+			},
+			{
 				"set": "Raging Bolt||Leftovers|Protosynthesis|CalmMind,DracoMeteor,Thunderbolt,Thunderclap|Modest|,,,252,4,252||,20,,,,|||",
 				"weight": 0.00886217,
 				"tags": {
@@ -9961,6 +9961,62 @@
 				"statsSpecies": "Raging Bolt",
 				"sources": [
 					"analysis:Calm Mind"
+				]
+			},
+			{
+				"set": "Raging Bolt||HeavyDutyBoots|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,VoltSwitch|Modest|,,,252,4,252||,20,,,,|||",
+				"weight": 0.00296962,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Raging Bolt",
+				"sources": [
+					"analysis:Pivot"
+				]
+			},
+			{
+				"set": "Raging Bolt||HeavyDutyBoots|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,VoltSwitch|Modest|124,,24,228,,132||,20,,,,|||",
+				"weight": 0.00296962,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Raging Bolt",
+				"sources": [
+					"analysis:Pivot"
+				]
+			},
+			{
+				"set": "Raging Bolt||HeavyDutyBoots|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,VoltSwitch|Timid|,,,252,4,252||,20,,,,|||",
+				"weight": 0.00296962,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Raging Bolt",
+				"sources": [
+					"analysis:Pivot"
+				]
+			},
+			{
+				"set": "Raging Bolt||HeavyDutyBoots|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,VoltSwitch|Timid|124,,24,228,,132||,20,,,,|||",
+				"weight": 0.00296962,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Raging Bolt",
+				"sources": [
+					"analysis:Pivot"
 				]
 			},
 			{
@@ -10101,62 +10157,6 @@
 				"statsSpecies": "Raging Bolt",
 				"sources": [
 					"analysis:Calm Mind"
-				]
-			},
-			{
-				"set": "Raging Bolt||HeavyDutyBoots|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,VoltSwitch|Modest|,,,252,4,252||,20,,,,|||",
-				"weight": 0.00296962,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Raging Bolt",
-				"sources": [
-					"analysis:Pivot"
-				]
-			},
-			{
-				"set": "Raging Bolt||HeavyDutyBoots|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,VoltSwitch|Modest|124,,24,228,,132||,20,,,,|||",
-				"weight": 0.00296962,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Raging Bolt",
-				"sources": [
-					"analysis:Pivot"
-				]
-			},
-			{
-				"set": "Raging Bolt||HeavyDutyBoots|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,VoltSwitch|Timid|,,,252,4,252||,20,,,,|||",
-				"weight": 0.00296962,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Raging Bolt",
-				"sources": [
-					"analysis:Pivot"
-				]
-			},
-			{
-				"set": "Raging Bolt||HeavyDutyBoots|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,VoltSwitch|Timid|124,,24,228,,132||,20,,,,|||",
-				"weight": 0.00296962,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Raging Bolt",
-				"sources": [
-					"analysis:Pivot"
 				]
 			},
 			{
@@ -10328,20 +10328,6 @@
 				]
 			},
 			{
-				"set": "Raging Bolt||RoseliBerry|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,WeatherBall|Modest|232,,,248,,28||,20,,,,|||",
-				"weight": 0.00137876,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Raging Bolt",
-				"sources": [
-					"pool:pokepaste-0402eec71d70382d"
-				]
-			},
-			{
 				"set": "Raging Bolt||DragoniumZ|Protosynthesis|CalmMind,DragonPulse,Thunderclap,WeatherBall|Modest|,,,252,4,252||,20,,,,|||",
 				"weight": 0.00115121,
 				"tags": {
@@ -10367,6 +10353,20 @@
 				"statsSpecies": "Raging Bolt",
 				"sources": [
 					"analysis:Calm Mind"
+				]
+			},
+			{
+				"set": "Raging Bolt||RoseliBerry|Protosynthesis|DracoMeteor,Thunderbolt,Thunderclap,WeatherBall|Modest|232,,,248,,28||,20,,,,|||",
+				"weight": 0.00137876,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Raging Bolt",
+				"sources": [
+					"pool:pokepaste-0402eec71d70382d"
 				]
 			},
 			{
@@ -10956,34 +10956,6 @@
 				]
 			},
 			{
-				"set": "Samurott-Hisui||HeavyDutyBoots|Sharpness|AquaCutter,CeaselessEdge,SacredSword,SuckerPunch|Jolly|,252,,,4,252|||||",
-				"weight": 0.00716488,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Samurott-Hisui",
-				"sources": [
-					"analysis:Offensive"
-				]
-			},
-			{
-				"set": "Samurott-Hisui||HeavyDutyBoots|Sharpness|CeaselessEdge,RazorShell,SuckerPunch,SwordsDance|Jolly|,252,,,4,252|||||",
-				"weight": 0.00614191,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Samurott-Hisui",
-				"sources": [
-					"analysis:Offensive"
-				]
-			},
-			{
 				"set": "Samurott-Hisui||AssaultVest|Sharpness|CeaselessEdge,KnockOff,RazorShell,SuckerPunch|Adamant|168,176,,,80,84|||||",
 				"weight": 0.00538536,
 				"tags": {
@@ -11012,20 +10984,6 @@
 				]
 			},
 			{
-				"set": "Samurott-Hisui||BlackGlasses|Sharpness|CeaselessEdge,RazorShell,SacredSword,SuckerPunch|Jolly|,252,,,4,252|||||",
-				"weight": 0.00523444,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Samurott-Hisui",
-				"sources": [
-					"analysis:Offensive"
-				]
-			},
-			{
 				"set": "Samurott-Hisui||AssaultVest|Sharpness|CeaselessEdge,FlipTurn,KnockOff,SuckerPunch|Adamant|248,84,,,112,64|||||",
 				"weight": 0.00382682,
 				"tags": {
@@ -11051,6 +11009,48 @@
 				"statsSpecies": "Samurott-Hisui",
 				"sources": [
 					"pool:pokepaste-919588c7a782f733"
+				]
+			},
+			{
+				"set": "Samurott-Hisui||HeavyDutyBoots|Sharpness|AquaCutter,CeaselessEdge,SacredSword,SuckerPunch|Jolly|,252,,,4,252|||||",
+				"weight": 0.00716488,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Samurott-Hisui",
+				"sources": [
+					"analysis:Offensive"
+				]
+			},
+			{
+				"set": "Samurott-Hisui||HeavyDutyBoots|Sharpness|CeaselessEdge,RazorShell,SuckerPunch,SwordsDance|Jolly|,252,,,4,252|||||",
+				"weight": 0.00614191,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Samurott-Hisui",
+				"sources": [
+					"analysis:Offensive"
+				]
+			},
+			{
+				"set": "Samurott-Hisui||BlackGlasses|Sharpness|CeaselessEdge,RazorShell,SacredSword,SuckerPunch|Jolly|,252,,,4,252|||||",
+				"weight": 0.00523444,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Samurott-Hisui",
+				"sources": [
+					"analysis:Offensive"
 				]
 			},
 			{
@@ -11294,20 +11294,6 @@
 				]
 			},
 			{
-				"set": "Scizor||Scizorite|LightMetal|BulletPunch,CloseCombat,KnockOff,SwordsDance|Adamant|,252,,,4,252|||||",
-				"weight": 0.0818206,
-				"tags": {
-					"mega": true,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Scizor-Mega",
-				"sources": [
-					"analysis:Offensive Swords Dance"
-				]
-			},
-			{
 				"set": "Scizor||Scizorite|LightMetal|BulletPunch,Roost,SwordsDance,Uturn|Impish|248,,112,,128,20|||||",
 				"weight": 0.0406536,
 				"tags": {
@@ -11347,6 +11333,20 @@
 				"statsSpecies": "Scizor-Mega",
 				"sources": [
 					"pool:pokepaste-9a3ce373e60936f0"
+				]
+			},
+			{
+				"set": "Scizor||Scizorite|LightMetal|BulletPunch,CloseCombat,KnockOff,SwordsDance|Adamant|,252,,,4,252|||||",
+				"weight": 0.0818206,
+				"tags": {
+					"mega": true,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Scizor-Mega",
+				"sources": [
+					"analysis:Offensive Swords Dance"
 				]
 			},
 			{
@@ -11754,35 +11754,6 @@
 				]
 			},
 			{
-				"set": "Slowking-Galar||HeavyDutyBoots|Regenerator|ChillyReception,Flamethrower,FutureSight,SludgeBomb|Sassy|248,,8,,252,||,0,,,,0|||",
-				"weight": 0.0686293,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Slowking-Galar",
-				"sources": [
-					"analysis:Defensive Pivot"
-				]
-			},
-			{
-				"set": "Slowking-Galar||HeavyDutyBoots|Regenerator|ChillyReception,FutureSight,SludgeBomb,Toxic|Sassy|248,,8,,252,||,0,,,,0|||",
-				"weight": 0.0348274,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Slowking-Galar",
-				"sources": [
-					"analysis:Defensive Pivot",
-					"pool:pokepaste-f5dd7be8f202f5a2"
-				]
-			},
-			{
 				"set": "Slowking-Galar||HeavyDutyBoots|Regenerator|ChillyReception,FutureSight,SludgeBomb,ThunderWave|Bold|248,,252,,8,||,0,,,,0|||",
 				"weight": 0.025575,
 				"tags": {
@@ -11822,6 +11793,35 @@
 				"statsSpecies": "Slowking-Galar",
 				"sources": [
 					"analysis:Defensive Pivot"
+				]
+			},
+			{
+				"set": "Slowking-Galar||HeavyDutyBoots|Regenerator|ChillyReception,Flamethrower,FutureSight,SludgeBomb|Sassy|248,,8,,252,||,0,,,,0|||",
+				"weight": 0.0686293,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Slowking-Galar",
+				"sources": [
+					"analysis:Defensive Pivot"
+				]
+			},
+			{
+				"set": "Slowking-Galar||HeavyDutyBoots|Regenerator|ChillyReception,FutureSight,SludgeBomb,Toxic|Sassy|248,,8,,252,||,0,,,,0|||",
+				"weight": 0.0348274,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Slowking-Galar",
+				"sources": [
+					"analysis:Defensive Pivot",
+					"pool:pokepaste-f5dd7be8f202f5a2"
 				]
 			},
 			{
@@ -12553,6 +12553,37 @@
 		],
 		"Terapagos": [
 			{
+				"set": "Terapagos||HeavyDutyBoots|TeraShift|Flamethrower,IceBeam,RapidSpin,TeraStarstorm|Modest|,,4,252,,252|||||",
+				"weight": 0.10734,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Terapagos",
+				"sources": [
+					"pool:pokepaste-18fe9e93931feadc"
+				]
+			},
+			{
+				"set": "Terapagos||HeavyDutyBoots|TeraShift|Flamethrower,IceBeam,RapidSpin,TeraStarstorm|Timid|,,,252,4,252|||||",
+				"weight": 0.10734,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Terapagos",
+				"sources": [
+					"analysis:Offensive Utility",
+					"pool:pokepaste-49a480cfdf0983ef",
+					"pool:pokepaste-6f07414a7c5d7ed8",
+					"pool:smogon-sample-08"
+				]
+			},
+			{
 				"set": "Terapagos||HeavyDutyBoots|TeraShift|EarthPower,IceBeam,RapidSpin,TeraStarstorm|Timid|,,,252,4,252|||||",
 				"weight": 0.10587,
 				"tags": {
@@ -12579,50 +12610,6 @@
 				"statsSpecies": "Terapagos",
 				"sources": [
 					"pool:pokepaste-919588c7a782f733"
-				]
-			},
-			{
-				"set": "Terapagos||HeavyDutyBoots|TeraShift|Flamethrower,IceBeam,RapidSpin,TeraStarstorm|Modest|,,4,252,,252|||||",
-				"weight": 0.0715599,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Terapagos",
-				"sources": [
-					"pool:pokepaste-18fe9e93931feadc"
-				]
-			},
-			{
-				"set": "Terapagos||HeavyDutyBoots|TeraShift|Flamethrower,IceBeam,RapidSpin,TeraStarstorm|Timid|,,,252,4,252|||||",
-				"weight": 0.0715599,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Terapagos",
-				"sources": [
-					"analysis:Offensive Utility",
-					"pool:pokepaste-49a480cfdf0983ef",
-					"pool:pokepaste-6f07414a7c5d7ed8"
-				]
-			},
-			{
-				"set": "Terapagos||HeavyDutyBoots|TeraShift|Flamethrower,IceBeam,RapidSpin,TeraStarstorm|Timid|,,,252,4,252|||||,Dark,,,,",
-				"weight": 0.0715599,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Terapagos",
-				"sources": [
-					"pool:smogon-sample-08"
 				]
 			},
 			{
@@ -13142,48 +13129,6 @@
 				]
 			},
 			{
-				"set": "Toxapex||RockyHelmet|Regenerator|Recover,Scald,Toxic,ToxicSpikes|Bold|248,,184,,60,16||,0,,,,|||",
-				"weight": 0.0893089,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Toxapex",
-				"sources": [
-					"pool:pokepaste-b3892a0730acd598"
-				]
-			},
-			{
-				"set": "Toxapex||RockyHelmet|Regenerator|Haze,Recover,Scald,ToxicSpikes|Bold|248,,136,,124,||,0,,,,|||",
-				"weight": 0.087287,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Toxapex",
-				"sources": [
-					"analysis:The Pex"
-				]
-			},
-			{
-				"set": "Toxapex||HeavyDutyBoots|Regenerator|Haze,Recover,Scald,ToxicSpikes|Bold|248,,136,,124,||,0,,,,|||",
-				"weight": 0.0584278,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Toxapex",
-				"sources": [
-					"analysis:The Pex"
-				]
-			},
-			{
 				"set": "Toxapex||BlackSludge|Regenerator|Haze,Recover,Scald,ToxicSpikes|Bold|248,,136,,124,||,0,,,,|||",
 				"weight": 0.0466929,
 				"tags": {
@@ -13214,6 +13159,34 @@
 				]
 			},
 			{
+				"set": "Toxapex||RockyHelmet|Regenerator|Recover,Scald,Toxic,ToxicSpikes|Bold|248,,184,,60,16||,0,,,,|||",
+				"weight": 0.0893089,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Toxapex",
+				"sources": [
+					"pool:pokepaste-b3892a0730acd598"
+				]
+			},
+			{
+				"set": "Toxapex||RockyHelmet|Regenerator|Haze,Recover,Scald,ToxicSpikes|Bold|248,,136,,124,||,0,,,,|||",
+				"weight": 0.087287,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Toxapex",
+				"sources": [
+					"analysis:The Pex"
+				]
+			},
+			{
 				"set": "Toxapex||HeavyDutyBoots|Regenerator|Haze,Recover,Scald,Toxic|Bold|248,,136,,124,||,0,,,,|||",
 				"weight": 0.0408607,
 				"tags": {
@@ -13239,6 +13212,20 @@
 				"statsSpecies": "Toxapex",
 				"sources": [
 					"pool:pokepaste-cb8a955871442aa0"
+				]
+			},
+			{
+				"set": "Toxapex||HeavyDutyBoots|Regenerator|Haze,Recover,Scald,ToxicSpikes|Bold|248,,136,,124,||,0,,,,|||",
+				"weight": 0.0584278,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Toxapex",
+				"sources": [
+					"analysis:The Pex"
 				]
 			},
 			{
@@ -13342,20 +13329,6 @@
 		],
 		"Tyranitar": [
 			{
-				"set": "Tyranitar||Tyranitarite|SandStream|KnockOff,LowKick,Pursuit,StealthRock|Adamant|92,252,,,,164|||||",
-				"weight": 0.118771,
-				"tags": {
-					"mega": true,
-					"z": false,
-					"rocks": true,
-					"removal": false
-				},
-				"statsSpecies": "Tyranitar-Mega",
-				"sources": [
-					"analysis:Offensive Utility"
-				]
-			},
-			{
 				"set": "Tyranitar||Tyranitarite|SandStream|KnockOff,LowKick,Pursuit,StoneEdge|Adamant|16,252,,,,240|||||",
 				"weight": 0.113416,
 				"tags": {
@@ -13400,6 +13373,20 @@
 			{
 				"set": "Tyranitar||Tyranitarite|SandStream|KnockOff,Pursuit,StealthRock,StoneEdge|Adamant|92,252,,,,164|||||",
 				"weight": 0.0946415,
+				"tags": {
+					"mega": true,
+					"z": false,
+					"rocks": true,
+					"removal": false
+				},
+				"statsSpecies": "Tyranitar-Mega",
+				"sources": [
+					"analysis:Offensive Utility"
+				]
+			},
+			{
+				"set": "Tyranitar||Tyranitarite|SandStream|KnockOff,LowKick,Pursuit,StealthRock|Adamant|92,252,,,,164|||||",
+				"weight": 0.118771,
 				"tags": {
 					"mega": true,
 					"z": false,
@@ -14054,20 +14041,6 @@
 				]
 			},
 			{
-				"set": "Volcanion||Leftovers|WaterAbsorb|Flamethrower,SteamEruption,Substitute,Toxic|Modest|72,,,216,,220||,0,,,,|||",
-				"weight": 0.000876483,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Volcanion",
-				"sources": [
-					"pool:pokepaste-d833dc56f886ece5"
-				]
-			},
-			{
 				"set": "Volcanion||HeavyDutyBoots|WaterAbsorb|FireBlast,FireSpin,SteamEruption,Substitute|Modest|,,,252,4,252|||||",
 				"weight": 0.000539945,
 				"tags": {
@@ -14093,6 +14066,20 @@
 				"statsSpecies": "Volcanion",
 				"sources": [
 					"analysis:Wallbreaker"
+				]
+			},
+			{
+				"set": "Volcanion||Leftovers|WaterAbsorb|Flamethrower,SteamEruption,Substitute,Toxic|Modest|72,,,216,,220||,0,,,,|||",
+				"weight": 0.000876483,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Volcanion",
+				"sources": [
+					"pool:pokepaste-d833dc56f886ece5"
 				]
 			}
 		],
@@ -14514,6 +14501,48 @@
 				]
 			},
 			{
+				"set": "Zamazenta||Leftovers|DauntlessShield|BodyPress,Crunch,IronDefense,Substitute|Jolly|,132,124,,,252|||||",
+				"weight": 0.00232332,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Zamazenta",
+				"sources": [
+					"analysis:Iron Defense + Body Press"
+				]
+			},
+			{
+				"set": "Zamazenta||Leftovers|DauntlessShield|BodyPress,Crunch,IronDefense,Substitute|Jolly|252,,136,,,120|||||",
+				"weight": 0.00232332,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Zamazenta",
+				"sources": [
+					"pool:smogon-sample-22"
+				]
+			},
+			{
+				"set": "Zamazenta||Leftovers|DauntlessShield|BodyPress,Crunch,IronDefense,Substitute|Jolly|252,,4,,,252|||||",
+				"weight": 0.00232332,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": false
+				},
+				"statsSpecies": "Zamazenta",
+				"sources": [
+					"analysis:Iron Defense + Body Press"
+				]
+			},
+			{
 				"set": "Zamazenta||DarkiniumZ|DauntlessShield|CloseCombat,Crunch,HeavySlam,StoneEdge|Jolly|,252,,,4,252|||||",
 				"weight": 0.00530353,
 				"tags": {
@@ -14545,48 +14574,6 @@
 			{
 				"set": "Zamazenta||Leftovers|DauntlessShield|BodyPress,IronDefense,StoneEdge,Substitute|Jolly|252,,4,,,252|||||",
 				"weight": 0.00244356,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Zamazenta",
-				"sources": [
-					"analysis:Iron Defense + Body Press"
-				]
-			},
-			{
-				"set": "Zamazenta||Leftovers|DauntlessShield|BodyPress,Crunch,IronDefense,Substitute|Jolly|,132,124,,,252|||||",
-				"weight": 0.00232332,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Zamazenta",
-				"sources": [
-					"analysis:Iron Defense + Body Press"
-				]
-			},
-			{
-				"set": "Zamazenta||Leftovers|DauntlessShield|BodyPress,Crunch,IronDefense,Substitute|Jolly|252,,136,,,120|||||",
-				"weight": 0.00232332,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": false
-				},
-				"statsSpecies": "Zamazenta",
-				"sources": [
-					"pool:smogon-sample-22"
-				]
-			},
-			{
-				"set": "Zamazenta||Leftovers|DauntlessShield|BodyPress,Crunch,IronDefense,Substitute|Jolly|252,,4,,,252|||||",
-				"weight": 0.00232332,
 				"tags": {
 					"mega": false,
 					"z": false,
@@ -14923,48 +14910,6 @@
 		],
 		"Zapdos": [
 			{
-				"set": "Zapdos||HeavyDutyBoots|Static|Defog,HeatWave,Roost,VoltSwitch|Bold|248,,188,,,72||,0,,,,|||",
-				"weight": 0.130472,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Zapdos",
-				"sources": [
-					"analysis:Defensive"
-				]
-			},
-			{
-				"set": "Zapdos||HeavyDutyBoots|Static|Defog,Hurricane,Roost,VoltSwitch|Bold|248,,188,,,72||,0,,,,|||",
-				"weight": 0.107498,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Zapdos",
-				"sources": [
-					"analysis:Defensive"
-				]
-			},
-			{
-				"set": "Zapdos||HeavyDutyBoots|Static|Defog,Hurricane,Roost,VoltSwitch|Bold|248,,244,,,16||,0,,,,|||",
-				"weight": 0.107498,
-				"tags": {
-					"mega": false,
-					"z": false,
-					"rocks": false,
-					"removal": true
-				},
-				"statsSpecies": "Zapdos",
-				"sources": [
-					"pool:pokepaste-f504fdf2a232dd11"
-				]
-			},
-			{
 				"set": "Zapdos||HeavyDutyBoots|Static|HeatWave,Hurricane,Roost,VoltSwitch|Bold|248,,188,,,72||,0,,,,|||",
 				"weight": 0.0611604,
 				"tags": {
@@ -15019,6 +14964,48 @@
 				"statsSpecies": "Zapdos",
 				"sources": [
 					"pool:smogon-sample-08"
+				]
+			},
+			{
+				"set": "Zapdos||HeavyDutyBoots|Static|Defog,Hurricane,Roost,VoltSwitch|Bold|248,,188,,,72||,0,,,,|||",
+				"weight": 0.107498,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Zapdos",
+				"sources": [
+					"analysis:Defensive"
+				]
+			},
+			{
+				"set": "Zapdos||HeavyDutyBoots|Static|Defog,Hurricane,Roost,VoltSwitch|Bold|248,,244,,,16||,0,,,,|||",
+				"weight": 0.107498,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Zapdos",
+				"sources": [
+					"pool:pokepaste-f504fdf2a232dd11"
+				]
+			},
+			{
+				"set": "Zapdos||HeavyDutyBoots|Static|Defog,HeatWave,Roost,VoltSwitch|Bold|248,,188,,,72||,0,,,,|||",
+				"weight": 0.130472,
+				"tags": {
+					"mega": false,
+					"z": false,
+					"rocks": false,
+					"removal": true
+				},
+				"statsSpecies": "Zapdos",
+				"sources": [
+					"analysis:Defensive"
 				]
 			},
 			{

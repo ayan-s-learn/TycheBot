@@ -75,11 +75,11 @@ Branch: claude/task-t12-a4ia8b (this cloud session may push only to that branch,
 
 ## Result
 
-`data/pool/v1/` holds 50 validated teams, 10 of them held out. `data/priors/v0/species_sets.json` holds 1064 sets over 103 species. `scripts/pool/build.ts` rebuilds both byte for byte from the snapshots in `evidence/`. Its report, `evidence/build-report.txt`, is the source of the numbers below unless noted. Formats, commands and gotchas are in [team-pool](../../docs/areas/team-pool.md).
+`data/pool/v1/` holds 50 validated teams, 10 of them held out. `data/priors/v0/species_sets.json` holds 1063 sets over 103 species. `scripts/pool/build.ts` rebuilds both byte for byte from the snapshots in `evidence/`. Its report, `evidence/build-report.txt`, is the source of the numbers below unless noted. Formats, commands and gotchas are in [team-pool](../../docs/areas/team-pool.md).
 
 Neither stop condition is met: 650 distinct teams validate as OU from the sources, and no library set weighs 0.
 
-Review pass 1 (2026-11-27) changed the library's weights, two pool-set abilities, the dedupe and dating of the count, and `fetch.sh`. The numbers below are after those fixes (Progress, pass 1 entry).
+Review pass 1 changed the library's weights, four pool-set abilities, the dedupe and dating of the count, and `fetch.sh`. Pass 2 changed the dating again, the library's order, the ability rule's scope and the smoke test. Both passes ran 2026-11-27. The numbers below are after both passes' fixes (Progress).
 
 ### Sources
 
@@ -123,7 +123,7 @@ The stats' per-team rates are sums over species:
 
 The 0.66 replaces plan.md's "~0.5 Z-Crystals per team (research agent's count)" (For integration).
 
-**How v1 was chosen:** from the 25 samples and the 146 distinct OU teams posted since 2026-04-01, greedily. Each step adds the team that most lowers the distance plus 0.5 × the gaps in Megas and Z-Crystals per team. No two pool teams share more than 4 species. The result:
+**How v1 was chosen:** from the 25 samples and the 147 distinct OU teams dated 2026-04-01 or later, greedily. Each step adds the team that most lowers the distance plus 0.5 × the gaps in Megas and Z-Crystals per team. No two pool teams share more than 4 species. The result:
 
 - 23 NDPL VII, 19 NDWC VI and 2 NDFL IV pastes, and 6 sample teams;
 - 46 teams with a Stealth Rock setter and 43 with hazard removal.
@@ -137,19 +137,20 @@ The 0.66 replaces plan.md's "~0.5 Z-Crystals per team (research agent's count)" 
 
 ### Library
 
-**Sources.** 1064 sets over 103 species (counting a Mega under its base species).
+**Sources.** 1063 sets over 103 species (counting a Mega under its base species).
 
 - The 170 analysis sets expand to 881 concrete sets once every slash option is spelled out; combinations repeating a move are skipped. The 4 dropped are Blissey "Pink Blob" combinations the validator rejects as incompatible moves (Wish with Teleport).
-- Sets are stored with their moves sorted, so reorderings are one set.
-- 841 sets come from analyses only, 188 from training teams only and 35 from both.
+- Sets are stored with their moves sorted, and without an `hpType` unless they use Hidden Power, so sets differing only in those are one set.
+- 841 sets come from analyses only, 187 from training teams only and 35 from both.
 
-**Validation.** Every set passes `gen9nationaldex` validation at the pin unrepaired (check-library.ts). To get there, the build rewrites three conventions in the source sets (team-pool.md, Gotchas):
+**Validation.** Every set passes `gen9nationaldex` validation at the pin unrepaired (check-library.ts). To get there, the build rewrites four conventions in the source sets (team-pool.md, Gotchas):
 
 - An in-battle forme becomes its base forme.
-- An ability only an in-battle forme has becomes the base's first ability. That is the validator's own repair, so it is what the server played for a paste: Venusaur gets Overgrow, Mawile Hyper Cutter, Lopunny Cute Charm.
+- The ability of the in-battle forme the set becomes (the Mega or Primal forme its item makes, or Terapagos-Terastal) becomes the base's first ability. That is the validator's own repair, so it is what the server played for a paste: Venusaur gets Overgrow, Mawile Hyper Cutter, Lopunny Cute Charm. Pass 2 checked that every such rewrite in the snapshot matches the validator's repair.
+- A set the validator moves to a sibling forme takes that forme: Keldeo with Secret Sword becomes Keldeo-Resolute, Greninja with Battle Bond Greninja-Bond.
 - A missing analysis ability becomes the most used one.
 
-Any other illegal ability is left to fail validation. Each rewrite is counted in the report; for example, 81 `Diancie-Mega` sets become Diancie. Four pool sets changed in pass 1: two Venusaur sets go from Chlorophyll to Overgrow, Aerodactyl from Pressure to Rock Head, and Swampert from Damp to Torrent. A Mega's base ability matters only until it Mega Evolves.
+Any other illegal ability is left to fail validation. Each rewrite is counted in the report. The counts cover every candidate, rejected ones included: for example, 81 `Diancie-Mega` sets become Diancie. Four pool sets changed in pass 1: two Venusaur sets go from Chlorophyll to Overgrow, Aerodactyl from Pressure to Rock Head, and Swampert from Damp to Torrent. A Mega's base ability matters only until it Mega Evolves.
 
 **Weights.** Each set's weight is three factors:
 
@@ -160,13 +161,15 @@ Any other illegal ability is left to fail validation. Each rewrite is counted in
 The two scalings matter as follows:
 
 - **The usage share:** before it, Charizard Mega-Y sets held 55% of Charizard's weight against 34.5% of the X+Y usage. Now X gets 0.670 against 0.655 of the usage, and Venusaur's non-Mega sets 0.166 against 0.172.
-- **The split:** 440 sets share a combination with another and split its weight. Without the split, a combination with more spreads was drawn more often, by over 0.10 in total variation for 33 species (review pass 1).
+- **The split:** 439 sets share a combination with another and split its weight. Without the split, a combination with more spreads would be drawn more often. On the current library, the draw over combinations with and without the split differs by over 0.10 in total variation for 27 species (pass 1 counted 33 on the library before its fixes).
 
-No set weighs 0: the 1760 stats list every item, ability and move the sets use, even rare ones with small counts. The weights are steep products of six marginals: the median species' top set holds 42% of the species' weight, and 332 sets hold under 1% of theirs, so resampling will mostly draw a few sets per species.
+No set weighs 0: the 1760 stats list every item, ability and move the sets use, even rare ones with small counts. The weights are steep products of six marginals: the median species' heaviest set holds 42% of the species' weight, and 332 sets hold under 1% of theirs, so resampling will mostly draw a few sets per species.
 
-**Tags:** Mega 92 sets, Z-Crystal 176, Stealth Rock 152, hazard removal 138.
+**Order, for D7.** Each species' sets are sorted by their combination's summed weight, then by weight. So the first set consistent with what has been revealed comes from the likeliest consistent combination. With the split, the single heaviest set wasn't in the heaviest combination for 12 species (pass 2), so taking the heaviest set would pick the wrong one. For integration proposes D7 wording.
 
-**Independent recomputation.** All 1064 weights were recomputed in Python from the raw chaos file, and all match to the stored 6 digits:
+**Tags:** Mega 92 sets, Z-Crystal 176, Stealth Rock 152, hazard removal 137.
+
+**Independent recomputation.** All 1063 weights were recomputed in Python from the raw chaos file, and all match to the stored 6 digits (pass 2 also recomputed them in Node):
 
 ```bash
 python3 - <<'EOF'
@@ -191,17 +194,17 @@ EOF
 
 ### Count for the Phase 2 pool
 
-At the pin, the 13 threads and the sample teams give 650 distinct teams that validate as OU (613 distinct rosters). Each is dated by the earliest post linking it. When that post was edited more than 31 days after it was made, the date is unknown, since the link may have been added later.
+At the pin, the 13 threads and the sample teams give 650 distinct teams that validate as OU (613 distinct rosters). Each is dated by the earliest post linking it that wasn't edited more than 31 days after it was made, since such an edit may have added the link. A team that only such posts link has an unknown date.
 
 | First posted | Teams |
 |---|---|
-| 2024 | 160 |
-| 2025 | 153 |
-| 2026 | 188 |
-| Date unknown | 124 |
+| 2024 | 161 |
+| 2025 | 176 |
+| 2026 | 191 |
+| Date unknown | 97 |
 | Sample teams | 25 |
 
-The unknown-date teams come from the sample-team thread (its two linking posts were edited in June 2026), Teams of the Week, and posts in NDPL VI and NDWC IV. 146 teams are dated 2026-04-01 or later.
+The unknown-date teams come from the sample-team thread (its two linking posts were edited in June 2026) and posts in NDPL VI and NDWC IV. 147 teams are dated 2026-04-01 or later.
 
 Per thread:
 
@@ -209,19 +212,19 @@ Per thread:
 |---|---|---|---|
 | NDFL IV dump | 40 | 9 | 2026-11-22 |
 | NDPL VII dump | 130 | 87 | 2026-11-02 |
-| NDWC VI dump | 64 | 50 | 2026-05-16 |
+| NDWC VI dump | 72 | 51 | 2026-05-16 |
 | NDCL I dump | 106 | 42 | 2026-03-04 |
-| NatDex OU Teams of the Week | 10 | 10 | 2025-11-11 (post edited 2026-01-02) |
-| NDFL III dump | 90 | 22 | 2025-12-06 |
-| NDPL VI dump | 148 | 68 | 2025-11-18 |
-| NDWC V dump | 96 | 42 | 2025-06-09 |
+| NatDex OU Teams of the Week | 10 | 10 | 2026-01-02 |
+| NDFL III dump | 92 | 24 | 2025-12-06 |
+| NDPL VI dump | 156 | 76 | 2025-11-18 |
+| NDWC V dump | 101 | 47 | 2025-06-09 |
 | NDBD I dump | 140 | 25 | 2025-03-10 |
 | NDFL II dump | 81 | 32 | 2024-11-20 |
 | NDPL V dump | 130 | 44 | 2024-11-04 |
-| NDWC IV dump | 158 | 84 | 2024-06-02 |
-| National Dex Sample Teams thread | 150 | 110 | 2023-03-08 (posts edited 2026-06) |
+| NDWC IV dump | 160 | 85 | 2024-06-02 |
+| National Dex Sample Teams thread | 125 | 93 | 2023-03-08 (posts edited 2026-06) |
 
-A paste is counted under the thread of the earliest post linking it. Validating at today's pin doesn't make an old team current: the 1760 meta drifts ~10% a month (D4). So a Phase 2 pool of 200–300 teams from these sources would reach back into 2025.
+A paste is counted under the thread of the post that dates it, as above. Validating at today's pin doesn't make an old team current: the 1760 meta drifts ~10% a month (D4). So a Phase 2 pool of 200–300 teams from these sources would reach back into 2025.
 
 What the count leaves out, or may wrongly include:
 
@@ -234,7 +237,8 @@ What the count leaves out, or may wrongly include:
 - **Stats month:** the weights use October's stats, and resampling and calcs inherit their drift.
 - **Held-out split:** it has no group constraint (deferred in D4).
 - **Paste authors:** `source.author` is the paste's author, or the forum poster when the paste gives none or a pokepast.es "Guest NNNNN" placeholder.
-- **Stats entries for other formes:** the stats have no entry of their own for Greninja-Bond, Keldeo-Resolute or Sinistcha-Masterpiece, so their sets use Greninja's, Keldeo's and Sinistcha's. The report lists every such fallback, so a forme losing its entry would show there.
+- **Stats entries for other formes:** the stats have no entry of their own for Greninja-Bond or Keldeo-Resolute, so their library sets use Greninja's and Keldeo's. A Sinistcha-Masterpiece candidate team, not in the pool or library, used Sinistcha's. The report lists every such fallback, including rejected candidates', so a forme losing its entry would show there.
+- **Greninja-Bond's key:** the library files Greninja's sets under `Greninja-Bond`, which the protocol never shows (team-pool.md, species_sets.json).
 - **Pokémon Champions:** Smogon's forums also host "National Dex Champions OU" threads (announcements, metagame discussion). D4 rebuilds on a NatDex ruling on Pokémon Champions content. I didn't read the threads.
 
 ## Outputs
@@ -244,7 +248,8 @@ From a set-up checkout (AGENTS.md, Conventions; `nvm use` first):
 ```bash
 tasks/T12-pool-v1/acceptance.sh     # type check, validate-pool, check-library, rebuild compared byte for byte
 node scripts/pool/build.ts > tasks/T12-pool-v1/evidence/build-report.txt   # rebuild data/pool/v1 and data/priors/v0
-node tasks/T12-pool-v1/smoke-battles.ts   # 200 random-player games between v1 teams; exits 1 on any error
+node tasks/T12-pool-v1/smoke-battles.ts   # 200 random-player games between v1 teams; exits 1 on any error or a game over a minute
+node tasks/T12-pool-v1/smoke-battles.ts --library   # 788 games on 197 teams dealt from every library set
 scripts/pool/fetch.sh               # take any missing snapshot; never rewrites one that exists
 ```
 
@@ -261,7 +266,7 @@ scripts/pool/fetch.sh               # take any missing snapshot; never rewrites 
 | `scripts/pool/check-library.ts` | The library's acceptance checks |
 | `scripts/pool/fetch.sh`, `threads.txt` | Snapshots the sources |
 | `acceptance.sh`, `tsconfig.json` | Acceptance checks and the type check |
-| `smoke-battles.ts` | 200 random-player games between v1 teams (`evidence/smoke-battles.log`) |
+| `smoke-battles.ts` | Random-player games between v1 teams, or on every library set (`evidence/smoke-battles.log`) |
 | `evidence/` | Source snapshots, `build-report.txt`, `acceptance.log`, `smoke-battles.log` |
 
 ## For integration
@@ -274,7 +279,7 @@ scripts/pool/fetch.sh               # take any missing snapshot; never rewrites 
 
 2. AGENTS.md, Areas, replace the team-pool row with:
 
-   > | Team pool and set priors | v1: 50 teams, 10 held out; library v0: 1064 sets | `data/pool/`, `data/priors/`, `scripts/validate-pool.ts`, `scripts/pool/` | [team-pool](docs/areas/team-pool.md) |
+   > | Team pool and set priors | v1: 50 teams, 10 held out; library v0: 1063 sets | `data/pool/`, `data/priors/`, `scripts/validate-pool.ts`, `scripts/pool/` | [team-pool](docs/areas/team-pool.md) |
 
 3. AGENTS.md, Conventions, Re-pin: after "validate every pool team (`node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl`, once per pool version in use)" insert ", check every set library (`node scripts/pool/check-library.ts data/priors/<ver>/species_sets.json data/pool/<pool ver>`)".
 
@@ -284,8 +289,10 @@ scripts/pool/fetch.sh               # take any missing snapshot; never rewrites 
 
    > Two refinements, the user's call in T12's review (2026-11-27): a set is weighed under the stats entry it counts as (a Mega set under its Mega forme), and its weight is multiplied by that entry's share of the usage of the entries its species' sets count under, so Mega-X and Mega-Y split by usage. Sets that differ only in what the weight ignores (nature, spread, a Mega's base ability) split one weight evenly.
 
-6. checklist.md, For a later replan, the D4 item: append "T12 counted 650 distinct teams that validate as OU from the NatDex tour dumps and sample teams: 188 first posted in 2026, 146 since April, 124 of unknown date (T12, Result)."
+6. decisions.md, D7, in "Calcs assume the species-level usage prior: the highest-weight library set (D4) consistent with what the protocol has explicitly revealed", after "the highest-weight library set (D4)" insert " (in T12's library, the first consistent set in file order: from the consistent combination of item, ability and moves with the most summed weight)".
 
-7. For a planning session to decide:
+7. checklist.md, For a later replan, the D4 item: append "T12 counted 650 distinct teams that validate as OU from the NatDex tour dumps and sample teams: 191 first posted in 2026, 147 since April, 97 of unknown date (T12, Result)."
+
+8. For a planning session to decide:
    - whether choosing pool teams to match the 1760 species usage (T12, How v1 was chosen) is acceptable now, given D4 defers fitting the pool's usage to the stats to Phase 3;
    - whether "National Dex Champions OU" on Smogon's forums is the Pokémon Champions ruling D4's refresh rule waits for (T12, Limits).

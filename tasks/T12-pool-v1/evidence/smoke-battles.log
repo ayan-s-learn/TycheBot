@@ -1,1 +1,4 @@
-200/200 games ended in a win or tie; 0 errors sent to players
+# node tasks/T12-pool-v1/smoke-battles.ts
+50 teams; 200/200 games ended in a win or tie; 0 errors sent to players
+# node tasks/T12-pool-v1/smoke-battles.ts --library
+197 teams; 788/788 games ended in a win or tie; 0 errors sent to players

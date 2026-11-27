@@ -78,19 +78,26 @@ function defaultAbility(name: string): string {
 	return [...legal].sort((a, b) => (used[toID(b)] ?? 0) - (used[toID(a)] ?? 0))[0];
 }
 
-// Abilities only a battle-only forme of a species has (Diancie: Magic Bounce, from Diancie-Mega).
-const inBattleAbilities = new Map<string, Set<string>>();
+// The battle-only formes of each species (Diancie: Diancie-Mega), with the items that make them, if any.
+const battleFormes = new Map<string, { abilities: Set<string>, items: string[] }[]>();
 for (const forme of dex.species.all()) {
 	for (const base of [forme.battleOnly ?? []].flat()) {
-		if (!inBattleAbilities.has(base)) inBattleAbilities.set(base, new Set());
-		for (const a of Object.values(forme.abilities)) inBattleAbilities.get(base)!.add(toID(a));
+		if (!battleFormes.has(base)) battleFormes.set(base, []);
+		battleFormes.get(base)!.push({
+			abilities: new Set(Object.values(forme.abilities).map(a => toID(a))),
+			items: [forme.requiredItem ?? [], forme.requiredItems ?? []].flat().map(i => toID(i)),
+		});
 	}
 }
+// Whether the ability is that of the in-battle forme this set becomes: the Mega or Primal forme its item makes,
+// or a forme no item makes (Terapagos-Terastal). Only then does the validator repair it rather than reject it.
+const inBattleAbility = (species: string, item: string, ability: string) =>
+	(battleFormes.get(species) ?? []).some(f => (!f.items.length || f.items.includes(toID(item))) && f.abilities.has(toID(ability)));
 
 // Rewrites the source conventions the validator would otherwise repair, so the stored set passes unrepaired.
 // Pastes exported from Showdown and the analyses name the in-battle forme (Diancie-Mega, Terapagos-Terastal) and
-// its ability (Magic Bounce, Tera Shell). The set becomes the base forme, and an ability only an in-battle forme
-// has becomes the base's first ability: the validator's own repair, so what the server played for a paste. A set
+// its ability (Magic Bounce, Tera Shell). The set becomes the base forme, and the ability of the in-battle forme it
+// becomes is replaced by the base's first ability: the validator's own repair, so what the server played. A set
 // the validator moves to a sibling forme (Keldeo with Secret Sword to Keldeo-Resolute, Greninja with Battle Bond
 // to Greninja-Bond) takes that forme. A set with no ability (most analysis sets) gets the most used one. Any other
 // illegal ability is left to fail validation. Each rewrite is counted.
@@ -114,7 +121,7 @@ function canonical(set: PokemonSet): PokemonSet {
 	const target = dex.species.get(out.species);
 	if (!Object.values(target.abilities).some(a => toID(a) === toID(out.ability))) {
 		const fill = !out.ability ? defaultAbility(target.name)
-			: inBattleAbilities.get(target.name)?.has(toID(out.ability)) ? target.abilities[0] : null;
+			: inBattleAbility(target.name, out.item, out.ability) ? target.abilities[0] : null;
 		if (fill) {
 			note(`${target.name} ability ${out.ability || '(none)'} to ${fill}`);
 			out.ability = fill;
@@ -126,8 +133,13 @@ function canonical(set: PokemonSet): PokemonSet {
 // ---- Forum posts and pastes ----
 
 interface Post { thread: string, title: string, post: number, author: string | null, date: string, edited: string | null }
-const threadUrls = readFileSync(root('scripts/pool/threads.txt'), 'utf8').split('\n').filter(l => l && !l.startsWith('#'));
-const firstLink = new Map<string, Post>();   // paste id -> the earliest post linking it
+const threadUrls = readFileSync(root('scripts/pool/threads.txt'), 'utf8').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+// A post edited more than this many days after it was made may have gained its links later, so it doesn't date them.
+const EDIT_DAYS = 31;
+const days = (from: string, to: string) => (Date.parse(to) - Date.parse(from)) / 86400e3;
+const dates = (post: Post) => !post.edited || days(post.date, post.edited) <= EDIT_DAYS;
+// paste id -> the earliest post linking it that dates it, or failing that the earliest post linking it
+const firstLink = new Map<string, Post>();
 const linkedIn = new Map<string, Set<string>>();   // paste id -> threads linking it
 for (const url of threadUrls) {
 	const slug = url.replace(/\/$/, '').split('/').pop()!;
@@ -146,7 +158,8 @@ for (const url of threadUrls) {
 			};
 			for (const [, id] of body.matchAll(/pokepast\.es\/([0-9a-f]{16})/g)) {
 				const seen = firstLink.get(id);
-				if (!seen || post.date < seen.date || (post.date === seen.date && post.post < seen.post)) firstLink.set(id, post);
+				const earlier = !seen || post.date < seen.date || (post.date === seen.date && post.post < seen.post);
+				if (!seen || (dates(post) && !dates(seen)) || (dates(post) === dates(seen) && earlier)) firstLink.set(id, post);
 				if (!linkedIn.has(id)) linkedIn.set(id, new Set());
 				linkedIn.get(id)!.add(slug);
 			}
@@ -159,10 +172,7 @@ for (const line of gz('pastes.jsonl.gz').split('\n').filter(Boolean)) {
 	pastes.set(id, JSON.parse(body));
 }
 
-// A post edited more than this many days after it was made may have gained its links later, so its pastes
-// count as undated: not eligible for the pool, and in the count's "date unknown" bucket.
-const EDIT_DAYS = 31;
-const days = (from: string, to: string) => (Date.parse(to) - Date.parse(from)) / 86400e3;
+// A paste no dating post links is undated: not eligible for the pool, and in the count's "date unknown" bucket.
 
 // ---- Candidate teams ----
 
@@ -202,7 +212,7 @@ for (const [entry, { name, author, data }] of samples.entries()) {
 for (const [id, post] of [...firstLink].sort(([a], [b]) => cmp(a, b))) {
 	const paste = pastes.get(id);
 	const base = {
-		id: `pokepaste-${id}`, date: post.date, thread: post.thread, undated: !!post.edited && days(post.date, post.edited) > EDIT_DAYS,
+		id: `pokepaste-${id}`, date: post.date, thread: post.thread, undated: !dates(post),
 		source: {
 			url: `https://pokepast.es/${id}`, entry: null, name: paste?.title || null,
 			author: paste?.author && !/^Guest \d+$/.test(paste.author) ? paste.author : post.author,
@@ -289,8 +299,11 @@ interface LibrarySet { set: string, sources: string[] }
 const library = new Map<string, Map<string, LibrarySet>>();   // species -> packed set -> entry
 const add = (set: PokemonSet, source: string) => {
 	const name = dex.species.get(set.species).name;
-	// Moves in a fixed order, so sets that differ only in move order are one set.
-	const packed = pack([normalize({ ...set, moves: [...set.moves].sort((a, b) => cmp(toID(a), toID(b))) })]);
+	// Moves in a fixed order, so sets that differ only in move order are one set, and no hpType without Hidden
+	// Power (pkmn.github.io's sample teams add one), so sets that differ only by it are one set too.
+	const moves = [...set.moves].sort((a, b) => cmp(toID(a), toID(b)));
+	const hpType = moves.some(m => toID(m).startsWith('hiddenpower')) ? set.hpType : undefined;
+	const packed = pack([normalize({ ...set, moves, hpType })]);
 	if (!library.has(name)) library.set(name, new Map());
 	const entry = library.get(name)!.get(packed) ?? { set: packed, sources: [] };
 	if (!entry.sources.includes(source)) entry.sources.push(source);
@@ -334,10 +347,16 @@ const weighed = [...library].sort(([a], [b]) => cmp(a, b)).map(([name, sets]) =>
 	const total = sum([...new Set(entries.map(e => e.key))].map(usage));
 	const variants = new Map<string, number>();
 	for (const e of entries) variants.set(e.combo, (variants.get(e.combo) ?? 0) + 1);
-	return [name, entries.map(e => ({
-		set: e.set, weight: total ? e.weight * usage(e.key) / total / variants.get(e.combo)! : 0,
+	const weighted = entries.map(e => ({
+		set: e.set, weight: total ? e.weight * usage(e.key) / total / variants.get(e.combo)! : 0, combo: e.combo,
 		tags: e.tags, statsSpecies: e.key, sources: e.sources, missing: e.missing, variants: variants.get(e.combo)!,
-	})).sort((a, b) => b.weight - a.weight || cmp(a.set, b.set))] as const;
+	}));
+	// Sorted by the combination's summed weight, then the set's, so the first set consistent with what has been
+	// revealed (moves, item, ability, forme: all fixed within a combination) is from the likeliest combination.
+	const comboWeight = new Map<string, number>();
+	for (const e of weighted) comboWeight.set(e.combo, (comboWeight.get(e.combo) ?? 0) + e.weight);
+	return [name, weighted.sort((a, b) => comboWeight.get(b.combo)! - comboWeight.get(a.combo)! || cmp(a.combo, b.combo) ||
+		b.weight - a.weight || cmp(a.set, b.set))] as const;
 });
 
 // ---- Write ----
@@ -353,7 +372,7 @@ writeFileSync(`${out}/data/priors/v0/species_sets.json`, JSON.stringify({
 	pool: 'data/pool/v1/teams.jsonl',
 	stats: { url: STATS_URL, battles: chaos.info['number of battles'] },
 	analysis: SETS_URL,
-	species: Object.fromEntries(weighed.map(([name, sets]) => [name, sets.map(({ missing, variants, ...s }) => ({ ...s, weight: Number(s.weight.toPrecision(6)) }))])),
+	species: Object.fromEntries(weighed.map(([name, sets]) => [name, sets.map(({ missing, variants, combo, ...s }) => ({ ...s, weight: Number(s.weight.toPrecision(6)) }))])),
 }, null, '\t') + '\n');
 
 // ---- Report ----
@@ -388,7 +407,7 @@ report.push(`\nCandidates: ${counted(candidates)}`);
 report.push(`Distinct valid OU teams ${distinct.length}, rosters ${new Set(distinct.map(roster)).size}; eligible (samples, or posted on or after ${RECENT}) ${eligible.length}`);
 const byYear = Object.entries(Object.groupBy(distinct, c => c.undated ? 'date unknown' : c.date?.slice(0, 4) ?? 'samples')).sort();
 report.push(`Distinct valid OU teams by year first posted: ${byYear.map(([y, l]) => `${y} ${l!.length}`).join(', ')}; since ${RECENT}: ${distinct.filter(c => c.date && !c.undated && c.date >= RECENT).length}`);
-report.push(`Date unknown: pastes first linked in a post edited more than ${EDIT_DAYS} days after it was made (${[...new Set(candidates.filter(c => c.undated).map(c => c.thread!))].sort(cmp).join(', ')})`);
+report.push(`Date unknown: pastes linked only in posts edited more than ${EDIT_DAYS} days after they were made (${[...new Set(candidates.filter(c => c.undated).map(c => c.thread!))].sort(cmp).join(', ')})`);
 report.push('\nBy thread (pastes first linked there: all, distinct valid OU teams, newest first link):');
 for (const url of threadUrls) {
 	const slug = url.replace(/\/$/, '').split('/').pop()!;
