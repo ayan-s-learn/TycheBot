@@ -10,13 +10,11 @@ Phase 1 exit ([plan.md](plan.md), Phases).
 
 ## Next replan
 
-When any of T10, T11, T14, T16 or T17 has a `Reviewed:` line or stops on a stop condition (workflow.md, Task session). Also when T16 pushes its record version 2 and tensor layout (Progress, `Verified`): that is the input the 5M net's brief needs (Later in Phase 1). Once T10's layer, T11, T14 and T16 are in, brief the batch env and the v0-lite run.
+When any of T10, T11, T14, T16, T17 or T18 has a `Reviewed:` line or stops on a stop condition (workflow.md, Task session). Also when T16 pushes its record version 2 and tensor layout (Progress, `Verified`): that is the input the 5M net's brief needs (Later in Phase 1). Once T10's layer, T11, T14 and T16 are in, brief the batch env and the v0-lite run.
 
 ## Needs you
 
-- **Picking pool teams to match the 1760 species usage** (T12, How v1 was chosen). D4 defers "roster weights fitted so the pool's species usage matches the 1760 stats" to Phase 3. T12 used the stats only to choose among real tour and sample teams, which is close to that item but generates nothing, in keeping with D4's "usage stats weight and check the pool; they don't generate it". Recommended: accept v1 as built for Phases 1–2, and note in D4 that selecting teams by usage distance is allowed. Weighting the pool's sampling stays deferred.
-- **"National Dex Champions OU" threads on Smogon** (T12, Limits). D4 rebuilds the pool on a NatDex ruling on Pokémon Champions content. Recommended: no action now. The December re-pin reads `config/formats.ts`, where any ruling that changes NatDex OU's legal content shows up, and that session checks the threads.
-- **A ~$5 rented env benchmark now?** plan.md's own estimate of $5.40–9 per million games straddles D2's $8 gate, and that trial isn't due until after Phase 2. Running T02's sim sweep and T06's calc benchmark on a rented many-vCPU box would show early whether the gate is likely to trip. It needs your OK as an exception to D9's budget rule (decisions.md, D9), and you would set up the account and payment. Still recommended, but less urgent than T16's measurement, which shows the full builder's cost first.
+Nothing open. Answered 2026-11-27: T12's usage-matched selection is accepted (decisions.md, D4); Pokémon Champions content is out of scope, since the bot plays only `gen9nationaldex` as the pin defines it; the ~$5 rented benchmark is approved (T18).
 
 ## Active
 
@@ -24,13 +22,14 @@ When any of T10, T11, T14, T16 or T17 has a `Reviewed:` line or stops on a stop 
 
 ## Ready
 
-All five can start now, each in its own session (`/do-task T16` and so on). Their May change paths are disjoint. T14 and T16 both work around `worker/skeleton/`, split by file: T16 has `env.ts`, `record.ts`, `vocab.ts` and `drive.ts`, and T14 has `main.ts` and `mask.ts`.
+All six can start now, each in its own session (`/do-task T16` and so on). Their May change paths are disjoint. T14 and T16 both work around `worker/skeleton/`, split by file: T16 has `env.ts`, `record.ts`, `vocab.ts` and `drive.ts`, and T14 has `main.ts` and `mask.ts`.
 
 - T16: observation, first cut (record version 2, calcs on T12's prior, the hidden-content leak test, the builder's cost). [Brief](../tasks/T16-observation/README.md). Start it first: it is v0-lite's longest prerequisite. Its timed runs need your Mac.
 - T10: tracker fix layer and ground truth. [Brief](../tasks/T10-tracker-layer/README.md). T16 builds on the raw client meanwhile and swaps to this layer by import.
 - T14: baselines, eval runner and sampled mask check. [Brief](../tasks/T14-eval-baselines/README.md).
 - T11: PPO learner and toy checks. [Brief](../tasks/T11-learner/README.md).
 - T17: D4's set resampling. [Brief](../tasks/T17-set-resampling/README.md). Small, and not a v0-lite prerequisite.
+- T18: rented env benchmark, ≤$5. [Brief](../tasks/T18-rented-env-bench/README.md). It needs you to set up the provider account and payment, and runs from your Mac.
 
 ## Later in Phase 1
 
