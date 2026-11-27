@@ -16,6 +16,7 @@
     "../../scripts/pool/showdown.ts",
     "../../scripts/pool/build.ts",
     "../../scripts/pool/check-library.ts",
+    "smoke-battles.ts",
     "../../vendor/pokemon-showdown/dist/sim/global-types.d.ts"
   ]
 }

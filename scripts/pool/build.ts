@@ -24,6 +24,8 @@ const out = process.argv[2] ?? root('.');
 const gz = (file: string) => gunzipSync(readFileSync(`${EV}/${file}`)).toString('utf8');
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
 const round = (x: number, digits = 4) => Number(x.toFixed(digits));
+// Code-unit order, so the output doesn't depend on the locale.
+const cmp = (a: string, b: string) => a < b ? -1 : a > b ? 1 : 0;
 
 // ---- Usage stats ----
 
@@ -43,10 +45,13 @@ const target = {
 // The usage-stats entry a set counts under: the Mega forme for a Mega set, and otherwise the set's species, or
 // the forme it changes from or its base species when the stats have no entry of its own (they count
 // Keldeo-Resolute as Keldeo and Greninja-Bond as Greninja).
+const fallbacks = new Set<string>();
 function statsKey(set: PokemonSet): string {
 	const name = statsSpecies(set);
 	const species = dex.species.get(name);
-	return [name, species.changesFrom, species.baseSpecies].find(n => n && chaos.data[n]) ?? name;
+	const key = [name, species.changesFrom, species.baseSpecies].find(n => n && chaos.data[n]) ?? name;
+	if (key !== name) fallbacks.add(`${name} as ${key}`);
+	return key;
 }
 
 // D4: the product of the species' marginals for its item, ability and moves. A Mega set is counted under its
@@ -66,18 +71,29 @@ function weigh(set: PokemonSet): { weight: number, missing: string[] } {
 	return { weight: missing.length ? 0 : factors.reduce((w, [, n]) => w * n! / total, 1), missing };
 }
 
-// The species' most used legal ability in the stats.
+// The species' most used legal ability in the stats, or its first if the stats have none.
 function defaultAbility(name: string): string {
 	const legal = Object.values(dex.species.get(name).abilities);
 	const used = chaos.data[dex.species.get(name).name]?.Abilities ?? {};
 	return [...legal].sort((a, b) => (used[toID(b)] ?? 0) - (used[toID(a)] ?? 0))[0];
 }
 
+// Abilities only a battle-only forme of a species has (Diancie: Magic Bounce, from Diancie-Mega).
+const inBattleAbilities = new Map<string, Set<string>>();
+for (const forme of dex.species.all()) {
+	for (const base of [forme.battleOnly ?? []].flat()) {
+		if (!inBattleAbilities.has(base)) inBattleAbilities.set(base, new Set());
+		for (const a of Object.values(forme.abilities)) inBattleAbilities.get(base)!.add(toID(a));
+	}
+}
+
 // Rewrites the source conventions the validator would otherwise repair, so the stored set passes unrepaired.
 // Pastes exported from Showdown and the analyses name the in-battle forme (Diancie-Mega, Terapagos-Terastal) and
-// its ability (Magic Bounce, Tera Shell): the set becomes the base forme, with its most used ability if the given
-// one isn't legal for it. A set the validator moves to a sibling forme (Keldeo with Secret Sword to
-// Keldeo-Resolute, Greninja with Battle Bond to Greninja-Bond) takes that forme. Each rewrite is counted.
+// its ability (Magic Bounce, Tera Shell). The set becomes the base forme, and an ability only an in-battle forme
+// has becomes the base's first ability: the validator's own repair, so what the server played for a paste. A set
+// the validator moves to a sibling forme (Keldeo with Secret Sword to Keldeo-Resolute, Greninja with Battle Bond
+// to Greninja-Bond) takes that forme. A set with no ability (most analysis sets) gets the most used one. Any other
+// illegal ability is left to fail validation. Each rewrite is counted.
 const rewrites = new Map<string, number>();
 function canonical(set: PokemonSet): PokemonSet {
 	const out = { ...set, moves: [...set.moves] };
@@ -95,18 +111,21 @@ function canonical(set: PokemonSet): PokemonSet {
 		note(`${dex.species.get(out.species).name} to ${moved.name}`);
 		out.species = moved.name;
 	}
-	const legal = Object.values(dex.species.get(out.species).abilities);
-	if (!legal.some(a => toID(a) === toID(out.ability))) {
-		const fill = defaultAbility(out.species);
-		note(`${dex.species.get(out.species).name} ability ${out.ability || '(none)'} to ${fill}`);
-		out.ability = fill;
+	const target = dex.species.get(out.species);
+	if (!Object.values(target.abilities).some(a => toID(a) === toID(out.ability))) {
+		const fill = !out.ability ? defaultAbility(target.name)
+			: inBattleAbilities.get(target.name)?.has(toID(out.ability)) ? target.abilities[0] : null;
+		if (fill) {
+			note(`${target.name} ability ${out.ability || '(none)'} to ${fill}`);
+			out.ability = fill;
+		}
 	}
 	return out;
 }
 
 // ---- Forum posts and pastes ----
 
-interface Post { thread: string, title: string, post: number, author: string | null, date: string }
+interface Post { thread: string, title: string, post: number, author: string | null, date: string, edited: string | null }
 const threadUrls = readFileSync(root('scripts/pool/threads.txt'), 'utf8').split('\n').filter(l => l && !l.startsWith('#'));
 const firstLink = new Map<string, Post>();   // paste id -> the earliest post linking it
 const linkedIn = new Map<string, Set<string>>();   // paste id -> threads linking it
@@ -121,8 +140,9 @@ for (const url of threadUrls) {
 			const body = parts[i + 1];
 			const post: Post = {
 				thread: slug, title, post: Number(parts[i]),
-				author: /class="username[^"]*"[^>]*>([^<]*)</.exec(body)?.[1] ?? null,
+				author: /class="username[^"]*"[^>]*>(.*?)<\/a>/.exec(body)?.[1].replace(/<[^>]*>/g, '').trim() || null,
 				date: /datetime="(\d{4}-\d\d-\d\d)/.exec(body)![1],
+				edited: /message-lastEdit[\s\S]*?datetime="(\d{4}-\d\d-\d\d)/.exec(body)?.[1] ?? null,
 			};
 			for (const [, id] of body.matchAll(/pokepast\.es\/([0-9a-f]{16})/g)) {
 				const seen = firstLink.get(id);
@@ -139,10 +159,15 @@ for (const line of gz('pastes.jsonl.gz').split('\n').filter(Boolean)) {
 	pastes.set(id, JSON.parse(body));
 }
 
+// A post edited more than this many days after it was made may have gained its links later, so its pastes
+// count as undated: not eligible for the pool, and in the count's "date unknown" bucket.
+const EDIT_DAYS = 31;
+const days = (from: string, to: string) => (Date.parse(to) - Date.parse(from)) / 86400e3;
+
 // ---- Candidate teams ----
 
 interface Candidate {
-	id: string, team: string, verdict: string, date: string | null, thread: string | null,
+	id: string, team: string, verdict: string, date: string | null, thread: string | null, undated?: boolean,
 	source: { url: string, entry: number | null, name: string | null, author: string | null, date: string | null, post?: string },
 }
 const candidates: Candidate[] = [];
@@ -174,12 +199,13 @@ for (const [entry, { name, author, data }] of samples.entries()) {
 		source: { url: SAMPLE_URL, entry, name: name ?? null, author: author ?? null, date: null },
 	});
 }
-for (const [id, post] of [...firstLink].sort(([a], [b]) => a.localeCompare(b))) {
+for (const [id, post] of [...firstLink].sort(([a], [b]) => cmp(a, b))) {
 	const paste = pastes.get(id);
 	const base = {
-		id: `pokepaste-${id}`, date: post.date, thread: post.thread,
+		id: `pokepaste-${id}`, date: post.date, thread: post.thread, undated: !!post.edited && days(post.date, post.edited) > EDIT_DAYS,
 		source: {
-			url: `https://pokepast.es/${id}`, entry: null, name: paste?.title || null, author: paste?.author || post.author,
+			url: `https://pokepast.es/${id}`, entry: null, name: paste?.title || null,
+			author: paste?.author && !/^Guest \d+$/.test(paste.author) ? paste.author : post.author,
 			date: post.date, post: `https://www.smogon.com/forums/posts/${post.post}/`,
 		},
 	};
@@ -191,11 +217,16 @@ for (const [id, post] of [...firstLink].sort(([a], [b]) => a.localeCompare(b))) 
 	candidates.push({ ...base, ...verdict(Teams.import(paste.paste), format) });
 }
 
-// Identical teams count once, under their earliest source (samples first).
+// Teams equal up to the order of their Pokemon and moves, and to an hpType without Hidden Power (pkmn.github.io
+// adds those), count once, under their earliest source (samples first).
+const teamKey = (c: Candidate) => Teams.unpack(c.team)!.map(s => pack([{
+	...s, moves: [...s.moves].sort(cmp), hpType: s.moves.some(m => toID(m).startsWith('hiddenpower')) ? s.hpType : undefined,
+}])).sort(cmp).join(']');
 const byTeam = new Map<string, Candidate>();
 for (const c of candidates.filter(c => c.verdict === 'ou')) {
-	const seen = byTeam.get(c.team);
-	if (!seen || (seen.date !== null && (c.date === null || c.date < seen.date))) byTeam.set(c.team, c);
+	const key = teamKey(c);
+	const seen = byTeam.get(key);
+	if (!seen || (seen.date !== null && (c.date === null || c.date < seen.date))) byTeam.set(key, c);
 }
 const distinct = [...byTeam.values()];
 const species = (c: Candidate) => Teams.unpack(c.team)!.map(s => dex.species.get(s.species).name);
@@ -203,7 +234,7 @@ const roster = (c: Candidate) => [...species(c)].sort().join('/');
 
 // ---- Pool selection ----
 
-const eligible = distinct.filter(c => c.date === null || c.date >= RECENT).sort((a, b) => a.id.localeCompare(b.id));
+const eligible = distinct.filter(c => c.date === null || (!c.undated && c.date >= RECENT)).sort((a, b) => cmp(a.id, b.id));
 interface Profile { counts: Map<string, number>, mega: number, z: number }
 const profile = (teams: Candidate[]): Profile => {
 	const counts = new Map<string, number>();
@@ -239,9 +270,9 @@ while (chosen.length < POOL_SIZE) {
 	if (!best) break;
 	chosen.push(best);
 }
-const pool = [...chosen].sort((a, b) => a.id.localeCompare(b.id));
+const pool = [...chosen].sort((a, b) => cmp(a.id, b.id));
 const holdoutKey = (c: Candidate) => createHash('sha256').update(`T12 holdout ${c.id}`).digest('hex');
-const heldOut = new Set([...pool].sort((a, b) => holdoutKey(a).localeCompare(holdoutKey(b))).slice(0, HELD_OUT).map(c => c.id));
+const heldOut = new Set([...pool].sort((a, b) => cmp(holdoutKey(a), holdoutKey(b))).slice(0, HELD_OUT).map(c => c.id));
 const training = pool.filter(c => !heldOut.has(c.id));
 
 // ---- Set library ----
@@ -258,7 +289,8 @@ interface LibrarySet { set: string, sources: string[] }
 const library = new Map<string, Map<string, LibrarySet>>();   // species -> packed set -> entry
 const add = (set: PokemonSet, source: string) => {
 	const name = dex.species.get(set.species).name;
-	const packed = pack([normalize(set)]);
+	// Moves in a fixed order, so sets that differ only in move order are one set.
+	const packed = pack([normalize({ ...set, moves: [...set.moves].sort((a, b) => cmp(toID(a), toID(b))) })]);
 	if (!library.has(name)) library.set(name, new Map());
 	const entry = library.get(name)!.get(packed) ?? { set: packed, sources: [] };
 	if (!entry.sources.includes(source)) entry.sources.push(source);
@@ -284,11 +316,29 @@ for (const [name, sets] of Object.entries(analysis)) {
 }
 for (const c of training) for (const set of Teams.unpack(c.team)!) add(set, `pool:${c.id}`);
 
-const weighed = [...library].sort(([a], [b]) => a.localeCompare(b)).map(([name, sets]) => [name, [...sets.values()].map(e => {
-	const set = Teams.unpack(e.set)![0];
-	const { weight, missing } = weigh(set);
-	return { set: e.set, weight, tags: tags(set), statsSpecies: statsKey(set), sources: e.sources.sort(), missing };
-}).sort((a, b) => b.weight - a.weight || a.set.localeCompare(b.set))] as const);
+// A set's weight: D4's product of marginals, times its stats entry's share of the usage of the entries this
+// species' sets count under (Charizard: Charizard-Mega-X and -Y; Venusaur: Venusaur and Venusaur-Mega), divided by
+// the number of sets sharing its stats entry, item, ability (a Mega's own for a Mega set) and moves: they differ
+// only in what D4's weight ignores, such as nature, spread or a Mega's base-forme ability. So each combination's
+// weight follows the stats, however many spreads the sources give it.
+const weighed = [...library].sort(([a], [b]) => cmp(a, b)).map(([name, sets]) => {
+	const entries = [...sets.values()].map(e => {
+		const set = Teams.unpack(e.set)![0];
+		const key = statsKey(set);
+		// The ability the weight reads: a Mega's own, whatever the base forme's ability before it Mega Evolves.
+		const ability = tags(set).mega ? toID(dex.species.get(key).abilities[0]) : toID(set.ability);
+		const combo = [key, toID(set.item), ability, ...set.moves.map(toID).sort(cmp)].join('|');
+		return { set: e.set, ...weigh(set), key, combo, tags: tags(set), sources: e.sources.sort(cmp) };
+	});
+	const usage = (key: string) => chaos.data[key]?.usage ?? 0;
+	const total = sum([...new Set(entries.map(e => e.key))].map(usage));
+	const variants = new Map<string, number>();
+	for (const e of entries) variants.set(e.combo, (variants.get(e.combo) ?? 0) + 1);
+	return [name, entries.map(e => ({
+		set: e.set, weight: total ? e.weight * usage(e.key) / total / variants.get(e.combo)! : 0,
+		tags: e.tags, statsSpecies: e.key, sources: e.sources, missing: e.missing, variants: variants.get(e.combo)!,
+	})).sort((a, b) => b.weight - a.weight || cmp(a.set, b.set))] as const;
+});
 
 // ---- Write ----
 
@@ -303,14 +353,14 @@ writeFileSync(`${out}/data/priors/v0/species_sets.json`, JSON.stringify({
 	pool: 'data/pool/v1/teams.jsonl',
 	stats: { url: STATS_URL, battles: chaos.info['number of battles'] },
 	analysis: SETS_URL,
-	species: Object.fromEntries(weighed.map(([name, sets]) => [name, sets.map(({ missing, ...s }) => ({ ...s, weight: Number(s.weight.toPrecision(6)) }))])),
+	species: Object.fromEntries(weighed.map(([name, sets]) => [name, sets.map(({ missing, variants, ...s }) => ({ ...s, weight: Number(s.weight.toPrecision(6)) }))])),
 }, null, '\t') + '\n');
 
 // ---- Report ----
 
 const v0 = readFileSync(root('data/pool/v0/teams.jsonl'), 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l) as Candidate);
 const line = (label: string, p: Profile, n: number) => {
-	const top = [...p.counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8).map(([s, k]) => `${s} ${k}`).join(', ');
+	const top = [...p.counts].sort((a, b) => b[1] - a[1] || cmp(a[0], b[0])).slice(0, 8).map(([s, k]) => `${s} ${k}`).join(', ');
 	return `${label}: ${n} teams, ${p.counts.size} species, Mega ${round(p.mega, 2)}/team, Z ${round(p.z, 2)}/team, distance ${round(distance(p), 3)}; most common: ${top}`;
 };
 const report: string[] = [];
@@ -336,14 +386,15 @@ report.push(gaps('v1', profile(pool)));
 const counted = (cs: Candidate[]) => Object.entries(Object.groupBy(cs, c => c.verdict)).map(([v, l]) => `${v} ${l!.length}`).sort().join(', ');
 report.push(`\nCandidates: ${counted(candidates)}`);
 report.push(`Distinct valid OU teams ${distinct.length}, rosters ${new Set(distinct.map(roster)).size}; eligible (samples, or posted on or after ${RECENT}) ${eligible.length}`);
-const byYear = Object.entries(Object.groupBy(distinct, c => c.date?.slice(0, 4) ?? 'samples')).sort();
-report.push(`Distinct valid OU teams by year first posted: ${byYear.map(([y, l]) => `${y} ${l!.length}`).join(', ')}; since ${RECENT}: ${distinct.filter(c => c.date && c.date >= RECENT).length}`);
-report.push('\nBy thread (pastes first linked there: all, distinct valid OU teams, newest post):');
+const byYear = Object.entries(Object.groupBy(distinct, c => c.undated ? 'date unknown' : c.date?.slice(0, 4) ?? 'samples')).sort();
+report.push(`Distinct valid OU teams by year first posted: ${byYear.map(([y, l]) => `${y} ${l!.length}`).join(', ')}; since ${RECENT}: ${distinct.filter(c => c.date && !c.undated && c.date >= RECENT).length}`);
+report.push(`Date unknown: pastes first linked in a post edited more than ${EDIT_DAYS} days after it was made (${[...new Set(candidates.filter(c => c.undated).map(c => c.thread!))].sort(cmp).join(', ')})`);
+report.push('\nBy thread (pastes first linked there: all, distinct valid OU teams, newest first link):');
 for (const url of threadUrls) {
 	const slug = url.replace(/\/$/, '').split('/').pop()!;
 	const mine = candidates.filter(c => c.thread === slug);
 	const ok = distinct.filter(c => c.thread === slug);
-	report.push(`  ${slug}: ${mine.length} pastes, ${ok.length} OU, newest ${mine.map(c => c.date!).sort().pop() ?? '-'}`);
+	report.push(`  ${slug}: ${mine.length} pastes, ${ok.length} OU, newest first link ${mine.map(c => c.date!).sort().pop() ?? '-'}`);
 }
 const inPool = new Set(pool.map(c => c.id));
 report.push(`  smogon samples: ${candidates.filter(c => !c.thread).length} teams, ${distinct.filter(c => !c.thread).length} OU, ${pool.filter(c => !c.thread).length} in v1`);
@@ -354,6 +405,9 @@ report.push(`\nLibrary: ${librarySets.length} sets over ${weighed.length} specie
 report.push(`Weight 0: ${zero.length} of ${librarySets.length} sets (${round(100 * zero.length / librarySets.length, 1)}%); species with every set at 0: ${allZero.length} (${allZero.join(', ')})`);
 const reasons = Object.entries(Object.groupBy(zero.flatMap(s => s.missing.map(m => m.split(' ')[0])), x => x)).map(([k, v]) => `${k} ${v!.length}`);
 report.push(`Missing from the stats, by kind (a set can miss several): ${reasons.join(', ')}`);
+const multi = librarySets.filter(s => s.variants > 1);
+report.push(`Sets sharing their stats entry, item, ability and moves with another (weight split among them): ${multi.length}`);
+report.push(`Stats entries used for another forme: ${[...fallbacks].sort(cmp).join(', ')}`);
 report.push(`Tagged: Mega ${librarySets.filter(s => s.tags.mega).length}, Z ${librarySets.filter(s => s.tags.z).length}, Stealth Rock ${librarySets.filter(s => s.tags.rocks).length}, removal ${librarySets.filter(s => s.tags.removal).length}`);
 const trainingSpecies = new Set(training.flatMap(species));
 const heldSpecies = new Set(pool.filter(c => heldOut.has(c.id)).flatMap(species));

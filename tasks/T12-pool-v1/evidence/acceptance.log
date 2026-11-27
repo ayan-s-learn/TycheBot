@@ -1,23 +1,8 @@
-# acceptance.sh in the working checkout, 2026-11-27T02:40:13Z, Node v24.22.3
+# acceptance.sh in the working checkout, 2026-11-27T19:22:19Z, Node v24.22.3
 == type check
 == pool validates
 50/50 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
 == library sets validate; training species covered; no set only from a held-out team
-Library built at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e, checked at 29f2d9969159fd23f8bb96e177a70072fe573b0e: 1089 sets over 103 species; 40 training and 10 held-out teams; 0 failures
+Library built at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e, checked at 29f2d9969159fd23f8bb96e177a70072fe573b0e: 1064 sets over 103 species; 40 training and 10 held-out teams; 0 failures
 == rebuild from the snapshots
 rebuild identical: teams.jsonl, holdout.txt, species_sets.json, build-report.txt
-
-# fresh clone of the branch at ca65633 with a fresh setup (scripts/pool/check-library.ts later only changed its pin line)
-ca65633 T12: v1 pool (50 teams, 10 held out), set library v0, build scripts and source snapshots
-Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e built with Node v24.22.3
-v24.22.3
-== type check
-== pool validates
-50/50 teams valid for gen9nationaldex at Showdown 29f2d9969159fd23f8bb96e177a70072fe573b0e
-== library sets validate; training species covered; no set only from a held-out team
-1089 sets over 103 species; 40 training and 10 held-out teams; 0 failures
-== rebuild from the snapshots
-rebuild identical: teams.jsonl, holdout.txt, species_sets.json, build-report.txt
-CLEAN-OK
-
-[exited with code 0]
