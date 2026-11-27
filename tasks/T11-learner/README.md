@@ -16,7 +16,7 @@
     - a turn cap treated as truncation that bootstraps from V(s);
     - synchronous collection, built so it can go asynchronous later without a rewrite (D10): each stored decision carries its behavior log-prob and the version of the policy that chose it, and the clip fraction is logged;
     - a snapshot store and opponent sampling: half of games against the latest policy, half against past snapshots, weighted toward the ones it loses to.
-  - The env interface the learner consumes, as a Python protocol in `tyche/learner/`. It carries batches of decisions from two-player games: observations as arrays, the legal-action mask, which side is trained, rewards, and episode end versus truncation. T09's batch env will be adapted to it later, so keep it independent of T09's record format.
+  - The env interface the learner consumes, as a Python protocol in `tyche/learner/`. It carries batches of decisions from two-player games: observations as arrays, the legal-action mask, which side is trained, rewards, and episode end versus truncation. The Python batch env over T09's transport will be adapted to it later, so keep it independent of T09's record format.
   - `tyche/toy/`: toy envs behind that interface, and the checks below. OpenSpiel supplies the matrix games and exploitability.
   - `docs/areas/learner.md`. Propose the AGENTS.md Areas row under For integration.
 - **Acceptance checks,** each a pytest test (AGENTS.md, Conventions: Tests) or a run that Outputs reproduces. They run with D10's KL term and the entropy bonus on, at the coefficients Result proposes for Phase 2. Where those shift the fixed point, as in the non-uniform game, measure against the regularized game's equilibrium and report how far it lies from the true one.

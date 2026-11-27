@@ -9,11 +9,12 @@
   - T08's README: Result (the mismatch classes and Fixes) and Edge-case passes. The passes add `-prepare`, plain Wish, Gastro Acid, Yawn and `addedType`, and show that Illusion re-attribution is harder than T08 estimated.
   - Code to copy from, not import: T08's harness (`record.ts`, `sim.ts`, `truth.ts`, `pkmn.ts`, `compare.py`), `edge-red/layer.ts` as the starting layer, and the edge-case scenario scripts (`edge-red/`, `edge-blue/gen.ts` and `scenarios.ts`) as the seed of the scenario suite.
   - T04's replays (`data/replays/v0/`), for the parse check.
+  - Teams: the v1 pool, `data/pool/v1/teams.jsonl` (team-pool.md). It has no Transform, Imposter or Illusion user, so the scenario suite covers those.
 - **Deliverables,** in `worker/tracker/`:
   - The layer: a subclass of the client's `Battle`, as `layer.ts` is, so T09's worker can switch to it by changing an import.
     - It carries every fix in T08's list and the edge-case passes, including the Regenerator estimate for species with only one possible ability.
     - It keeps an allowlist of the message types the client may ignore. Any other type is an error.
-  - A ground-truth harness. It records games with its own copy of the recorder (T09 builds `worker/sim/` in parallel; merging the two is later work), replays them for the sim's state, and diffs the tracked state as T08's `compare.py` does.
+  - A ground-truth harness. It records games with its own copy of the recorder (T09's `worker/sim/` is merged; copy its recorder rather than import it, and merging the two is later work), replays them for the sim's state, and diffs the tracked state as T08's `compare.py` does.
     - Node or Python is your choice, as long as it lives in this folder.
     - It covers the fields T08 compared, plus own-side PP and the toxic and sleep counters.
   - A scripted-scenario suite: each scenario is a fixed-seed game with chosen inputs and the expected state at chosen decisions. At least these:

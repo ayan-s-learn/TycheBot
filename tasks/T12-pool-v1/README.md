@@ -299,31 +299,3 @@ scripts/pool/fetch.sh               # take any missing snapshot; never rewrites 
 | `acceptance.sh`, `tsconfig.json` | Acceptance checks and the type check |
 | `smoke-battles.ts` | Random-player games between v1 teams, or on every library set (`evidence/smoke-battles.log`) |
 | `evidence/` | Source snapshots, `build-report.txt`, `acceptance.log`, `smoke-battles.log` |
-
-## For integration
-
-1. AGENTS.md, Current state, replace the bullet with:
-
-   > - 2026-11-27: Phase 1 (plan.md, Phases). `data/pool/v1/` holds a 50-team pool with 10 held out, `data/priors/v0/` its set library ([T12](tasks/T12-pool-v1/README.md)), and `data/replays/v0/` the public replay corpus ([T04](tasks/T04-replay-corpus/README.md), Outputs). The only project code so far is `scripts/`.
-
-   (Adjust "the only project code" if T09–T11 have merged by then.)
-
-2. AGENTS.md, Areas, replace the team-pool row with:
-
-   > | Team pool and set priors | v1: 50 teams, 10 held out; library v0: 1063 sets | `data/pool/`, `data/priors/`, `scripts/validate-pool.ts`, `scripts/pool/` | [team-pool](docs/areas/team-pool.md) |
-
-3. AGENTS.md, Conventions, Re-pin: after "validate every pool team (`node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl`, once per pool version in use)" insert ", check every set library (`node scripts/pool/check-library.ts data/priors/<ver>/species_sets.json data/pool/<pool ver>`)".
-
-4. plan.md, Format facts, replace "and ~0.5 Z-Crystals per team (research agent's count)" with "and 0.66 Z-Crystals and 0.79 Megas per team (T12, from the Oct 2026 1760 chaos stats)".
-
-5. decisions.md, D4, Decided, in the "Resample sets every game" item, after "A set's weight is the product of its species' 1760 chaos-stat marginals for its item, ability and four moves, since sets themselves carry no usage." insert:
-
-   > Two refinements, the user's call in T12's review (2026-11-27): a set is weighed under the stats entry it counts as (a Mega set under its Mega forme), and its weight is multiplied by that entry's share of the usage of the entries its species' sets count under, so Mega-X and Mega-Y split by usage. Sets that differ only in what the weight ignores (nature, spread, a Mega's base ability) split one weight evenly.
-
-6. decisions.md, D7, in "Calcs assume the species-level usage prior: the highest-weight library set (D4) consistent with what the protocol has explicitly revealed", after "the highest-weight library set (D4)" insert " (in T12's library, the first consistent set in file order: from the consistent combination of item, ability and moves with the most summed weight)".
-
-7. checklist.md, For a later replan, the D4 item: append "T12 counted 650 distinct teams that validate as OU from the NatDex tour dumps and sample teams: 191 first posted in 2026, 147 since April, 97 of unknown date (T12, Result)."
-
-8. For a planning session to decide:
-   - whether choosing pool teams to match the 1760 species usage (T12, How v1 was chosen) is acceptable now, given D4 defers fitting the pool's usage to the stats to Phase 3;
-   - whether "National Dex Champions OU" on Smogon's forums is the Pokémon Champions ruling D4's refresh rule waits for (T12, Limits).

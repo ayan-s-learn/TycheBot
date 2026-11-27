@@ -12,7 +12,7 @@ From Showdown master and the Oct 2026 usage stats, verified 2026-11-22. Only the
 
 - **Rules:**
   - Tera is banned (`Terastal Clause`).
-  - Megas and Z-Moves are legal: no clause bans them, and both are used. Oct 2026 had Diancie-Mega at 9.9% (1760 cutoff) and ~0.5 Z-Crystals per team (research agent's count).
+  - Megas and Z-Moves are legal: no clause bans them, and both are used. Oct 2026 had Diancie-Mega at 9.9% (1760 cutoff) and 0.66 Z-Crystals and 0.79 Megas per team (T12, from the Oct 2026 1760 chaos stats).
   - Team Preview, `+Past` and `+Unobtainable` content (past Pokémon, moves and items), Endless Battle Clause, Sleep Clause Mod.
   - Battles auto-tie at turn 1000 (`sim/battle.ts`).
 - **Team Preview does not reveal everything:**
@@ -43,7 +43,7 @@ Training runs on Showdown's simulator through the first scale-up. A Rust engine 
 2. **Observation builder** (D7): TypeScript, in the Node env workers. Tracks each player's state with @pkmn/client from its protocol stream and request JSON, runs the damage calcs on that state, and writes a numeric record per decision, which Python stacks into tensors. Used for both training and online play. Built in Phase 1.
 3. **Network:** PyTorch (D6). A stand-in in Phase 1's learner track; the full v0 in Phase 2.
 4. **Learner and actors:** PPO + GAE (D10), plus a snapshot store for the league. Built in Phase 1's learner track.
-5. **Team pool and set priors** (D4). Stub pool in Phase 0; the ~50-team pool and the set library in Phase 1; growth in Phase 3.
+5. **Team pool and set priors** (D4). Stub pool in Phase 0; the ~50-team pool and the set library in Phase 1 (done: T12, pool v1 and library v0); growth in Phase 3.
 6. **Eval harness:** runs in-process with fixed baselines, snapshot ratings and held-out teams. A local Showdown server is used only for the online client and Foul Play. Built in Phase 1.
 7. **Online client:** a Showdown websocket client in Node, feeding the same worker code as component 2. Built at Phase 2's online gate, hardened in Phase 4.
 8. **Later:** play-time search (D8, Phase 5), and the Rust engine if gated in (D2).
@@ -126,7 +126,7 @@ Each phase ends at its exit criteria. Since 2026-11-25 the PPO learner and toy c
    - A 20-team validated stub pool.
    - Exit (met 2026-11-26): the toolchain is recorded, the stub pool validates, the results of S1, S3, S4 and S6 (numbers, documented differences or recommendation) are written up, and the user has signed off on S4's and S6's proposals.
 1. **Env and plumbing (M4 Max, 5–7 weeks, plus up to the v0-lite run's 3–5 days).**
-   - Build: first a walking skeleton (env workers with tracking and the 288 calcs in-process, on true sets until the set library exists, a minimal observation, a simple synchronous PPO, beating random), which measures env decisions/s end to end for D7's calc revisit trigger. Then env workers, observation builder, action masks, damage-calc features, the Python batch env, the ~50-team pool (correcting the stub pool's skew: docs/areas/team-pool.md), the set library (`data/priors/v0/species_sets.json`, D4), baselines (random, max-damage) and the eval runner.
+   - Build: first a walking skeleton (done: T09; env workers with tracking and the 288 calcs in-process, on true sets until the set library exists, a minimal observation, a simple synchronous PPO, beating random), which measures env decisions/s end to end for D7's calc revisit trigger. Then env workers, observation builder, action masks, damage-calc features, the Python batch env, the ~50-team pool (correcting the stub pool's skew: docs/areas/team-pool.md), the set library (`data/priors/v0/species_sets.json`, D4), baselines (random, max-damage) and the eval runner.
    - In parallel: the PPO learner (D10), and the toy checks: rock-paper-scissors ends near uniform, small endgames have known answers. OpenSpiel's matrix games and solvers supply the reference answers.
    - The observation builder is the long pole (2–3 weeks).
    - **v0-lite run:** a first self-play run on real NatDex, for 3–5 days on the M4 Max, with the 5M net. It needs the skeleton's transport, the learner, the set library, the max-damage baseline, the eval runner, and a first cut of the observation built on the tracker layer as it stands, with calcs on the set library's priors, never the skeleton's true sets. The sampled mask check and the first leak test (Exit, below) pass on that observation first. It reports learning curves and the win rate against max-damage. Its brief states the bar before the run: by default, it learns if its final checkpoint wins ≥60% of 1,000 duplicate games against max-damage on the pool's training teams. Whether PPO learns this format is the project's biggest unknown, and the exhaustive bars would otherwise delay the answer to Phase 2. The weights carry across later observation changes (Versioning). A run below the bar sends Phase 1 back to planning.
