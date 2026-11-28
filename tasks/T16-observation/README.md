@@ -56,6 +56,13 @@
 
 ## Progress
 
+### 2026-11-28, session 1: claimed
+
+State: active
+Verified: inputs exist at 02a09d0 (pool v1, library v0, T09's worker, T07's tokens); D7 and D10 are decided. T14 has no branch on `origin` yet, so the entry point follows T14's brief for the game schedule.
+Pending: everything.
+Next: record version 2's layout in `worker/obs/`, then the builder.
+
 ## Result
 
 ## Outputs
