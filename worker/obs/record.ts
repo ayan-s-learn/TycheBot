@@ -122,8 +122,14 @@ for (const f of FIELDS) {
 export const RECORD_WORDS = words;
 export const RECORD_BYTES = words * 4;
 
+/** The layout as the hello frame sends it: byte offsets, and the code lists, so the layout check covers them too. */
 export const LAYOUT = {
 	version: VERSION,
 	recordBytes: RECORD_BYTES,
 	fields: FIELDS.map(f => ({ ...f, offset: OFFSET[f.name] * 4 })),
+	codes: {
+		weathers: WEATHERS, terrains: TERRAINS, fieldNum: FIELD_NUM, sideNum: SIDE_NUM, volatiles: VOLATILES,
+		monFlags: MON_FLAGS, moveNum: MOVE_NUM, events: EVENTS.map(([name]) => name), eventCols: EVENT_COLS,
+		eventSide: EVENT_SIDE, idKind: ID_KIND,
+	},
 };

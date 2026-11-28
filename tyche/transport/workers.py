@@ -1,5 +1,5 @@
-"""The Python end of the transport: starts Node env workers (worker/skeleton/main.ts), receives their batches of
-records, and sends one action per record back.
+"""The Python end of the transport: starts Node env workers (worker/skeleton/main.ts for record version 1,
+worker/obs/main.ts for version 2), receives their batches of records, and sends one action per record back.
 
 Each worker gets two pipes. Frames are length-prefixed: magic u32, version u16, type u16, payload length u32, then
 the payload, all little-endian (worker/skeleton/frames.ts). A worker sends a hello, then a batch per step, and blocks
@@ -16,7 +16,8 @@ from pathlib import Path
 
 import numpy as np
 
-from tyche.transport.record import ENDED, RECORD, VERSION, VersionError, check_layout
+from tyche.transport import record as record_v1
+from tyche.transport.record import ENDED, VersionError
 
 ROOT = Path(__file__).resolve().parents[2]
 MAIN = ROOT / "worker" / "skeleton" / "main.ts"
@@ -58,16 +59,21 @@ def _write_all(fd, data):
 
 
 class Worker:
-    def __init__(self, index, config, node="node", stderr=None):
+    """One worker process. `main` is its entry point and `record` the module of the record version it writes
+    (RECORD, VERSION, check_layout): tyche.transport.record for worker/skeleton/main.ts, tyche.obs.record for
+    worker/obs/main.ts."""
+
+    def __init__(self, index, config, node="node", stderr=None, main=MAIN, record=record_v1):
         self.index = index
         self.proc = None
+        self.record = record
         to_node_r, self._w = os.pipe()
         self._r, from_node_w = os.pipe()
         config = {**config, "worker": index, "fds": [to_node_r, from_node_w]}
         try:
             try:
                 self.proc = subprocess.Popen(
-                    [node, str(MAIN), json.dumps(config)], cwd=ROOT, pass_fds=(to_node_r, from_node_w), stderr=stderr
+                    [node, str(main), json.dumps(config)], cwd=ROOT, pass_fds=(to_node_r, from_node_w), stderr=stderr
                 )
             finally:
                 # Closed before reading, so a worker that dies before its hello gives EOF rather than a hang.
@@ -78,7 +84,7 @@ class Worker:
             if kind != HELLO:
                 raise WorkerError(f"worker {index}: expected hello, got frame type {kind}")
             self.hello = json.loads(payload)
-            check_layout(self.hello["layout"])
+            self.record.check_layout(self.hello["layout"])
         except BaseException:
             self.close()  # a refused worker isn't in Workers.workers, so close it here
             raise
@@ -92,8 +98,8 @@ class Worker:
             raise WorkerError(f"worker {self.index} closed its pipe (exit code {self.proc.wait()})") from None
         if magic != MAGIC:
             raise WorkerError(f"worker {self.index}: bad frame magic {magic:x}")
-        if version != VERSION:
-            raise VersionError(f"worker {self.index} sends record version {version}, this end knows {VERSION}")
+        if version != self.record.VERSION:
+            raise VersionError(f"worker {self.index} sends record version {version}, this end knows {self.record.VERSION}")
         return kind, payload
 
     def recv_batch(self):
@@ -102,12 +108,12 @@ class Worker:
             raise WorkerError(f"worker {self.index}: expected a batch, got frame type {kind}")
         n_records, n_ended = struct.unpack_from("<II", payload)
         ended = np.frombuffer(payload, ENDED, n_ended, 8)
-        records = np.frombuffer(payload, RECORD, n_records, 8 + ENDED.itemsize * n_ended)
+        records = np.frombuffer(payload, self.record.RECORD, n_records, 8 + ENDED.itemsize * n_ended)
         self.pending = True
         return Batch(self.index, records, ended)
 
     def send(self, kind, payload=b""):
-        _write_all(self._w, HEADER.pack(MAGIC, VERSION, kind, len(payload)) + payload)
+        _write_all(self._w, HEADER.pack(MAGIC, self.record.VERSION, kind, len(payload)) + payload)
 
     def send_actions(self, actions, reset_stats=False):
         actions = np.ascontiguousarray(actions, dtype="<i4")
@@ -139,14 +145,16 @@ class Workers:
     """Node env workers. Each holds `battles` battles and sends a batch per step.
 
     `seed` names the run: worker w's game g has its seeds and teams from (seed, w, g). `echo` > 0 runs
-    transport-only workers that send that many blank records per batch."""
+    transport-only workers that send that many blank records per batch (record version 1 only). `main` and `record`
+    pick the entry point and record version (Worker); `extra` adds to the config, as version 2's `library`."""
 
-    def __init__(self, n, *, battles=32, seed=0, pool=POOL, turn_cap=300, echo=0, node="node"):
-        config = {"battles": battles, "seed": seed, "pool": str(pool), "turnCap": turn_cap, "echo": echo}
+    def __init__(self, n, *, battles=32, seed=0, pool=POOL, turn_cap=300, echo=0, node="node", main=MAIN, record=record_v1,
+                 extra=None):
+        config = {"battles": battles, "seed": seed, "pool": str(pool), "turnCap": turn_cap, "echo": echo, **(extra or {})}
         self.workers = []
         try:
             for i in range(n):
-                self.workers.append(Worker(i, config, node))
+                self.workers.append(Worker(i, config, node, main=main, record=record))
         except BaseException:
             self.close()
             raise
@@ -196,7 +204,7 @@ class Workers:
 def stack(batches):
     """The records of several batches as one array of each field, plus each record's worker index."""
     records = np.concatenate([b.records for b in batches])
-    out = {name: records[name] for name in RECORD.names}
+    out = {name: records[name] for name in records.dtype.names}
     out["worker"] = np.concatenate([np.full(len(b.records), b.worker, np.int32) for b in batches])
     return out
 

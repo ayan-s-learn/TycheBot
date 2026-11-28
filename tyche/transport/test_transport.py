@@ -68,6 +68,7 @@ def test_python_refuses_another_layout():
 def test_python_refuses_another_frame_version():
     w = Worker.__new__(Worker)
     w.index = 0
+    w.record = record
     w._r, write = os.pipe()
     os.write(write, HEADER.pack(MAGIC, record.VERSION + 1, 2, 0))
     with pytest.raises(VersionError):
@@ -99,7 +100,7 @@ def test_refused_worker_is_closed(monkeypatch):
         procs.append(real_popen(*args, **kwargs))
         return procs[-1]
 
-    monkeypatch.setattr("tyche.transport.workers.check_layout", refuse)
+    monkeypatch.setattr("tyche.transport.record.check_layout", refuse)
     monkeypatch.setattr("tyche.transport.workers.subprocess.Popen", popen)
     with pytest.raises(VersionError):
         Worker(0, CONFIG)

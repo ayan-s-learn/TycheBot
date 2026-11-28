@@ -56,6 +56,31 @@
 
 ## Progress
 
+### 2026-11-28, session 1: builder, tests and tensors
+
+State: active
+Verified: record version 2 is built in `worker/obs/` and runs through `Env` (`record: 2`) and the transport (`worker/obs/main.ts`). `tsc -p tsconfig.json`, `node --test 'worker/**/*.test.ts'` (21) and `uv run pytest` (14) pass. The leak test's three parts pass (`worker/obs/leak.test.ts`, `tyche/obs/test_obs.py`), and both fail on a planted leak of the true opposing item. 0 of 130,837 nonzero calcs differ from calcs on the prior set and the sim's visible state (`worker/obs/calcs.test.ts`).
+Pending: the timed runs (version 1 and 2 at 12 processes, 3 runs each, under the lock); env-workers.md; Result and Outputs.
+Next: copy `bench.py` into `tyche/obs/` with a record-version flag, then the timed runs.
+
+**Tensor format for T19**, fixed as of this entry: `tyche/obs/tensor.py`. `Tensorizer(hello["vocab"]["hash"])(records)` returns a dict of numpy arrays (`as_torch` converts). Its keys are the stand-in's (`tasks/T07-mps-throughput/tokens/net.py`, `obs`), plus `event_xids`:
+
+| Key | Shape | dtype |
+|---|---|---|
+| `field` | (b, 1, 83) | float32 |
+| `own_ids`, `opp_ids` | (b, 6, 7): species, item, ability, 4 moves | int64 |
+| `own_num`, `opp_num` | (b, 6, 129): the first 24 are the mon's calcs, move j against each of the other side's 6 at 6j + k, as the stand-in's | float32 |
+| `own_mnum`, `opp_mnum` | (b, 6, 4, 90): the last 6 are the move's calcs | float32 |
+| `move_ids` | (b, 4): own mon 0's moves | int64 |
+| `move_num` | (b, 4, 90): `own_mnum[:, 0]` | float32 |
+| `event_ids` | (b, 16, 3): event type, species, move | int64 |
+| `event_xids` | (b, 16, 2): item, ability (added) | int64 |
+| `event_num` | (b, 16, 13) | float32 |
+| `present` | (b, 33): field, own mons, opposing mons, own active's moves, events | bool |
+| `action_mask` | (b, 18) | bool |
+
+Vocab sizes (embedding rows, `Tensorizer.widths()`): species 1,520, moves 940, items 590, abilities 324, event types 41. Item and ability ids: 0 none, 1 outside the vocab, 2 not revealed. Opposing mons are ordered active first, so calcs keep the opposing active at k = 0. Mon order is the request's for own mons (switch logit j is own mon j).
+
 ### 2026-11-28, session 1: claimed
 
 State: active
