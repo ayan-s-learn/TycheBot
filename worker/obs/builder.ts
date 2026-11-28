@@ -69,10 +69,10 @@ function effectId(effect: string): [number, number] {
 }
 const detailsSpecies = (details: string) => details.slice(0, (details + ',').indexOf(','));
 const usedPP = (slot: ClientPokemon['moveSlots'][number]) => typeof slot.ppUsed === 'number' ? slot.ppUsed : slot.ppUsed[0];
-/** The fraction of a move's PP left, as the tracker counts it (PP Ups assumed, as the sim's default). */
+/** The fraction of a move's PP left, as the tracker counts it (PP Ups assumed, as the sim's default), or null. */
 function ppLeft(p: ClientPokemon, id: string) {
 	const slot = p.moveSlots.find(s => !s.virtual && normalMove(s.id) === id);
-	if (!slot) return 1;
+	if (!slot) return null;
 	const move = Dex.moves.get(id);
 	const max = 'maxpp' in slot ? slot.maxpp : move.noPPBoosts ? move.pp : move.pp * 8 / 5;
 	return max > 0 ? Math.max(0, 1 - usedPP(slot) / max) : 1;
@@ -92,6 +92,13 @@ export class Builder {
 	/** [own, opposing]: the side has Mega Evolved, or used a Z-Move. */
 	private megaUsed = [false, false];
 	private zUsed = [false, false];
+	/** Own mons' max HP by ident: the tracker loses it when a mon faints (`0 fnt`). */
+	private maxhp = new Map<string, number>();
+	/**
+	 * Own mons' PP by ident and move, as last recorded: a locked move's request lists no PP, and the tracker then
+	 * drops the mon's move slots until the next full request.
+	 */
+	private pp = new Map<string, number>();
 	/** Opposing Team Preview slots that have had no consistent library set at some decision. */
 	readonly noPrior = new Set<number>();
 	/** Set to an array to record every input (Entry), for the leak test. */
@@ -230,8 +237,8 @@ export class Builder {
 		this.head = (this.head + 1) % N_EVENTS;
 	}
 
-	/** D7's prior for opposing Team Preview slot k, from what it has shown. */
-	private priorOf(k: number): { prior: Prior, revealed: Set<string> } {
+	/** D7's prior for opposing Team Preview slot k, from what it has shown, and the moves it has shown. */
+	prior(k: number): { prior: Prior, revealed: Set<string> } {
 		const p = this.client[this.foe].team[k], s = this.shown[k];
 		const revealed = new Set<string>();
 		for (const slot of p.moveSlots) {
@@ -312,9 +319,10 @@ export class Builder {
 			ints[at + W.item + i] = itemId(r.item);
 			ints[at + W.ability + i] = abilityId(r.ability ?? r.baseAbility);
 			floats[at + W.active + i] = +(r.active && !fainted && !req.teamPreview);
+			if (!fainted) this.maxhp.set(r.ident, p.maxhp);
 			const st = at + W.stats + 6 * i;
 			[floats[st], floats[st + 1], floats[st + 2], floats[st + 3], floats[st + 4], floats[st + 5]] =
-				[p.maxhp, r.stats.atk, r.stats.def, r.stats.spa, r.stats.spd, r.stats.spe];
+				[this.maxhp.get(r.ident) ?? 0, r.stats.atk, r.stats.def, r.stats.spa, r.stats.spd, r.stats.spe];
 			const mf = at + W.monFlags + NF * i;
 			const item = Dex.items.get(r.item);
 			const isMega = Dex.species.get(species).isMega;
@@ -327,7 +335,9 @@ export class Builder {
 				ints[at + W.moves + 4 * i + j] = moveId(r.moves[j]);
 				const mn = at + W.moveNum + NM * (4 * i + j);
 				floats[mn] = 1;
-				floats[mn + 1] = ppLeft(p, id);
+				const left = ppLeft(p, id) ?? this.pp.get(`${r.ident}|${id}`) ?? 1;
+				this.pp.set(`${r.ident}|${id}`, left);
+				floats[mn + 1] = left;
 				if (i === 0 && active) {
 					const a = active.moves.findIndex(m => normalMove(m.id) === id);
 					floats[mn + 2] = +(a >= 0 && !!active.moves[a].disabled);
@@ -360,7 +370,7 @@ export class Builder {
 			const ability = p.ability || p.baseAbility;
 			ints[at + W.ability + j] = ability ? abilityId(ability) : UNREVEALED;
 			floats[at + W.active + j] = +opp.active.includes(p);
-			const { prior, revealed } = this.priorOf(k);
+			const { prior, revealed } = this.prior(k);
 			const mf = at + W.monFlags + NF * j;
 			const isMega = Dex.species.get(p.speciesForme).isMega;
 			floats[mf + FLAG.canMega] = +(!!p.item && !!megaOf(p.item, p.speciesForme) && !isMega && !this.megaUsed[1]);
@@ -375,7 +385,7 @@ export class Builder {
 				ints[at + W.moves + 4 * j + m] = moveId(moves[m]);
 				const mn = at + W.moveNum + NM * (4 * j + m);
 				floats[mn] = +revealed.has(id);
-				floats[mn + 1] = ppLeft(p, id);
+				floats[mn + 1] = ppLeft(p, id) ?? 1;
 			}
 			if (!prior.set) this.noPrior.add(k);
 			const set = prior.set?.set;
