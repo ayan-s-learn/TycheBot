@@ -1,0 +1,6 @@
+lock taken 2026-11-26T13:39:21, load { 8.88 8.96 6.61 }
+run 0: 1,224 decisions/s; per decision ms: sim 0.193, track 0.038, calc 0.574, record 0.009, transfer 0.003, wall 0.817; cpu share 1.08 (min 1.08); other cores 0.6; load { 11.36 9.51 6.87 } -> { 8.47 8.99 6.75 }
+run 1: 1,194 decisions/s; per decision ms: sim 0.200, track 0.038, calc 0.586, record 0.010, transfer 0.003, wall 0.837; cpu share 1.09 (min 1.09); other cores 1.4; load { 8.47 8.99 6.75 } -> { 6.32 8.44 6.62 }
+run 2: 1,206 decisions/s; per decision ms: sim 0.193, track 0.037, calc 0.586, record 0.010, transfer 0.003, wall 0.829; cpu share 1.09 (min 1.09); other cores 0.9; load { 6.32 8.44 6.62 } -> { 5.31 8.03 6.53 }
+median 1,206 decisions/s; runs within 1.5% of it
+done 2026-11-26T13:40:55, load { 5.31 8.03 6.53 }

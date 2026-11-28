@@ -10,7 +10,7 @@ A self-play RL bot for [Gen 9] National Dex OU on Pokémon Showdown. GitHub: [ay
 
 Replace this line, don't append to it, when the phase changes. What's in flight is in [docs/checklist.md](docs/checklist.md).
 
-- 2026-11-26: Phase 1 (plan.md, Phases). `data/pool/v0/` holds a 20-team stub pool and `data/replays/v0/` the public replay corpus ([T04](tasks/T04-replay-corpus/README.md), Outputs). The only project code so far is `scripts/`.
+- 2026-11-27: Phase 1 (plan.md, Phases). `data/pool/v1/` holds a 50-team pool with 10 held out, `data/priors/v0/` its set library ([T12](tasks/T12-pool-v1/README.md)), and `data/replays/v0/` the public replay corpus ([T04](tasks/T04-replay-corpus/README.md), Outputs). The walking skeleton is merged ([T09](tasks/T09-skeleton/README.md)): env workers in `worker/`, the transport in `tyche/transport/` and the skeleton's PPO in `tyche/skeleton/` ([env-workers](docs/areas/env-workers.md)).
 
 ## Docs
 
@@ -52,10 +52,11 @@ Toolchain decided 2026-11-24 ([T01](tasks/T01-toolchain/README.md)).
 - **Node code is TypeScript,** run directly with `node file.ts`. Type stripping allows erasable syntax only: no enums, namespaces or parameter properties. Load Showdown's CommonJS `dist/` with a default import or `createRequire`; named imports fail. Type-check with `node vendor/pokemon-showdown/node_modules/typescript/bin/tsc -p <tsconfig>`, using a tsconfig like `tasks/T01-toolchain/tsconfig.json` with its `typeRoots` and `files` paths pointed at the root `vendor/`. Code under `worker/` uses the root one: `tsc -p tsconfig.json`.
 - **Layout** (decided 2026-11-26): Phase 1 code goes in `worker/` (TypeScript: the Node env worker, tracker, observation builder and calcs) and `tyche/` (Python: transport, learner, net, batch env, eval). Each brief names the subfolders its task owns. A task edits only those, and proposes changes to another task's subfolder under For integration. `tyche/` has no `__init__.py`, so no two tasks write one. Tests sit next to their code.
 - **Tests:** `node --test 'worker/**/*.test.ts'` runs the Node tests (quote the glob) and `uv run pytest` the Python ones (`test_*.py` under `tyche/`, in importlib mode so test files in different folders can share a name). Both checked with throwaway files on 2026-11-26.
-- **Re-pin Showdown monthly** (plan.md, Versioning): fetch master's head into `vendor/pokemon-showdown` (`git fetch --depth 1 origin <new>`) and read `git diff <old> <new> -- config/formats.ts data sim` there (GitHub's compare API lists at most 300 files). Write the new commit into `showdown.pin`, rerun the setup script, validate every pool team (`node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl`, once per pool version in use) and rerun the tests that exist, then commit the pin.
+- **Python entry points** under `tyche/` run as modules from the root: `uv run python -m tyche.skeleton.train`. Run by path, the root isn't on `sys.path`. Those that start env workers need Node 24 on `PATH` (`nvm use` in the same command), and refuse another major.
+- **Re-pin Showdown monthly** (plan.md, Versioning): fetch master's head into `vendor/pokemon-showdown` (`git fetch --depth 1 origin <new>`) and read `git diff <old> <new> -- config/formats.ts data sim` there (GitHub's compare API lists at most 300 files). Write the new commit into `showdown.pin`, rerun the setup script, validate every pool team (`node scripts/validate-pool.ts data/pool/<ver>/teams.jsonl`, once per pool version in use), check every set library (`node scripts/pool/check-library.ts data/priors/<ver>/species_sets.json data/pool/<pool ver>`) and rerun the tests that exist, then commit the pin.
 - **Timed runs** share this machine with other sessions. Run each timed command under the lock in the git common dir, in one shell command so the lock is released even if the run fails:
   `L="$(git rev-parse --path-format=absolute --git-common-dir)/timing.lock"; until mkdir "$L" 2>/dev/null; do sleep 30; done; echo "<task ID> $(date +%FT%T)" > "$L/owner"; trap 'rm -f "$L/owner"; rmdir "$L" 2>/dev/null' EXIT; trap 'exit 143' INT TERM HUP; <command>`. Agent shells are zsh, which skips an EXIT trap on a signal unless the signal trap exits.
-  Record `sysctl -n vm.loadavg` with each run. If the lock has been held for over an hour, tell the user; `owner` says which task holds it and since when.
+  Record `sysctl -n vm.loadavg` with each run. Check the agent shell isn't at background priority first: `ps -o pri= -p $$` prints 4 there, against 31 normally. At 4 the same in-process run took ~5× as long (T09, 2026-11-26), with one process still at more than a full core, so CPU share doesn't show it. If it prints 4, tell the user rather than timing. If the lock has been held for over an hour, tell the user; `owner` says which task holds it and since when.
   In an agent session isolated in a worktree, the sandbox can refuse the inline lock command and `source ~/.nvm/nvm.sh`. T02's `timed.sh` holds the same lock command (writing T02 as owner), and prefixing `PATH` with `~/.nvm/versions/node/v24.<x>/bin` stands in for `nvm use`. The lock command finds the git common dir from the current directory, so a timed run of a separate clone must start from inside this repository to take the shared lock.
 - **Spike code is throwaway.** It stays in its task folder. Phase 1 code may copy from it but doesn't import it.
 
@@ -65,7 +66,8 @@ Add a row when work in one starts, using the component names from plan.md (Compo
 
 | Area | Status | Code | Notes |
 |---|---|---|---|
-| Team pool and set priors | 20-team stub pool; no priors | `data/pool/`, `scripts/validate-pool.ts` | [team-pool](docs/areas/team-pool.md) |
+| Team pool and set priors | v1: 50 teams, 10 held out; library v0: 1063 sets | `data/pool/`, `data/priors/`, `scripts/validate-pool.ts`, `scripts/pool/` | [team-pool](docs/areas/team-pool.md) |
+| Env workers | Walking skeleton: sim, tracking, 288 calcs on true sets, record v1, transport | `worker/sim/`, `worker/calc/`, `worker/skeleton/`, `tyche/transport/` | [env-workers](docs/areas/env-workers.md) |
 
 Status lives in the row (a few words) and the detail in the area's notes, `docs/areas/<area>.md`. Put in the notes only what has been verified, and skip what doesn't apply yet:
 

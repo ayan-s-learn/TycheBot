@@ -1,0 +1,29 @@
+{
+ "checkpoint": "tasks/T09-skeleton/runs/train-0/net.pt",
+ "games": 1000,
+ "wins": 982,
+ "winRate": 0.982,
+ "ci95": [
+  0.9717265156214581,
+  0.9885843541412616
+ ],
+ "seats": {
+  "p1": {
+   "games": 500,
+   "wins": 491,
+   "losses": 9,
+   "ties": 0,
+   "truncated": 0
+  },
+  "p2": {
+   "games": 500,
+   "wins": 491,
+   "losses": 9,
+   "ties": 0,
+   "truncated": 0
+  }
+ },
+ "greedy": false,
+ "seed": 0,
+ "meanTurns": 24.115
+}
