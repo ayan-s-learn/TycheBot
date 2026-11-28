@@ -22,7 +22,7 @@
     - When the move list shrinks (a locked move, Recharge, Struggle), action 0 is the only legal one, while `calcs` slot 0 still describes the first base move (env-workers, Actions). It takes action 0.
     - At a forced switch, it takes the bench mon with the highest calc against the opposing active. At Team Preview, it leads with team slot 1.
     - It never switches voluntarily.
-  - Teams: the v1 pool's 40 training teams (`data/pool/v1/teams.jsonl` less `holdout.txt`; team-pool.md). T09's worker plays them without errors: 2,000 random-player games, 0 `[Invalid choice]` (planning session, 2026-11-27). v1 has no Transform, Imposter or Illusion user, on which the skeleton's calcs throw (env-workers, Status).
+  - Teams: the v1 pool's 40 training teams (`data/pool/v1/teams.jsonl` less `holdout.txt`; team-pool.md), which `loadPool` returns. T09's worker plays them without errors: 2,000 random-player games, 0 `[Invalid choice]` (planning session, 2026-11-27). v1 has no Transform, Imposter or Illusion user, on which the skeleton's calcs throw (env-workers, Status).
 - **Deliverables:**
   - `tyche/baselines/`: random (uniform over legal actions) and max-damage, each a policy that maps a batch of records to actions. They sit behind a small protocol that the eval runner, and later the learner's league, call. A T09 checkpoint is wrapped behind the same protocol.
   - **`tyche/eval/`, the eval runner.** It plays agent A against agent B in duplicate pairs (plan.md, Evaluation: Pairings).
@@ -50,7 +50,7 @@
   - The four eval results are in Result, with their commands in Outputs, and a rerun gives identical game lists.
   - Tests (AGENTS.md, Conventions: Tests) and `tsc -p tsconfig.json` pass.
 - **May change:** `tyche/baselines/`, `tyche/eval/`, `worker/eval/`, `worker/sim/`, `worker/skeleton/main.ts`, `worker/skeleton/mask.ts` and `mask.test.ts` (fixes the check finds), `docs/areas/eval.md`, `tasks/T14-eval-baselines/`.
-  - T16 owns `worker/skeleton/env.ts`, `record.ts`, `vocab.ts`, `drive.ts`, `worker/calc/` and `tyche/transport/`. Use them by import; changes you need there go under For integration. T16 keeps `Env`'s config (`games`), `collect`, `encode`, `apply`, `slots`, `stats`, `decisions` and `counts`, and `drive.ts`'s `step` and `randomLegal`, working for you.
+  - T16 owns `worker/skeleton/env.ts`, `record.ts`, `record.test.ts`, `vocab.ts`, `drive.ts`, `frames.ts`, `worker/calc/` and `tyche/transport/`. Use them by import; changes you need there go under For integration. T16 keeps `Env`'s config (`games`), `collect`, `encode`, `apply`, `slots`, `ended`, `stats`, `resetStats`, `decisions` and `counts`, `drive.ts`'s `step` and `randomLegal`, and `frames.ts` as `main.ts` uses it, working for you.
   - A mask fix that needs the queued-switch tracking in `env.ts` changed is one of those. Say so in Progress early, since T16 edits `env.ts` in parallel.
 - **Limits:** up to two sessions, no paid services. No timed runs are needed.
 - **Stop and report if:**

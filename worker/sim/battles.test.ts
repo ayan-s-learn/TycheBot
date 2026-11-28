@@ -1,8 +1,20 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { drawGame, Game, loadPool } from './battles.ts';
 
 const POOL = loadPool(new URL('../../data/pool/v0/teams.jsonl', import.meta.url).pathname);
+
+test('a pool loads its training teams only', () => {
+	const v1 = new URL('../../data/pool/v1/', import.meta.url).pathname;
+	const lines = readFileSync(v1 + 'teams.jsonl', 'utf8').trim().split('\n').map(l => JSON.parse(l));
+	const held = new Set(readFileSync(v1 + 'holdout.txt', 'utf8').split('\n').filter(Boolean));
+	const train = loadPool(v1 + 'teams.jsonl');
+	assert.equal(held.size, 10);
+	assert.deepEqual(train, lines.filter(t => !held.has(t.id)).map(t => t.team));
+	assert.equal(train.length, 40);
+	assert.equal(POOL.length, 20); // v0 has no holdout.txt
+});
 
 test('a game follows from its seed parts', () => {
 	assert.deepEqual(drawGame(POOL, 'run', 0, 5), drawGame(POOL, 'run', 0, 5));

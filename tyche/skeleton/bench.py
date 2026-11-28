@@ -14,7 +14,7 @@ as long on 2026-11-26, or if the median worker playing battles got under 0.9 of 
 With --echo N the workers play no battles and send N blank records per batch: the transport alone.
 
 Usage: python -m tyche.skeleton.bench --out <file.jsonl> [--workers 12] [--battles 32] [--seconds 30] [--warmup 10]
-       [--runs 3] [--echo N]
+       [--runs 3] [--echo N] [--pool data/pool/<ver>/teams.jsonl]
 Take timings under the timing lock (AGENTS.md, Conventions: Timed runs).
 """
 
@@ -27,7 +27,7 @@ import time
 
 import numpy as np
 
-from tyche.transport.workers import Workers, random_actions
+from tyche.transport.workers import POOL, ROOT, Workers, random_actions
 
 CORES = os.cpu_count()
 
@@ -44,7 +44,7 @@ def run(args, index):
     rng = np.random.default_rng(index)
     load0 = loadavg()
     pri = priority()
-    with Workers(args.workers, battles=args.battles, seed=f"bench-{index}", echo=args.echo) as ws:
+    with Workers(args.workers, battles=args.battles, seed=f"bench-{index}", pool=args.pool, echo=args.echo) as ws:
         start = time.perf_counter()
         opened = set()
         window0 = None
@@ -86,7 +86,7 @@ def run(args, index):
     counts = {k: sum(s["counts"].get(k, 0) for s in stats) for k in stats[0]["counts"]}
     rate = sum(s["counts"]["decisions"] / s["windowMs"] * 1000 for s in stats)
     return {
-        "run": index, "workers": args.workers, "battles": args.battles, "echo": args.echo, "seconds": args.seconds,
+        "run": index, "workers": args.workers, "battles": args.battles, "echo": args.echo, "seconds": args.seconds, "pool": args.pool,
         "decisionsPerSecond": rate,
         "perDecision": {k: statistics.median(v) for k, v in per.items()},
         "cpuShare": {"min": min(share), "median": statistics.median(share)},
@@ -109,6 +109,7 @@ def main():
     p.add_argument("--warmup", type=int, default=10)
     p.add_argument("--runs", type=int, default=3)
     p.add_argument("--echo", type=int, default=0)
+    p.add_argument("--pool", default=str(POOL.relative_to(ROOT)), help="a teams.jsonl, relative to the repo root; its training teams are played")
     args = p.parse_args()
     results = []
     for i in range(args.runs):

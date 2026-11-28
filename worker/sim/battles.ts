@@ -3,16 +3,22 @@
 // decision. strictChoices stays off (Showdown's default): under it a rejected choice throws (plan.md,
 // Network v0: Action head).
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { Battle, extractChannelMessages, FORMAT, PRNG } from './showdown.ts';
 
 export const SIDES = ['p1', 'p2'] as const;
 export type Side = 0 | 1;
 const NAMES = ['Bot 1', 'Bot 2'];
 
-/** A pool file's packed teams (docs/areas/team-pool.md: teams.jsonl). */
+/**
+ * A pool file's training teams, packed: every team except those listed in the `holdout.txt` beside it, if
+ * there is one (docs/areas/team-pool.md: teams.jsonl, holdout.txt).
+ */
 export function loadPool(path: string): string[] {
-	return readFileSync(path, 'utf8').trim().split('\n').map(l => JSON.parse(l).team);
+	const holdout = join(dirname(path), 'holdout.txt');
+	const held = new Set(existsSync(holdout) ? readFileSync(holdout, 'utf8').split('\n').filter(Boolean) : []);
+	return readFileSync(path, 'utf8').trim().split('\n').map(l => JSON.parse(l)).filter(t => !held.has(t.id)).map(t => t.team);
 }
 
 /** A PRNG seed derived from any parts, so every game's seed follows from (run seed, worker, game). */

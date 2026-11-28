@@ -55,6 +55,8 @@ The sets are Smogon's analysis sets with every option expanded (moves, items, ab
 
 **Keys the protocol doesn't show:** the library files Greninja's sets under `Greninja-Bond` and has no `Greninja` key, but the protocol shows that set as `Greninja` on switch-in and `Greninja-*` at Team Preview (T12 review pass 2, one sim run). A consumer keyed on protocol species must map it. Keldeo-Resolute shows as itself.
 
+**Coverage of held-out mons:** every training-team mon's item, ability and moves are a library combination, by construction. For the held-out teams, 27 of 60 mons' combinations are not, and 18 of those 27 have an item, ability or move that no library set of their species holds (a script over `holdout.txt`, `teams.jsonl` and this file, moves sorted; final review of PR #12 and its independent pass, 2026-11-28). On those teams D7's prior can run out of consistent sets mid-game.
+
 Weights are concentrated: the median species' top set holds 42% of its weight, and 332 sets hold under 1% of their species' weight. All 1063 were recomputed independently from the raw stats (T12, Result).
 
 ## Validating

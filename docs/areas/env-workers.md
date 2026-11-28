@@ -15,7 +15,7 @@ Components 1 and 2 of plan.md as the walking skeleton built them (T09): Node pro
 | Path | What it is |
 |---|---|
 | `worker/sim/showdown.ts` | Showdown's `dist/` at the pin, loaded with `require` |
-| `worker/sim/battles.ts` | `Game`: one `Battle` driven directly, each player's chunks and requests kept until taken, `[Invalid choice]` counted and the request posed again. `drawGame`: seeds and teams from (run seed, worker, game) |
+| `worker/sim/battles.ts` | `Game`: one `Battle` driven directly, each player's chunks and requests kept until taken, `[Invalid choice]` counted and the request posed again. `drawGame`: seeds and teams from (run seed, worker, game). `loadPool`: a pool's training teams, leaving out those its `holdout.txt` lists |
 | `worker/calc/calcs.ts` | `Calcs`: the 288 calcs for one player over one game, cached. `compute` takes plain `MonState`s, so the sim's state can be calced the same way (`calcs.test.ts`) |
 | `worker/skeleton/env.ts` | `Env`: many games, a client `Battle` per player, `collect` / `encode` / `apply` per step |
 | `worker/skeleton/mask.ts` | The 18 actions, the mask from a request, and the choice string for an action |
@@ -43,7 +43,7 @@ After the hello the two alternate: a batch, then its actions (or a stop). A batc
 
 **Versions:** every frame carries the record version. The worker refuses a frame with another version, and Python refuses a hello whose version or layout differs from `tyche/transport/record.py`, or a frame with another version. Bump `VERSION` on both ends whenever a field or the meaning of its values changes (codes, action indices, axis order). The layout check catches only the first.
 
-`Workers(n, battles=32, seed=..., turn_cap=300)` starts n workers. `recv()` returns the batches ready now, `gather()` one from every worker, `send(worker, actions)` answers one, and `stop()` returns every worker's stats. It refuses workers on a Node major other than `.nvmrc`'s.
+`Workers(n, battles=32, seed=..., pool=..., turn_cap=300)` starts n workers. `pool` defaults to v0's stub pool, so pass v1's `teams.jsonl` for its training teams. `recv()` returns the batches ready now, `gather()` one from every worker, `send(worker, actions)` answers one, and `stop()` returns every worker's stats. It refuses workers on a Node major other than `.nvmrc`'s.
 
 ## Record, version 1
 
@@ -84,7 +84,7 @@ From the root, after setup (AGENTS.md, Conventions), with `nvm use` in the same 
 ```bash
 node --test 'worker/**/*.test.ts'
 uv run pytest
-uv run python -m tyche.skeleton.bench --out <file.jsonl> --workers 12 --runs 3
+uv run python -m tyche.skeleton.bench --out <file.jsonl> --workers 12 --runs 3 [--pool data/pool/v1/teams.jsonl]
 uv run python -m tyche.skeleton.train --out <dir> --minutes 10
 uv run python -m tyche.skeleton.eval <dir>/net.pt --games 1000
 ```
