@@ -1,18 +1,16 @@
 // The worker's env: many battles at once, one tracker per player, the calcs, and a record per decision.
 // Each step gathers every open decision across the battles, writes their records, and applies one action
-// per decision. main.ts moves the records and actions over the transport.
-import { Battle as Client } from '@pkmn/client';
-import { Generations } from '@pkmn/data';
-import { Dex as PkmnDex } from '@pkmn/dex';
+// per decision. main.ts and worker/obs/main.ts move the records and actions over the transport.
+// Record version 1 (record.ts) is the skeleton's; version 2 (worker/obs/record.ts) is built by worker/obs/builder.ts.
 import { Calcs, hpOf } from '../calc/calcs.ts';
+import { Builder, type Entry } from '../obs/builder.ts';
+import type { Library } from '../obs/prior.ts';
+import * as R2 from '../obs/record.ts';
+import { type Client, newClient } from '../obs/tracker.ts';
 import { drawGame, Game, type GameSpec, SIDES, type Side } from '../sim/battles.ts';
 import { choiceOf, kindOf, monName, type Request, SWITCH, writeMask } from './mask.ts';
 import { BOOSTS, KIND, OFFSET, RECORD_WORDS, STATUS } from './record.ts';
 import { moveId, speciesId } from './vocab.ts';
-
-// @pkmn/data's default filter drops Past content, and the client then throws on Past Megas (T08).
-const NATDEX = new Set([undefined, null, 'Past', 'Unobtainable']);
-const gens = new Generations(PkmnDex, d => !!d.exists && NATDEX.has((d as any).isNonstandard));
 
 export interface EnvConfig {
 	worker: number;
@@ -23,18 +21,27 @@ export interface EnvConfig {
 	/** A game still going when this turn starts is cut off and reported as truncated. */
 	turnCap: number;
 	log?: (msg: string) => void;
-	/** Game `id`'s seed and teams, instead of a draw from the pool. */
-	games?: (id: number) => GameSpec;
+	/** Game `id`'s seed and teams, instead of a draw from the pool. null: no game, and the slot closes. */
+	games?: (id: number) => GameSpec | null;
+	/** The record version to write: 1 (the default) or 2, which needs `library`. */
+	record?: 1 | 2;
+	library?: Library;
+	/** Version 2: keep each builder's inputs (Builder.transcript), for the leak test. */
+	transcripts?: boolean;
+	/** Called with each game's slot when it ends, before it is closed. */
+	onEnd?: (slot: Slot) => void;
 }
 
-interface Player { client: Client, calcs: Calcs, queued: string | null }
-interface Slot { id: number, game: Game, players: [Player, Player], invalid: [number, number] }
+interface Player { client: Client, calcs: Calcs | null, builder: Builder | null, queued: string | null }
+export interface Slot { id: number, game: Game, players: [Player, Player], invalid: [number, number] }
 interface Decision { slot: Slot, side: Side, request: Request }
 export interface Ended { game: number, winner: number, truncated: number, turns: number }
 
 export class Times { sim = 0; track = 0; calc = 0; record = 0; }
 export class Counts {
 	decisions = 0; games = 0; turns = 0; truncated = 0; invalid = 0; unavailable = 0; calcs = 0; calcHits = 0;
+	/** Version 2: opposing mons that had no consistent library set at some decision, once per player and game. */
+	noPrior = 0;
 }
 
 export class Env {
@@ -47,22 +54,40 @@ export class Env {
 	private calcTally = { calcs: 0, hits: 0 };
 
 	readonly cfg: EnvConfig;
+	readonly version: 1 | 2;
+	/** Words per record, and the mask's offset in a record, at this env's version. */
+	readonly recordWords: number;
+	readonly maskOffset: number;
 
 	constructor(cfg: EnvConfig) {
 		this.cfg = cfg;
+		this.version = cfg.record ?? 1;
+		if (this.version === 2 && !cfg.library) throw new Error('record version 2 needs a library');
+		this.recordWords = this.version === 2 ? R2.RECORD_WORDS : RECORD_WORDS;
+		this.maskOffset = this.version === 2 ? R2.OFFSET.mask : OFFSET.mask;
 		const t = performance.now();
-		for (let i = 0; i < cfg.battles; i++) this.slots.push(this.open());
+		for (let i = 0; i < cfg.battles; i++) {
+			const slot = this.open();
+			if (slot) this.slots.push(slot);
+		}
 		this.times.sim += performance.now() - t;
 	}
 
-	private open(): Slot {
+	private open(): Slot | null {
 		const id = this.nextGame++;
-		const game = new Game(this.cfg.games?.(id) ?? drawGame(this.cfg.pool, this.cfg.seed, this.cfg.worker, id));
-		const player = (side: Side): Player => ({
-			client: new Client(gens, SIDES[side] as ID),
-			calcs: new Calcs(game.sets[side], game.sets[1 - side], this.calcTally),
-			queued: null,
-		});
+		const spec = this.cfg.games ? this.cfg.games(id) : drawGame(this.cfg.pool, this.cfg.seed, this.cfg.worker, id);
+		if (!spec) return null;
+		const game = new Game(spec);
+		const player = (side: Side): Player => {
+			if (this.version === 1) {
+				const calcs = new Calcs(game.sets[side], game.sets[1 - side], this.calcTally);
+				return { client: newClient(SIDES[side]), calcs, builder: null, queued: null };
+			}
+			// The builder gets the player's own sets and the library, never the opponent's sets.
+			const builder = new Builder(SIDES[side], game.sets[side], this.cfg.library!, this.calcTally);
+			if (this.cfg.transcripts) builder.transcript = [] as Entry[];
+			return { client: builder.client, calcs: null, builder, queued: null };
+		};
 		return { id, game, players: [player(0), player(1)], invalid: [0, 0] };
 	}
 
@@ -102,12 +127,14 @@ export class Env {
 				continue;
 			}
 			if (chunk.startsWith('|request|')) {
-				p.client.add(chunk);
+				if (p.builder) p.builder.request(chunk);
+				else p.client.add(chunk);
 				continue;
 			}
 			for (const line of chunk.split('\n')) {
 				if (line.charCodeAt(0) !== 124) continue; // '|'
-				p.client.add(line);
+				if (p.builder) p.builder.line(line);
+				else p.client.add(line);
 				if (!p.queued) continue;
 				// The queued switch is over once its mon comes in, or once the turn's actions are done.
 				if (line === '|upkeep') p.queued = null;
@@ -122,6 +149,13 @@ export class Env {
 
 	/** Writes the records of the decisions `collect` listed, from word `at` of the two views. */
 	encode(ints: Int32Array, floats: Float32Array, at: number) {
+		if (this.version === 2) {
+			for (const [n, d] of this.decisions.entries()) {
+				const p = d.slot.players[d.side];
+				p.builder!.build(d.request, p.queued, d.slot.id, ints, floats, at + n * this.recordWords, this.times);
+			}
+			return;
+		}
 		for (const [n, d] of this.decisions.entries()) {
 			const t0 = performance.now();
 			const base = at + n * RECORD_WORDS;
@@ -158,7 +192,7 @@ export class Env {
 			}
 			writeMask(req, p.queued, ints, base + OFFSET.mask);
 			const t1 = performance.now();
-			p.calcs.run(p.client, SIDES[d.side], req as any, floats, base + OFFSET.calcs);
+			p.calcs!.run(p.client, SIDES[d.side], req as any, floats, base + OFFSET.calcs);
 			const t2 = performance.now();
 			this.times.record += t1 - t0;
 			this.times.calc += t2 - t1;
@@ -172,7 +206,7 @@ export class Env {
 		this.ended.length = 0;
 		for (const [n, d] of this.decisions.entries()) {
 			const a = actions[n];
-			if (!(a >= 0 && a < 18) || ints[at + n * RECORD_WORDS + OFFSET.mask + a] !== 1) {
+			if (!(a >= 0 && a < 18) || ints[at + n * this.recordWords + this.maskOffset + a] !== 1) {
 				throw new Error(`action ${a} is masked for decision ${n} (game ${d.slot.id}, side ${d.side})`);
 			}
 			// The player's own switch, while it is queued (writeMask). Forcing out the mon it was for cancels it
@@ -182,6 +216,7 @@ export class Env {
 			d.slot.game.choose(d.side, choiceOf(d.request, a));
 		}
 		this.counts.decisions += this.decisions.length;
+		const closed = new Set<Slot>();
 		for (const [i, slot] of this.slots.entries()) {
 			const game = slot.game;
 			for (const side of [0, 1] as const) {
@@ -197,9 +232,14 @@ export class Env {
 			this.counts.games++;
 			this.counts.truncated += +truncated;
 			this.counts.turns += game.battle.turn;
+			for (const p of slot.players) this.counts.noPrior += p.builder?.noPrior.size ?? 0;
+			this.cfg.onEnd?.(slot);
 			game.destroy();
-			this.slots[i] = this.open();
+			const next = this.open();
+			if (next) this.slots[i] = next;
+			else closed.add(slot);
 		}
+		if (closed.size) this.slots = this.slots.filter(s => !closed.has(s));
 		this.times.sim += performance.now() - t;
 	}
 }

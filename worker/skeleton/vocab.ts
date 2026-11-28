@@ -14,6 +14,10 @@ function vocab(ids: string[]) {
 const species = vocab(Dex.species.all().map(s => s.id));
 const moves = vocab(Dex.moves.all().map(m => m.id));
 
+/** The sorted ids, id i + 2 at index i: for record version 2's static tables (worker/obs/dex.ts). */
+export const SPECIES_IDS: readonly string[] = species.ids;
+export const MOVE_IDS: readonly string[] = moves.ids;
+
 export const VOCAB = {
 	species: species.size,
 	moves: moves.size,

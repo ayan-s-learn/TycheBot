@@ -56,10 +56,15 @@ export interface MonState {
 	moves: (string | null)[],
 }
 export interface SideState { reflect: boolean, lightScreen: boolean, auroraVeil: boolean }
-/** The field; `sides` is [own, opposing]. */
+/** Field-wide abilities an active mon has, as the calc's field flags take them (record version 2 sets them). */
+export const FIELD_FLAGS = {
+	'Beads of Ruin': 'isBeadsOfRuin', 'Sword of Ruin': 'isSwordOfRuin', 'Tablets of Ruin': 'isTabletsOfRuin',
+	'Vessel of Ruin': 'isVesselOfRuin', 'Fairy Aura': 'isFairyAura', 'Dark Aura': 'isDarkAura', 'Aura Break': 'isAuraBreak',
+} as const;
+/** The field; `sides` is [own, opposing]. `abilities` lists the field-wide abilities in play (FIELD_FLAGS). */
 export interface FieldState {
 	weather?: string, terrain?: string, gravity: boolean, magicRoom: boolean, wonderRoom: boolean,
-	sides: [SideState, SideState],
+	sides: [SideState, SideState], abilities?: (keyof typeof FIELD_FLAGS)[],
 }
 
 interface Mon { state: MonState, options: any, key: string, obj?: Pokemon }
@@ -101,7 +106,7 @@ export const hpOf = (p: ClientPokemon) => p.maxhp ? p.hp / p.maxhp : 1;
 const boostsOf = (p: ClientPokemon) =>
 	({ atk: p.boosts.atk ?? 0, def: p.boosts.def ?? 0, spa: p.boosts.spa ?? 0, spd: p.boosts.spd ?? 0, spe: p.boosts.spe ?? 0 });
 
-function trackedMon(p: ClientPokemon, species: string, item: string | undefined, ability: string | undefined,
+export function trackedMon(p: ClientPokemon, species: string, item: string | undefined, ability: string | undefined,
 	set: PokemonSet, moves: (string | null)[], alliesFainted: number): MonState {
 	const v = p.volatiles;
 	return {
@@ -112,7 +117,7 @@ function trackedMon(p: ClientPokemon, species: string, item: string | undefined,
 	};
 }
 
-const sideState = (s: ClientSide): SideState => ({
+export const sideState = (s: ClientSide): SideState => ({
 	reflect: !!s.sideConditions.reflect, lightScreen: !!s.sideConditions.lightscreen, auroraVeil: !!s.sideConditions.auroraveil,
 });
 
@@ -187,9 +192,10 @@ export class Calcs {
 				isGravity: field.gravity, isMagicRoom: field.magicRoom, isWonderRoom: field.wonderRoom,
 				attackerSide: { isReflect: a.reflect, isLightScreen: a.lightScreen, isAuroraVeil: a.auroraVeil },
 				defenderSide: { isReflect: d.reflect, isLightScreen: d.lightScreen, isAuroraVeil: d.auroraVeil },
-			};
+			} as { [k: string]: unknown };
+			for (const ability of field.abilities ?? []) fieldOpts[FIELD_FLAGS[ability]] = true;
 			const fieldKey = [field.weather, field.terrain, field.gravity, field.magicRoom, field.wonderRoom,
-				a.reflect, a.lightScreen, a.auroraVeil, d.reflect, d.lightScreen, d.auroraVeil].join(',');
+				a.reflect, a.lightScreen, a.auroraVeil, d.reflect, d.lightScreen, d.auroraVeil, field.abilities?.join('+')].join(',');
 			let fieldObj: Field | undefined;
 			for (const [ai, atk] of attackers.entries()) {
 				if (!atk) continue;
