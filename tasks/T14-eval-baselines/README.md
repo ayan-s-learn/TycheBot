@@ -56,6 +56,8 @@
 - **Stop and report if:**
   - a legal action is masked out and the fix needs information the player isn't shown;
   - max-damage wins under ~85% of its duplicate games against random (a planning session's estimate, not a measurement: T09's 10-minute policy won 98.2% against random). That would point to a bug in it or in the record's calcs.
+- **Watch for** (final review of PR #12, 2026-11-28). Context, not added requirements; use your judgment:
+  - On record version 1, max-damage's calcs read the opponents' true sets, so it's stronger than the version 2 max-damage v0-lite will face. Worth saying beside its results.
 
 ## Progress
 

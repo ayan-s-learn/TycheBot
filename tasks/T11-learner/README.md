@@ -32,6 +32,8 @@
 - **Limits:** up to three sessions, no paid services, with at most one of them on Kuhn poker. Take the timed runs on the user's Mac, as in AGENTS.md, Conventions (Timed runs).
 - **Stop and report if:**
   - PPO with D10's KL term doesn't end near uniform on rock-paper-scissors.
+- **Watch for** (final review of PR #12, 2026-11-28). Context, not added requirements; use your judgment:
+  - The measured MPS rate replaces T07's ~1,900, which sets T16's budgets (12 processes ÷ the rate is where the env bounds the M4 Max, ~6.3 ms now, and a third of that is D10's 3×, ~2.1 ms) and D10's switch. Result can restate both from the new figure. Above ~3,700 decisions/s, T09's 11.1k env decisions/s is already within 3×.
 
 ## Progress
 

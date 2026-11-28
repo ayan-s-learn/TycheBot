@@ -48,6 +48,11 @@
   - version 2 at 12 processes costs more than ~6.3 ms per decision per process (median of 3 runs), which fires D7's calc revisit trigger;
   - a field the observation needs can't be built without information the player isn't shown;
   - the leak test fails in a way that needs changing D7's prior rule.
+- **Watch for** (final review of PR #12, 2026-11-28). Context, not added requirements; use your judgment:
+  - Paired-game variants that change a spread or nature diverge at the first damage line, so they may compare little beyond Team Preview and turn 1. Variants on an unrevealed move, item or ability run deeper. The per-variant counts in Result show the difference.
+  - `encode` in `env.ts` reads the turn from the sim (`d.slot.game.battle.turn`). It's public, but a rebuild from the logged stream has no sim to read, so version 2 takes its fields from the tracker and the request.
+  - Prior sets change as an opponent reveals its set, and with them the calc cache keys. T09's calcs hit the cache on ~72% of lookups on v1's training teams (1,001 random games, 2026-11-28), so version 2's calc time may rise.
+  - T19 builds against your tensor format in parallel. Putting its keys, shapes and widths in Progress once they're fixed saves it guessing.
 
 ## Progress
 

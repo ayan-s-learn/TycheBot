@@ -30,6 +30,9 @@
   - the spend would pass $6;
   - setup fails on the box in a way that needs changing project code;
   - the env-only figure alone exceeds ~$4 per million games, half the gate, at the best count.
+- **Watch for** (final review of PR #12, 2026-11-28). Context, not added requirements; use your judgment:
+  - Random-player games average ~108 decisions on v1's training teams (107,867 in 1,001 games, 2026-11-28).
+  - Many-vCPU listings count hyperthreads. Per-process ms against the M4 Max's 1.09 ms shows what they're worth.
 
 ## Progress
 

@@ -29,6 +29,10 @@
 - **Limits:** up to two sessions, no paid services. Take the timed runs on the user's Mac, under the timing lock (AGENTS.md, Conventions: Timed runs).
 - **Stop and report if:**
   - the net at the v0 size trains more than 25% slower than T07's stand-in, which would change T07's learner estimate that D7 and D10 rest on.
+- **Watch for** (final review of PR #12, 2026-11-28). Context, not added requirements; use your judgment:
+  - Permuting the opposing bench also permutes the calc columns each own mon carries, so the test has to move those columns too, or it passes or fails for the wrong reason.
+  - T07's stand-in without aux heads has ~4.6M parameters (the independent review's count), inside the 10% bar, so there's no need to pad to 5M.
+  - T16 is asked to put its tensor keys, shapes and widths in its Progress once they're fixed (branch `task/T16-*`).
 
 ## Progress
 

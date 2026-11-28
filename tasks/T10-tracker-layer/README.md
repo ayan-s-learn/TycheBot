@@ -27,6 +27,9 @@
 - **Stop and report if:**
   - a fix needs changing @pkmn/client's own code or forking it, which D7 says the layer avoids;
   - the observation needs a field that can't be tracked without information the player isn't shown.
+- **Watch for** (final review of PR #12, 2026-11-28). Context, not added requirements; use your judgment:
+  - A per-fix test that also passes on the raw client doesn't show the fix.
+  - Keeping the client's constructor (`new Client(gens, side)` in `env.ts`) keeps the swap a one-line import change.
 
 ## Progress
 

@@ -21,6 +21,8 @@
 - **Limits:** one session, no paid services.
 - **Stop and report if:**
   - keeping the structure leaves some species with no eligible set often enough to matter (say over 5% of its draws), which would need a D4 decision on what to do instead.
+- **Watch for** (final review of PR #12, 2026-11-28). Context, not added requirements; use your judgment:
+  - Keeping Mega and Z-Crystal counts exact can pull the realized share of replaced mons below ~0.5. Result can give the share you get.
 
 ## Progress
 
